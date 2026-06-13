@@ -1,1 +1,3 @@
-﻿Console.WriteLine("Hello, World!");
+﻿
+ue3stubgencore.Test.Hello();
+Console.WriteLine("Hello, World!");
