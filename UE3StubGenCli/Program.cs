@@ -6,9 +6,12 @@ namespace UE3StubGenCli;
 
 internal class LoggingExporter : IExporter
 {
-    public void Export(ExportModel model, ExportPackage pkg)
+    public void Export(ExportModel model)
     {
-        Console.WriteLine($"Package {pkg.PackageName} has {pkg.Classes.Count} classes");
+        foreach (var pkg in model.Packages)
+        {
+            Console.WriteLine($"Package {pkg.PackageName} has {pkg.Classes.Count} classes");
+        }
     }
 
     public static void Main(string[] args)

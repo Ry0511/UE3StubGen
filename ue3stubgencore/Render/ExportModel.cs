@@ -6,7 +6,6 @@ public class ExportModel
 {
     public ExportContext Context { get; }
     public IReadOnlyList<ExportPackage> Packages { get; private set; }
-    public SymbolRegistry Registry { get; private set; }
 
     public ExportModel(ExportContext ctx)
     {
@@ -14,14 +13,10 @@ public class ExportModel
         Packages = ctx.GetPackages()
             .Select(pkg => new ExportPackage(Context, pkg))
             .ToList();
-        Registry = new SymbolRegistry();
     }
 
     public void ExportAll(IExporter api)
     {
-        foreach (var pkg in Packages)
-        {
-            api.Export(this, pkg);
-        }
+        api.Export(this);
     }
 }
