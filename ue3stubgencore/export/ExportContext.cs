@@ -1,5 +1,8 @@
-﻿using UELib;
+﻿using System.Globalization;
+using UELib;
 using UELib.Core;
+using UELib.Flags;
+using static UELib.UnrealPackage.GameBuild.BuildName;
 
 namespace ue3stubgencore.export;
 
@@ -12,7 +15,7 @@ public class ExportContext
     private DirectoryInfo _root { get; }
     private readonly Dictionary<string, UnrealPackage> _packages = new();
 
-    public ExportContext(string path, bool loadAll = true)
+    public ExportContext(string path)
     {
         _root = new DirectoryInfo(path);
         if (!_root.Exists)
@@ -20,29 +23,48 @@ public class ExportContext
             throw new Exception($"path specified does not exist: {path}");
         }
 
-        if (loadAll)
-        {
-            foreach (var file in _root.GetFiles("*.u", SearchOption.AllDirectories))
-            {
-                try
-                {
-                    var pkg = UnrealLoader.LoadPackage(file.FullName);
-                    pkg.InitializePackage();
-                    AddPackage(pkg);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Failed to load package {file.Name}: {e}");
-                }
-            }
-        }
-    }
+        var packageList = _root.GetFiles("*.u", SearchOption.AllDirectories)
+            .Select(file => file)
+            .ToList();
 
-    private FileInfo? FindPackageByName(string name)
-    {
-        return _root.GetFiles("*.u", SearchOption.AllDirectories)
-            .FirstOrDefault(file =>
-                file.Name.Equals(name + ".u", StringComparison.CurrentCultureIgnoreCase));
+        var seenSet = new HashSet<string>();
+
+        foreach (var pkgPath in packageList)
+        {
+            UnrealConfig.SuppressSignature = true;
+            var pkg = UnrealLoader.LoadPackage(pkgPath.FullName);
+            UnrealConfig.SuppressSignature = false;
+
+            // this is a compressed package
+            if (pkg.Summary.CompressedChunks != null && pkg.Summary.CompressedChunks.Any())
+            {
+                Console.WriteLine($"Skipping {pkgPath.Name} because it is compressed");
+                pkg.Stream.Close();
+                continue;
+            }
+
+            if (!seenSet.Add(pkg.PackageName))
+            {
+                pkg.Stream.Close();
+                continue;
+            }
+            
+            string ntlPath = Path.Combine(
+                AppContext.BaseDirectory,
+                "NativeTables",
+                "NativesTableList_UDK-2012-05.NTL"
+            );
+            
+            if (File.Exists(ntlPath))
+            {
+                using var ntlFileStream = File.Open(ntlPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                pkg.NTLPackage = new NativesTablePackage();
+                pkg.NTLPackage.Deserialize(ntlFileStream);
+            }
+            
+            pkg.InitializePackage();
+            AddPackage(pkg);
+        }
     }
 
     private void AddPackage(UnrealPackage pkg)
@@ -50,30 +72,12 @@ public class ExportContext
         _packages[pkg.PackageName] = pkg;
     }
 
-    public UnrealPackage? LoadPackage(string name)
+    public UnrealPackage? GetPackage(string name)
     {
-        return GetPackage(name, loadIfMissing: true);
+        return _packages.GetValueOrDefault(name);
     }
 
-    public UnrealPackage? GetPackage(string name, bool loadIfMissing = true)
-    {
-        var ret = _packages.GetValueOrDefault(name);
-        if (ret == null && loadIfMissing)
-        {
-            var file = FindPackageByName(name);
-            if (file != null)
-            {
-                var pkg = UnrealLoader.LoadPackage(file.FullName);
-                pkg.InitializePackage();
-                AddPackage(pkg);
-                return pkg;
-            }
-        }
-
-        return ret;
-    }
-
-    public T? ResolveImport<T>(UnrealPackage pkg, UObject obj) where T : UObject
+    public T ResolveImport<T>(UnrealPackage pkg, UObject obj) where T : UObject
     {
         var index = (int)obj;
         switch (index)
@@ -81,12 +85,20 @@ public class ExportContext
             case 0:
                 throw new Exception("null import cannot be resolved");
             case > 0:
-                return obj as T;
+                return (obj as T)!;
             default:
             {
                 var imp = pkg.Imports[-(index + 1)];
-                return GetPackage(imp.ClassPackageName, loadIfMissing: true)
-                    ?.FindObject<T>(imp.ObjectName);
+                var loaded = GetPackage(imp.ClassPackageName);
+                var found = loaded?.FindObject<T>(imp.ObjectName);
+
+                if (found == null)
+                {
+                    throw new Exception(
+                        $"Could not resolve import: {imp.GetReferencePath()} from {imp.ClassPackageName}");
+                }
+
+                return found;
             }
         }
     }

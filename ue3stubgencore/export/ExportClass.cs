@@ -5,6 +5,7 @@ namespace ue3stubgencore.export;
 
 public class ExportClass : BaseExport
 {
+    public string Name { get; private set; }
     public ExportClass? Super { get; private set; } = null;
     public List<ExportInterface> Interfaces { get; private set; } = [];
     public List<ExportStruct> Structs { get; private set; }
@@ -18,6 +19,8 @@ public class ExportClass : BaseExport
         {
             obj = ctx.ResolveImport<UClass>(pkg, obj)!;
         }
+
+        Name = obj.Name; // TODO: determine the difference between Name and FriendlyName
 
         if (obj.Super != null)
         {
@@ -54,12 +57,13 @@ public class ExportClass : BaseExport
             }
         }
 
-        Structs = obj.EnumerateFields<UStruct>().Select(s => new ExportStruct(ctx, pkg, s))
-            .ToList();
+        Structs = obj.EnumerateFields<UStruct>().Select(s => new ExportStruct(ctx, pkg, s)).ToList();
         Enums = obj.EnumerateFields<UEnum>().Select(e => new ExportEnum(ctx, pkg, e)).ToList();
-        Fields = obj.EnumerateFields<UProperty>().Select(f => new ExportField(ctx, pkg, f))
+        Fields = obj.EnumerateFields<UProperty>().Select(f => new ExportField(ctx, pkg, f)).ToList();
+
+        Functions = obj.EnumerateFields<UFunction>()
+            .Select(f => new ExportFunction(ctx, pkg, f))
             .ToList();
-        Functions = obj.EnumerateFields<UFunction>().Select(f => new ExportFunction(ctx, pkg, f))
-            .ToList();
+        Functions.Sort((a, b) => a.IsStatic.CompareTo(b.IsStatic));
     }
 }

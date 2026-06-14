@@ -2,7 +2,6 @@
 using ue3stubgencore.export;
 using UELib;
 using UELib.Core;
-using UELib.Flags;
 
 namespace ue3stubgencore;
 
@@ -11,113 +10,150 @@ public static class UClassInspector
     public static void Hello()
     {
         string root = @"C:\mod_tools\decompressed_packages\BL1\decompressed";
-        ExportContext ctx = new(root, loadAll: false);
-        var pkg = ctx.LoadPackage("Engine")!;
-        
-        StringBuilder sb = new();
+        ExportContext ctx = new(root);
+        var pkg = ctx.GetPackage("Engine")!;
+
+        StringBuilder text = new();
         foreach (var obj in pkg.Objects)
         {
-            if (obj is UClass cls && cls.Name == "AttributeInitializationDefinition")
+            if (obj is UClass cls)
             {
-                ExportClass test = new(ctx, pkg, cls);
-
-                sb.Append($"class {cls.Name}");
-                if (cls.ImplementedInterfaces?.Count > 0 || cls.Super != null)
+                try
                 {
-                    sb.Append("(");
-                    if (cls.Super != null)
-                    {
-                        sb.Append(cls.Super.Name);
-                    }
-
-                    if (cls.ImplementedInterfaces?.Count > 0)
-                    {
-                        sb.AppendJoin(",", cls.ImplementedInterfaces);
-                    }
-
-                    sb.Append(")");
+                    ExportClass e = new(ctx, pkg, cls);
+                    StringBuilder sb = new();
+                    PrintExportClass(sb, e);
+                    text.AppendLine(sb.ToString());
                 }
-
-                sb.AppendLine();
-                sb.AppendLine();
-
-                foreach (var elem in cls.EnumerateFields<UEnum>())
+                catch (Exception)
                 {
-                    sb.AppendLine($"  enum {elem.Name}:");
-                    for (int i = 0; i < elem.Names.Count; i++)
-                    {
-                        sb.AppendLine($"    {elem.Names[i]} = {i}");
-                    }
-
-                    sb.AppendLine();
+                    Console.WriteLine($"Failed to export {cls.GetReferencePath()}");
                 }
-
-                foreach (var elem in cls.EnumerateFields<UScriptStruct>())
-                {
-                    sb.AppendLine($"  struct {elem.Name}:");
-                    foreach (var prop in elem.EnumerateFields<UProperty>())
-                    {
-                        sb.AppendLine($"    {prop.Name}: {prop.Type}");
-                    }
-
-                    sb.AppendLine();
-                }
-
-                foreach (var prop in cls.EnumerateFields<UProperty>())
-                {
-                    sb.AppendLine($"  {prop.Name}: {prop.Type}");
-                }
-
-                sb.AppendLine();
-                foreach (var func in cls.EnumerateFields<UFunction>())
-                {
-                    if (func.FunctionFlags.HasFlag(FunctionFlag.Static))
-                    {
-                        sb.AppendLine("  @staticmethod");
-                    }
-
-                    StringBuilder parms = new();
-                    List<string> parmsList = new();
-                    foreach (var elem in func.EnumerateFields<UProperty>())
-                    {
-                        var optional = elem.PropertyFlags.HasFlag(PropertyFlag.OptionalParm);
-                        var outparm = elem.PropertyFlags.HasFlag(PropertyFlag.OutParm);
-
-                        ExportField f = new(ctx, pkg, elem);
-
-                        StringBuilder parm = new();
-                        parm.Append($"{elem.Name}: ");
-
-                        if (optional)
-                        {
-                            parm.Append("Optional[");
-                            parm.Append(f.TypeName);
-                            parm.Append("]");
-                        }
-                        else if (outparm)
-                        {
-                            parm.Append("Out[");
-                            parm.Append(f.TypeName);
-                            parm.Append("]");
-                        }
-                        else
-                        {
-                            parm.Append(f.TypeName);
-                        }
-
-                        parmsList.Add(parm.ToString());
-                    }
-
-                    parms.AppendJoin(", ", parmsList);
-
-                    sb.AppendLine(
-                        $"  def {func.Name}({parms.ToString()}) -> {func.ReturnProperty.Type}:");
-                }
-
-                sb.AppendLine();
             }
         }
 
-        Console.WriteLine(sb);
+        Console.WriteLine(text);
+        File.WriteAllText(root + @"\log.txt", text.ToString());
+    }
+
+    private static void PrintExportClass(StringBuilder text, ExportClass e)
+    {
+        text.Append($"class {e.Name}(");
+        text.Append(e.Super?.Name ?? "UObject");
+
+        if (e.Interfaces.Count > 0)
+        {
+            text.Append(", ");
+            text.AppendJoin(", ", e.Interfaces.Select(i => i.Name));
+        }
+
+        text.AppendLine("):");
+
+        foreach (var f in e.Fields)
+        {
+            if (!f.IsClassMember)
+            {
+                throw new Exception("this should not happen");
+            }
+
+            text.AppendLine($"  {f.Name}: {f.TypeName}");
+        }
+
+        if (e.Functions.Count > 0)
+        {
+            text.AppendLine();
+        }
+
+        foreach (var f in e.Functions)
+        {
+            if (!f.IsRegularFunction)
+            {
+                continue;
+            }
+
+            if (f.IsStatic)
+            {
+                text.AppendLine("  @staticmethod");
+            }
+
+            text.Append($"  def {f.Name}(");
+
+            List<string> parms = new();
+            foreach (var p in f.Parameters)
+            {
+                StringBuilder parm = new();
+
+                parm.Append(p.Name + ": ");
+
+                if (p.IsOutParm)
+                {
+                    parm.Append("Out[");
+                }
+
+                if (p.IsOptionalParm)
+                {
+                    parm.Append("Optional[");
+                }
+
+                parm.Append(p.TypeName);
+
+                if (p.IsOptionalParm)
+                {
+                    parm.Append("]");
+                }
+
+                if (p.IsOutParm)
+                {
+                    parm.Append("]");
+                }
+
+                parms.Add(parm.ToString());
+            }
+
+            text.AppendJoin(", ", parms);
+            text.Append(") -> ");
+
+            if (f.HasReturnParameter && f.HasOutParms)
+            {
+                text.Append("Tuple[");
+                text.Append(f.ReturnParameter!.TypeName);
+                text.Append(", ");
+                text.AppendJoin(", ", f.OutParameters.Select(p => p.TypeName));
+                text.Append("]");
+            }
+            else if (f.HasReturnParameter)
+            {
+                text.Append(f.ReturnParameter!.TypeName);
+            }
+            else if (f.HasOutParms)
+            {
+                text.Append("Tuple[");
+                text.AppendJoin(", ", f.OutParameters.Select(p => p.TypeName));
+                text.Append("]");
+            }
+            else
+            {
+                text.Append("None");
+            }
+
+            text.AppendLine(":");
+
+            UnrealConfig.Indention = "  ";
+            UnrealConfig.SuppressSignature = true;
+            UnrealConfig.SuppressComments = true;
+            UnrealConfig.PreBeginBracket = " ";
+            UnrealConfig.PreEndBracket = "\r\n{0}";
+            
+            StringBuilder decomp = new();
+            decomp.AppendLine("\"\"\"");
+            decomp.Append(f.ObjectHandle.Decompile());
+            decomp.AppendLine("\n    \"\"\"");
+            decomp.AppendLine("...");
+
+            foreach (var line in decomp.ToString().Split("\r\n"))
+            {
+                text.AppendLine($"    {line}");
+            }
+        }
     }
 }
