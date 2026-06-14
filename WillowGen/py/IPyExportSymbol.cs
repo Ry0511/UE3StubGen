@@ -1,5 +1,5 @@
 ﻿namespace WillowGen.py;
 
-public interface IPyImportTarget
+public interface IPyExportSymbol
 {
 }
