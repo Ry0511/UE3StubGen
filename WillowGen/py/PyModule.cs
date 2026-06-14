@@ -9,7 +9,7 @@ public class PyModule : PyBaseElement
     public List<PyStructDef> Structures { get; } = [];
     public List<PyEnumDef> Enums { get; } = [];
 
-    public PyModule(ExportPackage export)
+    public PyModule(ExportPackage export, PyBaseElement? parent = null) : base(parent)
     {
         Name = export.PackageName;
         foreach (var cls in export.Classes)
