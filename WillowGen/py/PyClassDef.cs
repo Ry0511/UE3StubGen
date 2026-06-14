@@ -4,6 +4,7 @@ namespace WillowGen.py;
 
 public class PyClassDef : PyBaseElement, IPyExportSymbol
 {
+    public string Name { get; }
     public PyRef? Super { get; }
     public IReadOnlyList<PyRef> Interfaces { get; }
     public IReadOnlyList<PyTypedParam> Fields { get; }
@@ -11,6 +12,7 @@ public class PyClassDef : PyBaseElement, IPyExportSymbol
 
     public PyClassDef(ExportClass export, PyBaseElement? parent) : base(parent)
     {
+        Name = export.Name;
         if (export.Super != null)
         {
             Super = new PyRef(export.Super, this);

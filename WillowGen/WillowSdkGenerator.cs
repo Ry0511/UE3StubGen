@@ -8,10 +8,9 @@ public class WillowSdkGenerator : IExporter
     public void Export(ExportModel model)
     {
         PyProject py = new(model);
-
-        foreach (var node in py.Descendants())
+        foreach (var cls in py.Descendants().OfType<PyClassDef>())
         {
-            Console.WriteLine(node.GetType().Name);
+            Console.WriteLine($"Package={cls.Module!.Name} Class={cls.Name}");
         }
     }
 }

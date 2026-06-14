@@ -1,23 +1,16 @@
 ﻿namespace WillowGen.py;
 
-public abstract class PyBaseElement(PyBaseElement? parent = null)
+public abstract class PyBaseElement
 {
-    public PyBaseElement? Parent { get; } = parent;
+    public PyBaseElement? Parent { get; }
+    public PyModule? Module { get; }
 
-    public PyBaseElement? Outermost()
+    protected PyBaseElement(PyBaseElement? parent = null)
     {
-        var node = Parent;
-        while (node != null && node.Parent != null)
-        {
-            node = node.Parent;
-        }
-
-        return node;
+        Parent = parent;
+        Module = Ancestors().OfType<PyModule>().FirstOrDefault();
     }
-
-    /**
-     * @return the immediate children of this node
-     */
+    
     public virtual IEnumerable<PyBaseElement> Children() => [];
 
     public IEnumerable<PyBaseElement> Descendants()
@@ -31,4 +24,15 @@ public abstract class PyBaseElement(PyBaseElement? parent = null)
             }
         }
     }
+
+    public IEnumerable<PyBaseElement> Ancestors()
+    {
+        var node = Parent;
+        while (node != null)
+        {
+            yield return node;
+            node = node.Parent;
+        }
+    }
+    
 }
