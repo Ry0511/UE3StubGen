@@ -94,6 +94,7 @@ public class ExportContext
             throw new Exception($"path specified does not exist: {path}");
         }
 
+        _exportCache.EnsureCapacity(8192);
         LoadAndInitialiseAllPackages();
     }
 

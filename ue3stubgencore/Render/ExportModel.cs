@@ -16,4 +16,12 @@ public class ExportModel
             .ToList();
         Registry = new SymbolRegistry();
     }
+
+    public void ExportAll(IExporter api)
+    {
+        foreach (var pkg in Packages)
+        {
+            api.Export(this, pkg);
+        }
+    }
 }
