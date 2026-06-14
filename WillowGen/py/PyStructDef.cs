@@ -2,16 +2,15 @@
 
 namespace WillowGen.py;
 
-public class PyStructDef : PyBaseElement, IPyExportSymbol
+public class PyStructDef : PyBaseElement, ISymbol
 {
-    private ExportStruct _export;
-
+    public ExportStruct Export { get; }
     public PyRef? Super { get; }
     public IReadOnlyList<PyTypedParam> Fields { get; }
 
     public PyStructDef(ExportStruct export, PyBaseElement? parent = null) : base(parent)
     {
-        _export = export;
+        Export = export;
 
         if (export.Super != null)
         {
@@ -20,10 +19,13 @@ public class PyStructDef : PyBaseElement, IPyExportSymbol
 
         Fields = export.Fields.Select(elem => new PyTypedParam(elem, this)).ToList();
     }
-    
+
     public override IEnumerable<PyBaseElement> Children()
     {
         if (Super != null) yield return Super;
         foreach (var elem in Fields) yield return elem;
     }
+
+    public string ExportPathName() => Export.ObjectHandle.GetPath();
+    public bool CanBeReferenced() => true;
 }

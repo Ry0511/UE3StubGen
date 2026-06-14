@@ -2,16 +2,16 @@
 
 namespace WillowGen.py;
 
-public class PyModule : PyBaseElement
+public class PyModule : PyBaseElement, ISymbol
 {
-    public string Name { get; } // TODO: Remove
+    public ExportPackage Export { get; }
     public List<PyClassDef> Classes { get; } = [];
     public List<PyStructDef> Structures { get; } = [];
     public List<PyEnumDef> Enums { get; } = [];
 
     public PyModule(ExportPackage export, PyBaseElement? parent = null) : base(parent)
     {
-        Name = export.PackageName;
+        Export = export;
         foreach (var cls in export.Classes)
         {
             Classes.Add(new PyClassDef(cls, this));
@@ -27,11 +27,14 @@ public class PyModule : PyBaseElement
             }
         }
     }
-    
+
     public override IEnumerable<PyBaseElement> Children()
     {
         foreach (var elem in Classes) yield return elem;
         foreach (var elem in Structures) yield return elem;
         foreach (var elem in Enums) yield return elem;
     }
+
+    public string ExportPathName() => Export.ObjectHandle.GetPath();
+    public bool CanBeReferenced() => false;
 }

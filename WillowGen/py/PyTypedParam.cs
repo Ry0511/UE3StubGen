@@ -2,14 +2,14 @@
 
 namespace WillowGen.py;
 
-public class PyTypedParam : PyBaseElement
+public class PyTypedParam : PyBaseElement, ISymbol
 {
-    private ExportField _export;
+    public ExportField Export { get; }
     public PyRef Type { get; }
 
     public PyTypedParam(ExportField export, PyBaseElement? parent) : base(parent)
     {
-        _export = export;
+        Export = export;
         Type = new PyRef(export, this);
     }
 
@@ -17,4 +17,7 @@ public class PyTypedParam : PyBaseElement
     {
         yield return Type;
     }
+
+    public string ExportPathName() => Export.ObjectHandle.GetPath();
+    public bool CanBeReferenced() => false;
 }

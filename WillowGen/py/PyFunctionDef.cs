@@ -2,15 +2,15 @@
 
 namespace WillowGen.py;
 
-public class PyFunctionDef : PyBaseElement
+public class PyFunctionDef : PyBaseElement, ISymbol
 {
-    private ExportFunction _export;
+    public ExportFunction Export { get; }
     public List<PyTypedParam> Params { get; }
     public PyTypedParam? ReturnValue { get; }
 
     public PyFunctionDef(ExportFunction export, PyBaseElement? parent = null) : base(parent)
     {
-        _export = export;
+        Export = export;
         Params = export.Parameters.Select(elem => new PyTypedParam(elem, this)).ToList();
         ReturnValue = export.ReturnParameter != null ? new PyTypedParam(export.ReturnParameter, this) : null;
     }
@@ -20,4 +20,7 @@ public class PyFunctionDef : PyBaseElement
         foreach (var elem in Params) yield return elem;
         if (ReturnValue != null) yield return ReturnValue;
     }
+
+    public string ExportPathName() => Export.ObjectHandle.GetPath();
+    public bool CanBeReferenced() => false;
 }

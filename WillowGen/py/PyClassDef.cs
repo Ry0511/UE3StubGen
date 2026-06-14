@@ -2,9 +2,9 @@
 
 namespace WillowGen.py;
 
-public class PyClassDef : PyBaseElement, IPyExportSymbol
+public class PyClassDef : PyBaseElement, ISymbol
 {
-    public string Name { get; }
+    public ExportClass Export { get; }
     public PyRef? Super { get; }
     public IReadOnlyList<PyRef> Interfaces { get; }
     public IReadOnlyList<PyTypedParam> Fields { get; }
@@ -12,7 +12,7 @@ public class PyClassDef : PyBaseElement, IPyExportSymbol
 
     public PyClassDef(ExportClass export, PyBaseElement? parent) : base(parent)
     {
-        Name = export.Name;
+        Export = export;
         if (export.Super != null)
         {
             Super = new PyRef(export.Super, this);
@@ -30,4 +30,7 @@ public class PyClassDef : PyBaseElement, IPyExportSymbol
         foreach (var elem in Fields) yield return elem;
         foreach (var elem in Functions) yield return elem;
     }
+
+    public string ExportPathName() => Export.ObjectHandle.GetPath();
+    public bool CanBeReferenced() => true;
 }
