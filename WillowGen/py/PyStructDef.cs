@@ -2,7 +2,7 @@
 
 namespace WillowGen.py;
 
-public class PyStructDef : PyBaseElement, IPySymbol
+public class PyStructDef : PyBaseElement, IPyImportTarget
 {
     private ExportStruct _export;
 

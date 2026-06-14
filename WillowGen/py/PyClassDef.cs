@@ -2,7 +2,7 @@
 
 namespace WillowGen.py;
 
-public class PyClassDef : PyBaseElement, IPySymbol
+public class PyClassDef : PyBaseElement, IPyImportTarget
 {
     public PyRef? Super { get; }
     public IReadOnlyList<PyRef> Interfaces { get; }
