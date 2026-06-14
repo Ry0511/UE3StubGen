@@ -48,11 +48,22 @@ public class ExportClass : BaseExport
             }
         }
 
-        Structs = obj.EnumerateFields<UScriptStruct>().Select(s => new ExportStruct(ctx, pkg, s)).ToList();
-        Enums = obj.EnumerateFields<UEnum>().Select(e => new ExportEnum(ctx, pkg, e)).ToList();
-        Fields = obj.EnumerateFields<UProperty>().Select(f => new ExportField(ctx, pkg, f)).ToList();
+        Structs = obj.EnumerateFields<UScriptStruct>()
+            .Select(elem => ctx.CreateExport<ExportStruct>(pkg, elem))
+            .ToList();
 
-        Functions = obj.EnumerateFields<UFunction>().Select(f => new ExportFunction(ctx, pkg, f)).ToList();
+        Enums = obj.EnumerateFields<UEnum>()
+            .Select(elem => ctx.CreateExport<ExportEnum>(pkg, elem))
+            .ToList();
+
+        Fields = obj.EnumerateFields<UProperty>()
+            .Select(elem => new ExportField(ctx, pkg, elem))
+            .ToList();
+
+        Functions = obj.EnumerateFields<UFunction>()
+            .Select(elem => new ExportFunction(ctx, pkg, elem))
+            .ToList();
+        
         Functions.Sort((a, b) =>
         {
             return GetFunctionRank(a).CompareTo(GetFunctionRank(b));

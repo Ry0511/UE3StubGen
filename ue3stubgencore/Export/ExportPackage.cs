@@ -18,7 +18,7 @@ public class ExportPackage : BaseExport
 
             try
             {
-                Classes.Add(new ExportClass(ctx, pkg, cls));
+                Classes.Add(ctx.CreateExport<ExportClass>(pkg, cls));
             }
             catch (Exception err)
             {
