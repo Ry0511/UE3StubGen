@@ -2,9 +2,12 @@
 
 namespace WillowGen.py;
 
-public class PyStructDef : PythonFileElement
+public class PyStructDef : PyBaseElement
 {
-    public PyStructDef(ExportStruct export)
+    private ExportStruct _export;
+
+    public PyStructDef(ExportStruct export, PyBaseElement? parent = null) : base(parent)
     {
+        _export = export;
     }
 }

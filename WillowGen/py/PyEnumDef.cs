@@ -2,9 +2,7 @@
 
 namespace WillowGen.py;
 
-public class PyEnumDef : PythonFileElement
+public class PyEnumDef(ExportEnum export, PyBaseElement? parent = null) : PyBaseElement(parent)
 {
-    public PyEnumDef(ExportEnum export)
-    {
-    }
+    public IReadOnlyList<string> Values { get; } = export.Ordinals;
 }

@@ -2,9 +2,7 @@
 
 namespace WillowGen.py;
 
-public class PyTypedParam : PythonFileElement
+public class PyTypedParam(ExportField export, PyBaseElement? parent = null) : PyBaseElement(parent)
 {
-    public PyTypedParam(ExportField export)
-    {
-    }
+    private ExportField _export = export;
 }

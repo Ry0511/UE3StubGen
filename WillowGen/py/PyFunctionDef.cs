@@ -2,9 +2,7 @@
 
 namespace WillowGen.py;
 
-public class PyFunctionDef : PythonFileElement
+public class PyFunctionDef(ExportFunction export, PyBaseElement? parent = null) : PyBaseElement(parent)
 {
-    public PyFunctionDef(ExportFunction export)
-    {
-    }
+    private ExportFunction _export = export;
 }
