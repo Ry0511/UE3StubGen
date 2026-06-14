@@ -4,6 +4,7 @@ namespace WillowGen.py;
 
 public class PyModule : PyBaseElement, ISymbol
 {
+    
     public ExportPackage Export { get; }
     public List<PyClassDef> Classes { get; } = [];
     public List<PyStructDef> Structures { get; } = [];

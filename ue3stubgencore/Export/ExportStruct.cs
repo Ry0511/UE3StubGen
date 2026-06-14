@@ -20,6 +20,9 @@ public class ExportStruct : BaseExport
             Super = ctx.CreateExport<ExportStruct>(pkg, obj.Super);
         }
 
+        // TODO: Structs can contain structs see MaterialInstance
+        //  .BeastMaterialInstancePropertiesContainer.BeastMaterialInstancePropertiesOverrides
+        
         foreach (var elem in obj.EnumerateFields<UProperty>())
         {
             Fields.Add(new ExportField(ctx, pkg, elem));

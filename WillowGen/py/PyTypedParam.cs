@@ -10,7 +10,7 @@ public class PyTypedParam : PyBaseElement, ISymbol
     public PyTypedParam(ExportField export, PyBaseElement? parent) : base(parent)
     {
         Export = export;
-        Type = new PyRef(export, this);
+        Type = new PyRef(export, parent);
     }
 
     public override IEnumerable<PyBaseElement> Children()
