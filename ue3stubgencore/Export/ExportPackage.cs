@@ -12,18 +12,13 @@ public class ExportPackage : BaseExport
     {
         PackageName = pkg.PackageName;
 
-        if (pkg.PackageName.Equals("Core"))
-        {
-            return; // ignore builtin package
-        }
-
         foreach (var cls in pkg.Objects.OfType<UClass>())
         {
             if (!IsExport(cls)) continue;
 
             try
             {
-                Classes.Add(new(ctx, pkg, cls));
+                Classes.Add(new ExportClass(ctx, pkg, cls));
             }
             catch (Exception err)
             {
