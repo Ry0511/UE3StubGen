@@ -26,7 +26,7 @@ public class ExportClass : BaseExport
         {
             if (obj.Super is UClass cls)
             {
-                Super = new ExportClass(ctx, pkg, cls);
+                Super = ctx.CreateExport<ExportClass>(pkg, cls);
             }
             else
             {
@@ -40,7 +40,7 @@ public class ExportClass : BaseExport
             try
             {
                 var iface = ctx.ResolveImport<UClass>(obj.Package, index);
-                Interfaces.Add(new ExportInterface(ctx, iface.Package, iface));
+                Interfaces.Add(ctx.CreateExport<ExportInterface>(iface.Package, iface));
             }
             catch (Exception err)
             {
@@ -48,7 +48,7 @@ public class ExportClass : BaseExport
             }
         }
 
-        Structs = obj.EnumerateFields<UStruct>().Select(s => new ExportStruct(ctx, pkg, s)).ToList();
+        Structs = obj.EnumerateFields<UScriptStruct>().Select(s => new ExportStruct(ctx, pkg, s)).ToList();
         Enums = obj.EnumerateFields<UEnum>().Select(e => new ExportEnum(ctx, pkg, e)).ToList();
         Fields = obj.EnumerateFields<UProperty>().Select(f => new ExportField(ctx, pkg, f)).ToList();
 

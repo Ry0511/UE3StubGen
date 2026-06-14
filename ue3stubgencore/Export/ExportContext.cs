@@ -7,7 +7,10 @@ public class ExportContext
 {
     private readonly DirectoryInfo _packageRoot;
     private readonly Dictionary<string, UnrealPackage> _packages = new();
+    private readonly Dictionary<string, BaseExport> _exportCache = new();
 
+    public int CacheCount => _exportCache.Count;
+    
     private void LoadAndInitialiseAllPackages()
     {
         var packageList = _packageRoot.GetFiles("*.u", SearchOption.AllDirectories)
@@ -155,5 +158,49 @@ public class ExportContext
         }
 
         throw new Exception("null import cannot be resolved");
+    }
+
+    public T CreateExport<T>(UnrealPackage pkg, UObject obj) where T : BaseExport
+    {
+        if (_exportCache.TryGetValue(obj.GetPath(), out var cachedExport))
+        {
+            if (cachedExport is T cachedExportAs)
+            {
+                return cachedExportAs;
+            }
+
+            throw new Exception("cached export is of a different type or is null");
+        }
+
+        static bool IsInterface(UClass cls)
+        {
+            var super = cls.Super;
+            while (super != null && super.Super != null)
+            {
+                super = super.Super;
+            }
+
+            return super != null && string.Compare(super.Name, "Interface", StringComparison.OrdinalIgnoreCase) == 0;
+        }
+
+        BaseExport createdExport = obj switch
+        {
+            UClass elem => IsInterface(elem)
+                ? new ExportInterface(this, pkg, elem)
+                : new ExportClass(this, pkg, elem),
+            UEnum elem => new ExportEnum(this, pkg, elem),
+            UFunction elem => new ExportFunction(this, pkg, elem),
+            UProperty elem => new ExportField(this, pkg, elem),
+            UStruct elem => new ExportStruct(this, pkg, elem),
+            _ => throw new Exception($"unsupported object type: {obj.GetType().Name}"),
+        };
+
+        if (createdExport is not T createdExportAs)
+        {
+            throw new Exception("export is not of expected type");
+        }
+
+        _exportCache.Add(obj.GetPath(), createdExportAs);
+        return createdExportAs;
     }
 }

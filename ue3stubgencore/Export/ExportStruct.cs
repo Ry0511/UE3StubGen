@@ -12,18 +12,17 @@ public class ExportStruct : BaseExport
     {
         if (IsImport(obj))
         {
-            // UStruct/UScriptStruct
-            obj = ctx.ResolveImport<UStruct>(obj, checkSubclasses: true);
+            obj = ctx.ResolveImport<UScriptStruct>(obj);
         }
 
         if (obj.Super != null)
         {
-            Super = new ExportStruct(ctx, pkg, obj.Super);
+            Super = ctx.CreateExport<ExportStruct>(pkg, obj.Super);
         }
 
         foreach (var elem in obj.EnumerateFields<UProperty>())
         {
-            Fields.Add(new(ctx, pkg, elem));
+            Fields.Add(new ExportField(ctx, pkg, elem));
         }
     }
 }

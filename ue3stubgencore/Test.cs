@@ -1,8 +1,5 @@
-﻿using System.Text;
-using UE3StubGenCore.Export;
+﻿using UE3StubGenCore.Export;
 using UE3StubGenCore.Render;
-using UELib;
-using UELib.Core;
 
 namespace UE3StubGenCore;
 
@@ -17,5 +14,7 @@ public static class UClassInspector
         {
             Console.WriteLine($"{pkg.PackageName} has {pkg.Classes.Count} classes");
         }
+        
+        Console.WriteLine("Cache Size = " + model.Context.CacheCount);
     }
 }
