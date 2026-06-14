@@ -12,7 +12,8 @@ public class ExportStruct : BaseExport
     {
         if (IsImport(obj))
         {
-            obj = ctx.ResolveImport<UStruct>(pkg, obj)!;
+            // UStruct/UScriptStruct
+            obj = ctx.ResolveImport<UStruct>(obj, checkSubclasses: true);
         }
 
         if (obj.Super != null)

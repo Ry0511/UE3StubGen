@@ -6,18 +6,18 @@ namespace ue3stubgencore.export;
 public class ExportClass : BaseExport
 {
     public string Name { get; private set; }
-    public ExportClass? Super { get; private set; } = null;
-    public List<ExportInterface> Interfaces { get; private set; } = [];
+    public ExportClass? Super { get; private set; }
+    public List<ExportInterface> Interfaces { get; } = [];
     public List<ExportStruct> Structs { get; private set; }
     public List<ExportEnum> Enums { get; private set; }
     public List<ExportField> Fields { get; private set; }
-    public List<ExportFunction> Functions { get; private set; }
+    public List<ExportFunction> Functions { get; }
 
     public ExportClass(ExportContext ctx, UnrealPackage pkg, UClass obj) : base(ctx, pkg, obj)
     {
         if (IsImport(obj))
         {
-            obj = ctx.ResolveImport<UClass>(pkg, obj)!;
+            obj = ctx.ResolveImport<UClass>(obj);
         }
 
         Name = obj.Name; // TODO: determine the difference between Name and FriendlyName
@@ -39,7 +39,7 @@ public class ExportClass : BaseExport
         {
             try
             {
-                var iface = ctx.ResolveImport<UClass>(pkg, index);
+                var iface = ctx.ResolveImport<UClass>(obj.Package, index);
                 Interfaces.Add(new ExportInterface(ctx, iface.Package, iface));
             }
             catch (Exception err)
@@ -56,6 +56,7 @@ public class ExportClass : BaseExport
         Functions.Sort((a, b) =>
         {
             return GetFunctionRank(a).CompareTo(GetFunctionRank(b));
+
             static int GetFunctionRank(ExportFunction f)
             {
                 return f switch

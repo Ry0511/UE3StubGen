@@ -11,4 +11,5 @@ public abstract class BaseExport(ExportContext ctx, UnrealPackage pkg, UObject o
 
     public static bool IsImport(int index) => index < 0;
     public static bool IsImport(UObject obj) => IsImport((int)obj);
+    public static bool IsExport(UObject obj) => (int)obj > 0;
 }

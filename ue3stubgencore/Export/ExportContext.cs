@@ -104,7 +104,9 @@ public class ExportContext
         return _packages.GetValueOrDefault(name);
     }
 
-    public T ResolveImport<T>(UnrealPackage pkg, UObject obj) where T : UObject
+    public IEnumerable<UnrealPackage> GetPackages() => _packages.Values;
+
+    public T ResolveImport<T>(UObject obj, bool checkSubclasses = false) where T : UObject
     {
         var index = (int)obj;
         if (index > 0)
@@ -112,10 +114,10 @@ public class ExportContext
             return (obj as T)!;
         }
 
-        return ResolveImport<T>(pkg, index);
+        return ResolveImport<T>(obj.Package, index, checkSubclasses);
     }
 
-    public T ResolveImport<T>(UnrealPackage pkg, int index) where T : UObject
+    public T ResolveImport<T>(UnrealPackage pkg, int index, bool checkSubclasses = false) where T : UObject
     {
         // this is an export, so just load it from package
         if (index > 0)
@@ -133,13 +135,20 @@ public class ExportContext
         if (index < 0)
         {
             var imp = pkg.Imports[-(index + 1)];
-            var loaded = GetPackage(imp.ClassPackageName);
-            var found = loaded?.FindObject<T>(imp.ObjectName);
+
+            var packageToImport = imp.Outer;
+            while (packageToImport?.Outer != null)
+            {
+                packageToImport = packageToImport.Outer;
+            }
+
+            var loaded = GetPackage(packageToImport!.ObjectName);
+            var found = loaded?.FindObject<T>(imp.ObjectName, checkSubclasses);
 
             if (found == null)
             {
                 throw new Exception(
-                    $"Could not resolve import: {imp.GetReferencePath()} from {imp.ClassPackageName}");
+                    $"Could not resolve import: {imp.GetReferencePath()} from {packageToImport!.ObjectName}");
             }
 
             return found;

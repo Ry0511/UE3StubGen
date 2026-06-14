@@ -11,7 +11,7 @@ public class ExportEnum : BaseExport
     {
         if (IsImport(obj))
         {
-            obj = ctx.ResolveImport<UEnum>(pkg, obj)!;
+            obj = ctx.ResolveImport<UEnum>(obj);
         }
 
         // the ordinal value is implied from index

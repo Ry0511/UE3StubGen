@@ -25,7 +25,7 @@ public class ExportFunction : BaseExport
     {
         if (IsImport(func))
         {
-            func = ctx.ResolveImport<UFunction>(pkg, func);
+            func = ctx.ResolveImport<UFunction>(func);
         }
 
         Name = func.FriendlyName;

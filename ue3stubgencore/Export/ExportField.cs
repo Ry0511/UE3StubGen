@@ -19,7 +19,7 @@ public class ExportField : BaseExport
     {
         if (IsImport(obj))
         {
-            obj = ctx.ResolveImport<UProperty>(pkg, obj);
+            obj = ctx.ResolveImport<UProperty>(obj);
         }
 
         Name = obj.Name;
@@ -31,5 +31,15 @@ public class ExportField : BaseExport
         IsReturnParm = obj.PropertyFlags.HasFlag(PropertyFlag.ReturnParm);
         IsClassMember = obj.Outer is UClass;
         IsFunctionParameter = obj.Outer is UFunction;
+    }
+
+    public string GetStructType()
+    {
+        if (ObjectHandle is UStructProperty sp)
+        {
+            return sp.Struct.Name;
+        }
+
+        throw new Exception("field is not a struct property");
     }
 }
