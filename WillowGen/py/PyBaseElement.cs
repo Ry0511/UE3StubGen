@@ -14,4 +14,21 @@ public abstract class PyBaseElement(PyBaseElement? parent = null)
 
         return node;
     }
+
+    /**
+     * @return the immediate children of this node
+     */
+    public virtual IEnumerable<PyBaseElement> Children() => [];
+
+    public IEnumerable<PyBaseElement> Descendants()
+    {
+        foreach (var child in Children())
+        {
+            yield return child;
+            foreach (var descendant in child.Descendants())
+            {
+                yield return descendant;
+            }
+        }
+    }
 }

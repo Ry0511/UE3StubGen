@@ -10,4 +10,6 @@ public class PyProject : PyBaseElement
     {
         Modules = model.Packages.Select(elem => new PyModule(elem, this)).ToList();
     }
+
+    public override IEnumerable<PyBaseElement> Children() => Modules;
 }

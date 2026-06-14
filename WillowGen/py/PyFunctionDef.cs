@@ -14,4 +14,10 @@ public class PyFunctionDef : PyBaseElement
         Params = export.Parameters.Select(elem => new PyTypedParam(elem, this)).ToList();
         ReturnValue = export.ReturnParameter != null ? new PyTypedParam(export.ReturnParameter, this) : null;
     }
+
+    public override IEnumerable<PyBaseElement> Children()
+    {
+        foreach (var elem in Params) yield return elem;
+        if (ReturnValue != null) yield return ReturnValue;
+    }
 }

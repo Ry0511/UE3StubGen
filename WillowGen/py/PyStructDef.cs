@@ -20,4 +20,10 @@ public class PyStructDef : PyBaseElement, IPyExportSymbol
 
         Fields = export.Fields.Select(elem => new PyTypedParam(elem, this)).ToList();
     }
+    
+    public override IEnumerable<PyBaseElement> Children()
+    {
+        if (Super != null) yield return Super;
+        foreach (var elem in Fields) yield return elem;
+    }
 }

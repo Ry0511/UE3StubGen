@@ -27,4 +27,11 @@ public class PyModule : PyBaseElement
             }
         }
     }
+    
+    public override IEnumerable<PyBaseElement> Children()
+    {
+        foreach (var elem in Classes) yield return elem;
+        foreach (var elem in Structures) yield return elem;
+        foreach (var elem in Enums) yield return elem;
+    }
 }

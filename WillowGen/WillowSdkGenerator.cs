@@ -9,16 +9,9 @@ public class WillowSdkGenerator : IExporter
     {
         PyProject py = new(model);
 
-        Console.WriteLine($"Modules={py.Modules.Count}");
-        foreach (var module in py.Modules)
+        foreach (var node in py.Descendants())
         {
-            Console.WriteLine($"  module={module.Name}");
-            Console.WriteLine($"    Class Count {module.Classes.Count}");
-            Console.WriteLine($"    Struct Count {module.Structures.Count}");
-            Console.WriteLine($"    Enum Count {module.Enums.Count}");
-            Console.WriteLine("  End");
+            Console.WriteLine(node.GetType().Name);
         }
-
-        Console.WriteLine("End");
     }
 }

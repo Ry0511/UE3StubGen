@@ -12,4 +12,9 @@ public class PyTypedParam : PyBaseElement
         _export = export;
         Type = new PyRef(export, this);
     }
+
+    public override IEnumerable<PyBaseElement> Children()
+    {
+        yield return Type;
+    }
 }
