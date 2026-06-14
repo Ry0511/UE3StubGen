@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ue3stubgen", "ue3stubgen\ue3stubgen.csproj", "{408E6B7A-DDB2-44F8-8E28-F39D188246AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UE3StubGen", "UE3StubGen\UE3StubGen.csproj", "{408E6B7A-DDB2-44F8-8E28-F39D188246AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ue3stubgencore", "ue3stubgencore\ue3stubgencore.csproj", "{AE07A6E0-DFBE-4874-B44D-5C782EA9F0DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UE3StubGenCore", "UE3StubGenCore\UE3StubGenCore.csproj", "{AE07A6E0-DFBE-4874-B44D-5C782EA9F0DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

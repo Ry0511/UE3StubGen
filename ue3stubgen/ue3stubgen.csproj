@@ -5,10 +5,11 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>ue3stubgen</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../ue3stubgencore/ue3stubgencore.csproj"/>
+        <ProjectReference Include="..\UE3StubGenCore\UE3StubGenCore.csproj" />
     </ItemGroup>
 
 </Project>
