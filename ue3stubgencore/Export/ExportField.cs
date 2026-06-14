@@ -3,7 +3,7 @@ using UELib.Core;
 using UELib.Flags;
 using UELib.Types;
 
-namespace ue3stubgencore.export;
+namespace UE3StubGenCore.Export;
 
 public class ExportField : BaseExport
 {

@@ -1,7 +1,7 @@
 ﻿using UELib;
 using UELib.Core;
 
-namespace ue3stubgencore.export;
+namespace UE3StubGenCore.Export;
 
 public abstract class BaseExport(ExportContext ctx, UnrealPackage pkg, UObject obj)
 {

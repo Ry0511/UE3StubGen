@@ -1,10 +1,10 @@
 ﻿using System.Text;
-using ue3stubgencore.export;
-using ue3stubgencore.Render;
+using UE3StubGenCore.Export;
+using UE3StubGenCore.Render;
 using UELib;
 using UELib.Core;
 
-namespace ue3stubgencore;
+namespace UE3StubGenCore;
 
 public static class UClassInspector
 {

@@ -2,7 +2,7 @@
 using UELib.Core;
 using UELib.Flags;
 
-namespace ue3stubgencore.export;
+namespace UE3StubGenCore.Export;
 
 public class ExportFunction : BaseExport
 {

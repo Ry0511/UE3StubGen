@@ -1,6 +1,6 @@
-﻿using ue3stubgencore.export;
+﻿using UE3StubGenCore.Export;
 
-namespace ue3stubgencore.Render;
+namespace UE3StubGenCore.Render;
 
 public class ExportModel
 {

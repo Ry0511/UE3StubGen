@@ -1,4 +1,4 @@
-﻿namespace ue3stubgencore.Render;
+﻿namespace UE3StubGenCore.Render;
 
 public class SymbolRegistry
 {
