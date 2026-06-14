@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UE3StubGen", "UE3StubGen\UE3StubGen.csproj", "{408E6B7A-DDB2-44F8-8E28-F39D188246AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UE3StubGenCli", "UE3StubGenCli\UE3StubGenCli.csproj", "{408E6B7A-DDB2-44F8-8E28-F39D188246AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UE3StubGenCore", "UE3StubGenCore\UE3StubGenCore.csproj", "{AE07A6E0-DFBE-4874-B44D-5C782EA9F0DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WillowGen", "WillowGen\WillowGen.csproj", "{B8FA335A-0F19-4159-AC28-7EE4E31340B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +20,9 @@ Global
 		{AE07A6E0-DFBE-4874-B44D-5C782EA9F0DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE07A6E0-DFBE-4874-B44D-5C782EA9F0DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE07A6E0-DFBE-4874-B44D-5C782EA9F0DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8FA335A-0F19-4159-AC28-7EE4E31340B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8FA335A-0F19-4159-AC28-7EE4E31340B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8FA335A-0F19-4159-AC28-7EE4E31340B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8FA335A-0F19-4159-AC28-7EE4E31340B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

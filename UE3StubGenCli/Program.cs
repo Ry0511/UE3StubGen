@@ -1,23 +1,22 @@
 ﻿using UE3StubGenCore.Export;
 using UE3StubGenCore.Render;
+using WillowGen;
 
-namespace UE3StubGenCore;
+namespace UE3StubGenCli;
 
-public static class UClassInspector
+internal class LoggingExporter : IExporter
 {
-    class LoggingExporter : IExporter
+    public void Export(ExportModel model, ExportPackage pkg)
     {
-        public void Export(ExportModel model, ExportPackage pkg)
-        {
-            Console.WriteLine($"{pkg.PackageName} has {pkg.Classes.Count} classes");
-        }
+        Console.WriteLine($"Package {pkg.PackageName} has {pkg.Classes.Count} classes");
     }
 
-    public static void Hello()
+    public static void Main(string[] args)
     {
         string root = @"C:\mod_tools\decompressed_packages\BL1\decompressed";
         ExportModel model = new ExportModel(new ExportContext(root));
         model.ExportAll(new LoggingExporter());
+        model.ExportAll(new WillowSdkGenerator());
         Console.WriteLine("Cache Size = " + model.Context.CacheCount);
     }
 }
