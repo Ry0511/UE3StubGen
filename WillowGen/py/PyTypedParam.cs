@@ -2,7 +2,14 @@
 
 namespace WillowGen.py;
 
-public class PyTypedParam(ExportField export, PyBaseElement? parent = null) : PyBaseElement(parent)
+public class PyTypedParam : PyBaseElement
 {
-    private ExportField _export = export;
+    private ExportField _export;
+    public PyRef Type { get; }
+
+    public PyTypedParam(ExportField export, PyBaseElement? parent) : base(parent)
+    {
+        _export = export;
+        Type = new PyRef(export, this);
+    }
 }

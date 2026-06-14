@@ -1,5 +1,8 @@
-﻿namespace WillowGen.py;
+﻿using UE3StubGenCore.Export;
 
-public class PyRef(PyBaseElement? parent = null) : PyBaseElement(parent)
+namespace WillowGen.py;
+
+public class PyRef(BaseExport export, PyBaseElement? parent = null) : PyBaseElement(parent)
 {
+    private BaseExport _export = export;
 }
