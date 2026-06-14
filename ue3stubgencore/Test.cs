@@ -21,6 +21,11 @@ public static class UClassInspector
                 try
                 {
                     ExportClass e = new(ctx, pkg, cls);
+                    if (e.IsBuiltinClass)
+                    {
+                        continue;
+                    }
+
                     StringBuilder sb = new();
                     PrintExportClass(sb, e);
                     text.AppendLine(sb.ToString());
@@ -32,7 +37,6 @@ public static class UClassInspector
             }
         }
 
-        Console.WriteLine(text);
         File.WriteAllText(root + @"\log.txt", text.ToString());
     }
 
@@ -56,7 +60,7 @@ public static class UClassInspector
                 throw new Exception("this should not happen");
             }
 
-            text.AppendLine($"  {f.Name}: {f.TypeName}");
+            text.AppendLine($"  {f.Name}: {f.Type.ToString()}");
         }
 
         if (e.Functions.Count > 0)
@@ -95,7 +99,7 @@ public static class UClassInspector
                     parm.Append("Optional[");
                 }
 
-                parm.Append(p.TypeName);
+                parm.Append(p.Type.ToString());
 
                 if (p.IsOptionalParm)
                 {
@@ -116,19 +120,19 @@ public static class UClassInspector
             if (f.HasReturnParameter && f.HasOutParms)
             {
                 text.Append("Tuple[");
-                text.Append(f.ReturnParameter!.TypeName);
+                text.Append(f.ReturnParameter!.Type.ToString());
                 text.Append(", ");
-                text.AppendJoin(", ", f.OutParameters.Select(p => p.TypeName));
+                text.AppendJoin(", ", f.OutParameters.Select(p => p.Type.ToString()));
                 text.Append("]");
             }
             else if (f.HasReturnParameter)
             {
-                text.Append(f.ReturnParameter!.TypeName);
+                text.Append(f.ReturnParameter!.Type.ToString());
             }
             else if (f.HasOutParms)
             {
                 text.Append("Tuple[");
-                text.AppendJoin(", ", f.OutParameters.Select(p => p.TypeName));
+                text.AppendJoin(", ", f.OutParameters.Select(p => p.Type.ToString()));
                 text.Append("]");
             }
             else
@@ -143,7 +147,7 @@ public static class UClassInspector
             UnrealConfig.SuppressComments = true;
             UnrealConfig.PreBeginBracket = " ";
             UnrealConfig.PreEndBracket = "\r\n{0}";
-            
+
             StringBuilder decomp = new();
             decomp.AppendLine("\"\"\"");
             decomp.Append(f.ObjectHandle.Decompile());

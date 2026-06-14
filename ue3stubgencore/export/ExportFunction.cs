@@ -9,9 +9,9 @@ public class ExportFunction : BaseExport
     public string Name { get; private set; }
     public bool IsStatic { get; private set; }
     public bool IsNative { get; private set; }
-    public bool IsIterator { get; private set; }
-    public bool IsDelegate { get; private set; }
-    public bool IsOperator { get; private set; }
+    public bool IsIterator { get; }
+    public bool IsDelegate { get; }
+    public bool IsOperator { get; }
     public bool IsRegularFunction => !IsIterator && !IsDelegate && !IsOperator;
     public bool HasOutParms { get; private set; }
     public bool HasOptionalParms { get; private set; }
@@ -20,12 +20,12 @@ public class ExportFunction : BaseExport
     public bool HasReturnParameter => ReturnParameter != null;
     public IEnumerable<ExportField> OutParameters => Parameters.Where(x => x.IsOutParm);
 
-    public ExportFunction(ExportContext ctx, UnrealPackage pkg, UFunction func) : base(ctx, pkg,
-        func)
+    public ExportFunction(ExportContext ctx, UnrealPackage pkg, UFunction func)
+        : base(ctx, pkg, func)
     {
         if (IsImport(func))
         {
-            func = ctx.ResolveImport<UFunction>(pkg, func)!;
+            func = ctx.ResolveImport<UFunction>(pkg, func);
         }
 
         Name = func.FriendlyName;
@@ -47,7 +47,9 @@ public class ExportFunction : BaseExport
             else
             {
                 if (ReturnParameter != null)
+                {
                     throw new Exception("Multiple return parameters?");
+                }
                 ReturnParameter = f;
             }
         }

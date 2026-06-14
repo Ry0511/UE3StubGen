@@ -34,26 +34,17 @@ public class ExportClass : BaseExport
             }
         }
 
+        // interfaces are indices into the import/export table so need a lookup
         foreach (var index in obj.ImplementedInterfaces ?? [])
         {
-            // when index=0 it is a null import/export
-            var i = index > 0 ? index - 1 : -(index + 1);
-
-            switch (index)
+            try
             {
-                case > 0 when pkg.Exports[i].Object is UClass ifaceCls:
-                    Interfaces.Add(new ExportInterface(ctx, pkg, ifaceCls));
-                    break;
-                case > 0:
-                    throw new Exception("Interface is not a class?");
-                case < 0:
-                {
-                    var import = pkg.Imports[i];
-                    Console.WriteLine($"Import From: {import.ObjectPackageName}");
-                    break;
-                }
-                default:
-                    throw new Exception("interface export is null");
+                var iface = ctx.ResolveImport<UClass>(pkg, index);
+                Interfaces.Add(new ExportInterface(ctx, iface.Package, iface));
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine($"Failed to resolve interface {index}: {err.Message} - skipping this one");
             }
         }
 
@@ -61,9 +52,24 @@ public class ExportClass : BaseExport
         Enums = obj.EnumerateFields<UEnum>().Select(e => new ExportEnum(ctx, pkg, e)).ToList();
         Fields = obj.EnumerateFields<UProperty>().Select(f => new ExportField(ctx, pkg, f)).ToList();
 
-        Functions = obj.EnumerateFields<UFunction>()
-            .Select(f => new ExportFunction(ctx, pkg, f))
-            .ToList();
-        Functions.Sort((a, b) => a.IsStatic.CompareTo(b.IsStatic));
+        Functions = obj.EnumerateFields<UFunction>().Select(f => new ExportFunction(ctx, pkg, f)).ToList();
+        Functions.Sort((a, b) =>
+        {
+            return GetFunctionRank(a).CompareTo(GetFunctionRank(b));
+            static int GetFunctionRank(ExportFunction f)
+            {
+                return f switch
+                {
+                    { IsNative: true, IsStatic: true } => 0,
+                    { IsStatic: true } => 1,
+                    { IsNative: true, IsRegularFunction: true } => 2,
+                    { IsRegularFunction: true } => 3,
+                    _ => 99
+                };
+            }
+        });
     }
+
+    public bool IsBuiltinClass => ObjectHandle.Outer != null && ObjectHandle.Outer!.Name == "Core";
+    public bool HasInterfaces() => Interfaces.Count > 0;
 }
