@@ -3,12 +3,12 @@ using UE3StubGenCore.Render;
 
 namespace UE3StubGenCore.ASG;
 
-public class Project : BaseElement
+public class MultiModuleProject : BaseElement
 {
     public IReadOnlyList<PackageDef> Modules { get; }
     public SymbolTable Symbols { get; } = new();
 
-    public Project(ExportModel model)
+    public MultiModuleProject(ExportModel model)
     {
         Modules = model.Packages.Select(elem => new PackageDef(elem, this)).ToList();
         LoadSymbols();

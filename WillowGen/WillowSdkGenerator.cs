@@ -7,7 +7,7 @@ public class WillowSdkGenerator : IExporter
 {
     public void Export(ExportModel model)
     {
-        Project py = new(model);
+        MultiModuleProject py = new(model);
         Dictionary<string, List<RefNode>> unresolved = new();
 
         foreach (var elem in py.Descendants().OfType<RefNode>().Where(e => e.ResolvedTo == null))
