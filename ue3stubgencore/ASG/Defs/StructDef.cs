@@ -7,6 +7,7 @@ public class StructDef : BaseElement, ISymbol
     public ExportStruct Export { get; }
     public RefNode? Super { get; }
     public IReadOnlyList<TypedParamDef> Fields { get; }
+    public IReadOnlyList<StructDef> ChildStructs { get; }
 
     public StructDef(ExportStruct export, BaseElement? parent = null) : base(parent)
     {
@@ -18,12 +19,14 @@ public class StructDef : BaseElement, ISymbol
         }
 
         Fields = export.Fields.Select(elem => new TypedParamDef(elem, this)).ToList();
+        ChildStructs = export.ChildStructs.Select(elem => new StructDef(elem, this)).ToList();
     }
 
     public override IEnumerable<BaseElement> Children()
     {
         if (Super != null) yield return Super;
         foreach (var elem in Fields) yield return elem;
+        foreach (var elem in ChildStructs) yield return elem;
     }
 
     public string ExportPathName() => Export.ObjectHandle.GetPath();

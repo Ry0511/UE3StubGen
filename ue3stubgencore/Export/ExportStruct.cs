@@ -5,8 +5,9 @@ namespace UE3StubGenCore.Export;
 
 public class ExportStruct : BaseExport
 {
-    public ExportStruct? Super { get; private set; }
-    public List<ExportField> Fields { get; } = [];
+    public ExportStruct? Super { get; }
+    public IReadOnlyList<ExportField> Fields { get; } = [];
+    public IReadOnlyList<ExportStruct> ChildStructs { get; }
 
     public ExportStruct(ExportContext ctx, UnrealPackage pkg, UStruct obj) : base(ctx, pkg, obj)
     {
@@ -20,12 +21,12 @@ public class ExportStruct : BaseExport
             Super = ctx.CreateExport<ExportStruct>(pkg, obj.Super);
         }
 
-        // TODO: Structs can contain structs see MaterialInstance
-        //  .BeastMaterialInstancePropertiesContainer.BeastMaterialInstancePropertiesOverrides
-        
-        foreach (var elem in obj.EnumerateFields<UProperty>())
-        {
-            Fields.Add(new ExportField(ctx, pkg, elem));
-        }
+        Fields = obj.EnumerateFields<UProperty>()
+            .Select(e => new ExportField(ctx, pkg, e))
+            .ToList();
+
+        ChildStructs = obj.EnumerateFields<UScriptStruct>()
+            .Select(e => ctx.CreateExport<ExportStruct>(pkg, e))
+            .ToList();
     }
 }
