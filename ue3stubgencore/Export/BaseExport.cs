@@ -5,6 +5,7 @@ namespace UE3StubGenCore.Export;
 
 public abstract class BaseExport(ExportContext ctx, UnrealPackage pkg, UObject obj)
 {
+    // TODO: add a GetPathName or similar function here to get unique path name for this export
     public ExportContext Context { get; private set; } = ctx;
     public UnrealPackage Package { get; private set; } = pkg;
     public UObject ObjectHandle { get; private set; } = obj;

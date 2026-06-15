@@ -7,8 +7,9 @@ namespace UE3StubGenCore.Export;
 
 public class ExportField : BaseExport
 {
-    public string Name { get; private set; }
-    public PropertyType Type { get; private set; }
+    public string Name { get; }
+    public PropertyType Type { get; }
+    public string TargetTypeFullPath { get; }
     public bool IsOutParm { get; private set; }
     public bool IsOptionalParm { get; private set; }
     public bool IsReturnParm { get; private set; }
@@ -31,15 +32,15 @@ public class ExportField : BaseExport
         IsReturnParm = obj.PropertyFlags.HasFlag(PropertyFlag.ReturnParm);
         IsClassMember = obj.Outer is UClass;
         IsFunctionParameter = obj.Outer is UFunction;
-    }
-
-    public string GetStructType()
-    {
-        if (ObjectHandle is UStructProperty sp)
+        
+        // TODO: this will probably need expanding and builtins will need to be identified i.e.,
+        //  Core.Object, Core.IntProperty, etc
+        TargetTypeFullPath = obj switch
         {
-            return sp.Struct.Name;
-        }
-
-        throw new Exception("field is not a struct property");
+            UObjectProperty e => e.Object.GetPath(),
+            UStructProperty e => e.Struct.GetPath(),
+            _ => "Core." + obj.Type,
+        };
     }
+    
 }
