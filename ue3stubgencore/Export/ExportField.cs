@@ -32,15 +32,14 @@ public class ExportField : BaseExport
         IsReturnParm = obj.PropertyFlags.HasFlag(PropertyFlag.ReturnParm);
         IsClassMember = obj.Outer is UClass;
         IsFunctionParameter = obj.Outer is UFunction;
-        
+
         // TODO: this will probably need expanding and builtins will need to be identified i.e.,
         //  Core.Object, Core.IntProperty, etc
         TargetTypeFullPath = obj switch
         {
             UObjectProperty e => e.Object.GetPath(),
             UStructProperty e => e.Struct.GetPath(),
-            _ => "Core." + obj.Type,
+            _ => obj.Type.ToString(),
         };
     }
-    
 }

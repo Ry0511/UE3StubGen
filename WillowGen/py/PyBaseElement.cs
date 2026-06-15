@@ -1,5 +1,9 @@
 ﻿namespace WillowGen.py;
 
+// TODO: I have used the Py naming convention here but in reality this actually builds a pseudo AST
+//  that can be used to generate Python code - But it itself doesn't really generate Python code.
+//  with that in mind we can move all of this into StubGenCore.
+
 public abstract class PyBaseElement
 {
     public PyBaseElement? Parent { get; }

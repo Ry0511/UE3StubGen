@@ -13,5 +13,5 @@ public class SymbolTable
     }
 
     public ISymbol? Resolve(string fullPath) => _fullPathSymbols.GetValueOrDefault(fullPath);
-    public ISymbol? Resolve(PyRef @ref) => Resolve(@ref.FullPath);
+    public ISymbol? Resolve(PyRef pyRef) => Resolve(pyRef.TargetFullPath);
 }

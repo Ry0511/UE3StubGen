@@ -3,9 +3,13 @@
 public interface ISymbol
 {
     /**
-     * the unrealscript path name for this symbol i.e., WillowGame.WillowPlayerController
+     * the unique name for this symbol, currently this is just the unreal path i.e.,
+     * WillowGame.WillowPlayerController
      */
     public string ExportPathName();
     
+    /**
+     * can this symbol be referenced by a PyRef?
+     */
     public bool CanBeReferenced();
 }

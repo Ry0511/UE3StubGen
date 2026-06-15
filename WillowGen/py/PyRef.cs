@@ -1,34 +1,38 @@
 ﻿using UE3StubGenCore.Export;
-using UELib.Core;
 
 namespace WillowGen.py;
 
 public class PyRef : PyBaseElement
 {
+    /**
+     * The export object that this reference was constructed from.
+     */
     public BaseExport Export { get; }
-    public string FullPath { get; }
-    public bool ReferencesBuiltin { get; }
-    public bool DirectInit { get; }
 
-    public PyRef(BaseExport export, PyBaseElement? parent) : base(parent)
+    /**
+     * The path to the target object of which this reference is referencing.
+     */
+    public string TargetFullPath { get; }
+
+    /**
+     * The node element that this reference resolves to.
+     */
+    public PyBaseElement? ResolvedTo { get; set; } = null;
+
+    /**
+     * Constructs a new reference to the given export object.
+     */
+    public PyRef(BaseExport export, PyBaseElement? parent)
+        : this(export, export.ObjectHandle.GetPath(), parent)
     {
-        Export = export;
-        FullPath = Export.ObjectHandle.GetPath();
-        DirectInit = true;
     }
 
-    public PyRef(ExportField export, PyBaseElement? parent) : base(parent)
+    /**
+     * creates a reference to the given target path
+     */
+    public PyRef(BaseExport export, string targetPath, PyBaseElement? parent) : base(parent)
     {
         Export = export;
-        FullPath = export.ObjectHandle switch
-        {
-            UObjectProperty e => e.Object.GetPath(),
-            UStructProperty e => e.Struct.GetPath(),
-            UProperty e => "Core." + e.Type,
-            _ => throw new ArgumentException($"unhandled type {export.Type}, {export.ObjectHandle.GetType().Name}")
-        };
-
-        ReferencesBuiltin = FullPath.StartsWith("Core.");
-        DirectInit = false;
+        TargetFullPath = targetPath;
     }
 }

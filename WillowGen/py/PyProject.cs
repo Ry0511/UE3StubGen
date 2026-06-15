@@ -1,5 +1,4 @@
 ﻿using UE3StubGenCore.Render;
-using UELib.Core;
 
 namespace WillowGen.py;
 
@@ -16,20 +15,17 @@ public class PyProject : PyBaseElement
 
     public void LoadSymbols()
     {
-        foreach (var sym in Descendants().OfType<ISymbol>()) Symbols.Register(sym);
-        foreach (var @ref in Descendants().OfType<PyRef>())
+        // walk through all modules and register every symbol that can be referenced
+        foreach (var sym in Descendants().OfType<ISymbol>())
         {
-            if (!@ref.ReferencesBuiltin && Symbols.Resolve(@ref) == null)
-            {
-                if (@ref.Export.ObjectHandle is UObjectProperty)
-                {
-                    // TODO: some of these just don't exist in the decompiled output so just emit
-                    //  `type Bla = UObject | None` or similar
-                    continue;
-                }
+            Symbols.Register(sym);
+        }
 
-                Console.WriteLine($"could not resolve {@ref.FullPath} ({@ref.DirectInit}, {@ref.ReferencesBuiltin}, {@ref.Export.ObjectHandle.GetReferencePath()})");
-            }
+        // walk through all references and resolve them
+        foreach (var symbolRef in Descendants().OfType<PyRef>())
+        {
+            // This resolution can fail i.e., IntProperty is likely not a symbol, it is a builtin
+            symbolRef.ResolvedTo = Symbols.Resolve(symbolRef) as PyBaseElement;
         }
     }
 
