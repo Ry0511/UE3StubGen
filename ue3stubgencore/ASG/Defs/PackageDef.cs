@@ -1,35 +1,35 @@
 ﻿using UE3StubGenCore.Export;
 
-namespace WillowGen.py;
+namespace UE3StubGenCore.ASG.Defs;
 
-public class PyModule : PyBaseElement, ISymbol
+public class PackageDef : BaseElement, ISymbol
 {
     
     public ExportPackage Export { get; }
-    public List<PyClassDef> Classes { get; } = [];
-    public List<PyStructDef> Structures { get; } = [];
-    public List<PyEnumDef> Enums { get; } = [];
+    public List<ClassDef> Classes { get; } = [];
+    public List<StructDef> Structures { get; } = [];
+    public List<EnumDef> Enums { get; } = [];
 
-    public PyModule(ExportPackage export, PyBaseElement? parent = null) : base(parent)
+    public PackageDef(ExportPackage export, BaseElement? parent = null) : base(parent)
     {
         Export = export;
         foreach (var cls in export.Classes)
         {
-            Classes.Add(new PyClassDef(cls, this));
+            Classes.Add(new ClassDef(cls, this));
 
             foreach (var @struct in cls.Structs)
             {
-                Structures.Add(new PyStructDef(@struct, this));
+                Structures.Add(new StructDef(@struct, this));
             }
 
             foreach (var @enum in cls.Enums)
             {
-                Enums.Add(new PyEnumDef(@enum, this));
+                Enums.Add(new EnumDef(@enum, this));
             }
         }
     }
 
-    public override IEnumerable<PyBaseElement> Children()
+    public override IEnumerable<BaseElement> Children()
     {
         foreach (var elem in Classes) yield return elem;
         foreach (var elem in Structures) yield return elem;

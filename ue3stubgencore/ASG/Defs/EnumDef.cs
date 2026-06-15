@@ -1,8 +1,8 @@
 ﻿using UE3StubGenCore.Export;
 
-namespace WillowGen.py;
+namespace UE3StubGenCore.ASG.Defs;
 
-public class PyEnumDef(ExportEnum export, PyBaseElement? parent = null) : PyBaseElement(parent), ISymbol
+public class EnumDef(ExportEnum export, BaseElement? parent = null) : BaseElement(parent), ISymbol
 {
     public ExportEnum Export { get; } = export;
     public IReadOnlyList<string> Values { get; } = export.Ordinals;

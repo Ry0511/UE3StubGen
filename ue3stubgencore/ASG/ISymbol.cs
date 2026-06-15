@@ -1,4 +1,4 @@
-﻿namespace WillowGen.py;
+﻿namespace UE3StubGenCore.ASG;
 
 public interface ISymbol
 {

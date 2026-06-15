@@ -1,4 +1,4 @@
-﻿namespace WillowGen.py;
+﻿namespace UE3StubGenCore.ASG;
 
 public class SymbolTable
 {
@@ -13,5 +13,5 @@ public class SymbolTable
     }
 
     public ISymbol? Resolve(string fullPath) => _fullPathSymbols.GetValueOrDefault(fullPath);
-    public ISymbol? Resolve(PyRef pyRef) => Resolve(pyRef.TargetFullPath);
+    public ISymbol? Resolve(RefNode refNode) => Resolve(refNode.TargetFullPath);
 }

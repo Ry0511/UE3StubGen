@@ -1,8 +1,8 @@
 ﻿using UE3StubGenCore.Export;
 
-namespace WillowGen.py;
+namespace UE3StubGenCore.ASG;
 
-public class PyRef : PyBaseElement
+public class RefNode : BaseElement
 {
     /**
      * The export object that this reference was constructed from.
@@ -17,12 +17,12 @@ public class PyRef : PyBaseElement
     /**
      * The node element that this reference resolves to.
      */
-    public PyBaseElement? ResolvedTo { get; set; } = null;
+    public BaseElement? ResolvedTo { get; set; } = null;
 
     /**
      * Constructs a new reference to the given export object.
      */
-    public PyRef(BaseExport export, PyBaseElement? parent)
+    public RefNode(BaseExport export, BaseElement? parent)
         : this(export, export.ObjectHandle.GetPath(), parent)
     {
     }
@@ -30,7 +30,7 @@ public class PyRef : PyBaseElement
     /**
      * creates a reference to the given target path
      */
-    public PyRef(BaseExport export, string targetPath, PyBaseElement? parent) : base(parent)
+    public RefNode(BaseExport export, string targetPath, BaseElement? parent) : base(parent)
     {
         Export = export;
         TargetFullPath = targetPath;

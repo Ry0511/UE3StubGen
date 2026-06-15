@@ -1,15 +1,16 @@
-﻿using UE3StubGenCore.Render;
+﻿using UE3StubGenCore.ASG.Defs;
+using UE3StubGenCore.Render;
 
-namespace WillowGen.py;
+namespace UE3StubGenCore.ASG;
 
-public class PyProject : PyBaseElement
+public class Project : BaseElement
 {
-    public IReadOnlyList<PyModule> Modules { get; }
+    public IReadOnlyList<PackageDef> Modules { get; }
     public SymbolTable Symbols { get; } = new();
 
-    public PyProject(ExportModel model)
+    public Project(ExportModel model)
     {
-        Modules = model.Packages.Select(elem => new PyModule(elem, this)).ToList();
+        Modules = model.Packages.Select(elem => new PackageDef(elem, this)).ToList();
         LoadSymbols();
     }
 
@@ -22,12 +23,12 @@ public class PyProject : PyBaseElement
         }
 
         // walk through all references and resolve them
-        foreach (var symbolRef in Descendants().OfType<PyRef>())
+        foreach (var symbolRef in Descendants().OfType<RefNode>())
         {
             // This resolution can fail i.e., IntProperty is likely not a symbol, it is a builtin
-            symbolRef.ResolvedTo = Symbols.Resolve(symbolRef) as PyBaseElement;
+            symbolRef.ResolvedTo = Symbols.Resolve(symbolRef) as BaseElement;
         }
     }
 
-    public override IEnumerable<PyBaseElement> Children() => Modules;
+    public override IEnumerable<BaseElement> Children() => Modules;
 }

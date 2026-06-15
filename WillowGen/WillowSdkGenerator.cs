@@ -1,5 +1,5 @@
-﻿using UE3StubGenCore.Render;
-using WillowGen.py;
+﻿using UE3StubGenCore.ASG;
+using UE3StubGenCore.Render;
 
 namespace WillowGen;
 
@@ -7,10 +7,10 @@ public class WillowSdkGenerator : IExporter
 {
     public void Export(ExportModel model)
     {
-        PyProject py = new(model);
-        Dictionary<string, List<PyRef>> unresolved = new();
+        Project py = new(model);
+        Dictionary<string, List<RefNode>> unresolved = new();
 
-        foreach (var elem in py.Descendants().OfType<PyRef>().Where(e => e.ResolvedTo == null))
+        foreach (var elem in py.Descendants().OfType<RefNode>().Where(e => e.ResolvedTo == null))
         {
             var found = unresolved.GetValueOrDefault(elem.TargetFullPath);
             if (found == null)
