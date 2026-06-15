@@ -8,7 +8,7 @@ public class SymbolTable
     {
         if (sym.CanBeReferenced())
         {
-            _fullPathSymbols[sym.ExportPathName()] = sym;
+            _fullPathSymbols.Add(sym.ExportPathName(), sym);
         }
     }
 
