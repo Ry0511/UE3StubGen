@@ -7,6 +7,8 @@ public class ClassDef : BaseElement, ISymbol
     public ExportClass Export { get; }
     public RefNode? Super { get; }
     public IReadOnlyList<RefNode> Interfaces { get; }
+    public IReadOnlyList<EnumDef> Enums { get; }
+    public IReadOnlyList<StructDef> Structs { get; }
     public IReadOnlyList<TypedParamDef> Fields { get; }
     public IReadOnlyList<FunctionDef> Functions { get; }
 
@@ -19,6 +21,8 @@ public class ClassDef : BaseElement, ISymbol
         }
 
         Interfaces = export.Interfaces.Select(elem => new RefNode(elem, this)).ToList();
+        Enums = export.Enums.Select(elem => new EnumDef(elem, this)).ToList();
+        Structs = export.Structs.Select(elem => new StructDef(elem, this)).ToList();
         Fields = export.Fields.Select(elem => new TypedParamDef(elem, this)).ToList();
         Functions = export.Functions.Select(elem => new FunctionDef(elem, this)).ToList();
     }
@@ -27,6 +31,8 @@ public class ClassDef : BaseElement, ISymbol
     {
         if (Super != null) yield return Super;
         foreach (var elem in Interfaces) yield return elem;
+        foreach (var elem in Enums) yield return elem;
+        foreach (var elem in Structs) yield return elem;
         foreach (var elem in Fields) yield return elem;
         foreach (var elem in Functions) yield return elem;
     }
