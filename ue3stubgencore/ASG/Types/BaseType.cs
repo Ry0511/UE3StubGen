@@ -22,14 +22,19 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent)
             return new DynArrayType(arrayProp, parent);
         }
 
-        if (prop is UByteProperty { Enum: not null } byteProp)
-        {
-            return new NamedType(byteProp.Enum.GetPath(), parent);
-        }
-
         if (prop is UClassProperty cls)
         {
             return new ClassType(cls, parent);
+        }
+
+        if (prop is UMapProperty or UDelegateProperty)
+        {
+            return new UnhandledType(prop, parent);
+        }
+
+        if (prop is UByteProperty { Enum: not null } byteProp)
+        {
+            return new NamedType(byteProp.Enum.GetPath(), parent);
         }
 
         if (prop is UInterfaceProperty iface)
@@ -37,16 +42,9 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent)
             return new InterfaceType(iface, parent);
         }
 
-        // TODO: look into UDelegateProperty
-        if (prop is UMapProperty or UDelegateProperty)
+        if (prop is UObjectProperty or UComponentProperty)
         {
-            return new UnhandledType(prop, parent);
-        }
-
-        // NOTE: Need to do this near the bottom since UClassProperty derives UObjectProperty
-        if (prop is UObjectProperty objProp)
-        {
-            return new NamedType(objProp.Object.GetPath(), parent);
+            return new NamedType((prop as UObjectProperty)!.Object.GetPath(), parent);
         }
 
         if (prop is UStructProperty structProp)
