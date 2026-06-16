@@ -27,13 +27,18 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent)
             return new NamedType(byteProp.Enum.GetPath(), parent);
         }
 
-        if (
-            // ClassIsChildOf(Class TestClass, Class ParentClass); Class<T> and Class
-            prop is UClassProperty // TODO: We can handle this one
-            or UMapProperty
-            or UDelegateProperty  // ClassIsChildOf(Class TestClass, Class ParentClass);
-            or UInterfaceProperty // bool !=(Interface A, Interface B);
-        )
+        if (prop is UClassProperty cls)
+        {
+            return new ClassType(cls, parent);
+        }
+
+        if (prop is UInterfaceProperty iface)
+        {
+            return new InterfaceType(iface, parent);
+        }
+
+        // TODO: look into UDelegateProperty
+        if (prop is UMapProperty or UDelegateProperty)
         {
             return new UnhandledType(prop, parent);
         }
