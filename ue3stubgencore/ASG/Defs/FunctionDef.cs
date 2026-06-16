@@ -10,6 +10,10 @@ public class FunctionDef : BaseElement, ISymbol
 
     public FunctionDef(ExportFunction export, BaseElement? parent = null) : base(parent)
     {
+        if (!export.IsRegularFunction)
+        {
+            throw new Exception("only regular functions are supported (iterator and operator functions are not allowed)");
+        }
         Export = export;
         Params = export.Parameters.Select(elem => new TypedParamDef(elem, this)).ToList();
         ReturnValue = export.ReturnParameter != null ? new TypedParamDef(export.ReturnParameter, this) : null;

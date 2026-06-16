@@ -1,17 +1,19 @@
-﻿using UE3StubGenCore.Export;
+﻿using UE3StubGenCore.ASG.Types;
+using UE3StubGenCore.Export;
 
 namespace UE3StubGenCore.ASG.Defs;
 
-public class TypedParamDef(ExportField export, BaseElement? parent) : BaseElement(parent), ISymbol
+public class TypedParamDef : BaseElement, ISymbol
 {
-    public ExportField Export { get; } = export;
-    public RefNode Type { get; } = new(export, export.TargetTypeFullPath, parent);
+    public string ParamName { get; }
+    public BaseType ParamType { get; }
 
-    public override IEnumerable<BaseElement> Children()
+    public TypedParamDef(ExportProperty prop, BaseElement? parent = null) : base(parent)
     {
-        yield return Type;
+        ParamName = prop.Name;
+        ParamType = BaseType.Create(prop, this);
     }
 
-    public string ExportPathName() => Export.ObjectHandle.GetPath();
+    public string ExportPathName() => ParamName;
     public bool CanBeReferenced() => false;
 }

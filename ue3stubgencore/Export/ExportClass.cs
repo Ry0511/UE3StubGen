@@ -10,7 +10,7 @@ public class ExportClass : BaseExport
     public List<ExportInterface> Interfaces { get; } = [];
     public List<ExportStruct> Structs { get; private set; }
     public List<ExportEnum> Enums { get; private set; }
-    public List<ExportField> Fields { get; private set; }
+    public List<ExportProperty> Fields { get; private set; }
     public List<ExportFunction> Functions { get; }
 
     public ExportClass(ExportContext ctx, UnrealPackage pkg, UClass obj) : base(ctx, pkg, obj)
@@ -57,7 +57,7 @@ public class ExportClass : BaseExport
             .ToList();
 
         Fields = obj.EnumerateFields<UProperty>()
-            .Select(elem => new ExportField(ctx, pkg, elem))
+            .Select(elem => new ExportProperty(ctx, pkg, elem))
             .ToList();
 
         Functions = obj.EnumerateFields<UFunction>()

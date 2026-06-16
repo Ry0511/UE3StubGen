@@ -25,8 +25,7 @@ public class MultiModuleProject : BaseElement
         // walk through all references and resolve them
         foreach (var symbolRef in Descendants().OfType<RefNode>())
         {
-            // This resolution can fail i.e., IntProperty is likely not a symbol, it is a builtin
-            symbolRef.ResolvedTo = Symbols.Resolve(symbolRef) as BaseElement;
+            symbolRef.ResolvedTo = Symbols.Resolve(symbolRef);
         }
     }
 

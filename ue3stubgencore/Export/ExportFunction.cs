@@ -15,10 +15,8 @@ public class ExportFunction : BaseExport
     public bool IsRegularFunction => !IsIterator && !IsDelegate && !IsOperator;
     public bool HasOutParms { get; private set; }
     public bool HasOptionalParms { get; private set; }
-    public List<ExportField> Parameters { get; } = [];
-    public ExportField? ReturnParameter { get; }
-    public bool HasReturnParameter => ReturnParameter != null;
-    public IEnumerable<ExportField> OutParameters => Parameters.Where(x => x.IsOutParm);
+    public List<ExportProperty> Parameters { get; } = [];
+    public ExportProperty? ReturnParameter { get; }
 
     public ExportFunction(ExportContext ctx, UnrealPackage pkg, UFunction func)
         : base(ctx, pkg, func)
@@ -39,8 +37,8 @@ public class ExportFunction : BaseExport
 
         foreach (var elem in func.EnumerateFields<UProperty>())
         {
-            ExportField f = new(ctx, pkg, elem);
-            if (!f.IsReturnParm)
+            ExportProperty f = new(ctx, pkg, elem);
+            if (!f.IsReturnParam())
             {
                 Parameters.Add(f);
             }

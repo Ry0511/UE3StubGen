@@ -1,0 +1,62 @@
+using UE3StubGenCore.Export;
+using UELib.Core;
+
+namespace UE3StubGenCore.ASG.Types;
+
+public abstract class BaseType(BaseElement? parent) : BaseElement(parent)
+{
+    public static BaseType Create(ExportProperty elem, BaseElement? parent)
+    {
+        return Create((elem.ObjectHandle as UProperty)!, parent);
+    }
+
+    protected static BaseType Create(UProperty prop, BaseElement? parent, bool ignoreArrayDim = false)
+    {
+        if (prop.ArrayDim > 1 && !ignoreArrayDim)
+        {
+            return new StaticArrayType(prop, parent);
+        }
+
+        if (prop is UArrayProperty arrayProp)
+        {
+            return new DynArrayType(arrayProp, parent);
+        }
+
+        if (prop is UByteProperty { Enum: not null } byteProp)
+        {
+            return new NamedType(byteProp.Enum.GetPath(), parent);
+        }
+
+        if (
+            // ClassIsChildOf(Class TestClass, Class ParentClass); Class<T> and Class
+            prop is UClassProperty // TODO: We can handle this one
+            or UMapProperty
+            or UDelegateProperty  // ClassIsChildOf(Class TestClass, Class ParentClass);
+            or UInterfaceProperty // bool !=(Interface A, Interface B);
+        )
+        {
+            return new UnhandledType(prop, parent);
+        }
+
+        // NOTE: Need to do this near the bottom since UClassProperty derives UObjectProperty
+        if (prop is UObjectProperty objProp)
+        {
+            return new NamedType(objProp.Object.GetPath(), parent);
+        }
+
+        if (prop is UStructProperty structProp)
+        {
+            return new NamedType(structProp.Struct.GetPath(), parent);
+        }
+
+        try
+        {
+            return new EngineBuiltinType(prop, parent);
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine($"Unhandled property type: {prop.GetType().Name} {err.Message}");
+            return new UnhandledType(prop, parent);
+        }
+    }
+}

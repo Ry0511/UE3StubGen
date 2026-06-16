@@ -15,7 +15,7 @@ public class StructDef : BaseElement, ISymbol
 
         if (export.Super != null)
         {
-            Super = new RefNode(export.Super, this);
+            Super = new RefNode(export.Super.GetPath(), this);
         }
 
         Fields = export.Fields.Select(elem => new TypedParamDef(elem, this)).ToList();

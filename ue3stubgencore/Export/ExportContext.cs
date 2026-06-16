@@ -191,7 +191,7 @@ public class ExportContext
                 : new ExportClass(this, pkg, elem),
             UEnum elem => new ExportEnum(this, pkg, elem),
             UFunction elem => new ExportFunction(this, pkg, elem),
-            UProperty elem => new ExportField(this, pkg, elem),
+            UProperty elem => new ExportProperty(this, pkg, elem),
             UStruct elem => new ExportStruct(this, pkg, elem),
             _ => throw new Exception($"unsupported object type: {obj.GetType().Name}"),
         };

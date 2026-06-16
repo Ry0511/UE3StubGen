@@ -2,16 +2,16 @@
 
 public class SymbolTable
 {
-    private readonly Dictionary<string, ISymbol> _fullPathSymbols = new();
+    private readonly Dictionary<string, BaseElement> _fullPathSymbols = new();
 
     public void Register(ISymbol sym)
     {
-        if (sym.CanBeReferenced())
+        if (sym.CanBeReferenced() && sym is BaseElement elem)
         {
-            _fullPathSymbols.Add(sym.ExportPathName(), sym);
+            _fullPathSymbols.Add(sym.ExportPathName(), elem);
         }
     }
 
-    public ISymbol? Resolve(string fullPath) => _fullPathSymbols.GetValueOrDefault(fullPath);
-    public ISymbol? Resolve(RefNode refNode) => Resolve(refNode.TargetFullPath);
+    public BaseElement? Resolve(string fullPath) => _fullPathSymbols.GetValueOrDefault(fullPath);
+    public BaseElement? Resolve(RefNode refNode) => Resolve(refNode.TargetFullPath);
 }

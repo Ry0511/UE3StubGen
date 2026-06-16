@@ -17,14 +17,18 @@ public class ClassDef : BaseElement, ISymbol
         Export = export;
         if (export.Super != null)
         {
-            Super = new RefNode(export.Super, this);
+            Super = new RefNode(export.Super.GetPath(), this);
         }
 
-        Interfaces = export.Interfaces.Select(elem => new RefNode(elem, this)).ToList();
+        Interfaces = export.Interfaces.Select(elem => new RefNode(elem.GetPath(), this)).ToList();
         Enums = export.Enums.Select(elem => new EnumDef(elem, this)).ToList();
         Structs = export.Structs.Select(elem => new StructDef(elem, this)).ToList();
         Fields = export.Fields.Select(elem => new TypedParamDef(elem, this)).ToList();
-        Functions = export.Functions.Select(elem => new FunctionDef(elem, this)).ToList();
+        
+        Functions = export.Functions
+            .Where(elem => elem.IsRegularFunction)
+            .Select(elem => new FunctionDef(elem, this))
+            .ToList();
     }
 
     public override IEnumerable<BaseElement> Children()
