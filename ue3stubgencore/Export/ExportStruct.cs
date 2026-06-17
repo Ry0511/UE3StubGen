@@ -9,7 +9,7 @@ public class ExportStruct : BaseExport
     public IReadOnlyList<ExportProperty> Fields { get; } = [];
     public IReadOnlyList<ExportStruct> ChildStructs { get; }
 
-    public ExportStruct(ExportContext ctx, UnrealPackage pkg, UStruct obj) : base(ctx, pkg, obj)
+    public ExportStruct(ExportContext ctx, UnrealPackage pkg, UStruct obj) : base(pkg, obj)
     {
         if (IsImport(obj))
         {

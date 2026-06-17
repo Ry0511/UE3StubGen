@@ -10,7 +10,7 @@ public class TypedParamDef : BaseElement, ISymbol
 
     public TypedParamDef(ExportProperty prop, BaseElement? parent = null) : base(parent)
     {
-        ParamName = prop.Name;
+        ParamName = prop.Name();
         ParamType = BaseType.Create(prop, this);
     }
 

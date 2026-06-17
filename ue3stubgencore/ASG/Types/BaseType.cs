@@ -17,49 +17,29 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent)
             return new StaticArrayType(prop, parent);
         }
 
-        if (prop is UArrayProperty arrayProp)
+        switch (prop)
         {
-            return new DynArrayType(arrayProp, parent);
-        }
+            case UArrayProperty e: return new DynArrayType(e, parent);
+            case UClassProperty e: return new ClassType(e, parent);
+            case UMapProperty e: return new UnhandledType(e, parent);
+            case UDelegateProperty e: return new UnhandledType(e, parent);
+            case UByteProperty e:
+            {
+                if (e.Enum != null)
+                {
+                    return new NamedType(e.Enum.GetPath(), parent);
+                }
 
-        if (prop is UClassProperty cls)
-        {
-            return new ClassType(cls, parent);
-        }
-
-        if (prop is UMapProperty or UDelegateProperty)
-        {
-            return new UnhandledType(prop, parent);
-        }
-
-        if (prop is UByteProperty { Enum: not null } byteProp)
-        {
-            return new NamedType(byteProp.Enum.GetPath(), parent);
-        }
-
-        if (prop is UInterfaceProperty iface)
-        {
-            return new InterfaceType(iface, parent);
-        }
-
-        if (prop is UObjectProperty or UComponentProperty)
-        {
-            return new NamedType((prop as UObjectProperty)!.Object.GetPath(), parent);
-        }
-
-        if (prop is UStructProperty structProp)
-        {
-            return new NamedType(structProp.Struct.GetPath(), parent);
-        }
-
-        try
-        {
-            return new EngineBuiltinType(prop, parent);
-        }
-        catch (Exception err)
-        {
-            Console.WriteLine($"Unhandled property type: {prop.GetType().Name} {err.Message}");
-            return new UnhandledType(prop, parent);
+                return new EngineBuiltinType(e, parent);
+            }
+            case UInterfaceProperty e: return new InterfaceType(e, parent);
+            case UComponentProperty e: return new NamedType(e.Object.GetPath(), parent);
+            case UStructProperty e: return new NamedType(e.Struct.GetPath(), parent);
+            case UObjectProperty e: return new NamedType(e.Object.GetPath(), parent);
+            default:
+            {
+                return new UnhandledType(prop, parent);
+            }
         }
     }
 }

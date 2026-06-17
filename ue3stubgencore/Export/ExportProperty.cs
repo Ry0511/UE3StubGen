@@ -1,24 +1,13 @@
 ﻿using UELib;
 using UELib.Core;
 using UELib.Flags;
-using UELib.Types;
 
 namespace UE3StubGenCore.Export;
 
 public class ExportProperty : BaseExport
 {
-    public string Name { get; }
-    public PropertyType Type { get; }
-
-    public ExportProperty(ExportContext ctx, UnrealPackage pkg, UProperty obj) : base(ctx, pkg, obj)
+    public ExportProperty(ExportContext _, UnrealPackage pkg, UProperty obj) : base(pkg, obj)
     {
-        if (IsImport(obj))
-        {
-            obj = ctx.ResolveImport<UProperty>(obj);
-        }
-
-        Name = obj.Name;
-        Type = obj.Type;
     }
 
     private UProperty Obj() => (ObjectHandle as UProperty)!;

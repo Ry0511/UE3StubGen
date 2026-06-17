@@ -8,18 +8,15 @@ public class EngineBuiltinType : BaseType
 
     public EngineBuiltinType(UProperty prop, BaseElement? parent = null) : base(parent)
     {
-        switch (prop)
+        FriendlyName = prop switch
         {
-            case UIntProperty:
-            case UFloatProperty:
-            case UBoolProperty:
-            case UByteProperty:
-            case UNameProperty:
-            case UStrProperty:
-                FriendlyName = prop.GetFriendlyType();
-                break;
-            default:
-                throw new Exception("property is not a valid primitive type: " + prop.GetType());
-        }
+            UIntProperty
+                or UFloatProperty
+                or UBoolProperty
+                or UByteProperty
+                or UNameProperty
+                or UStrProperty => prop.GetFriendlyType(),
+            _ => throw new Exception("property is not a valid primitive type: " + prop.GetType())
+        };
     }
 }

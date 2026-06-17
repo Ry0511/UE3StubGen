@@ -10,7 +10,7 @@ internal class LoggingExporter : IExporter
     {
         foreach (var pkg in model.Packages)
         {
-            Console.WriteLine($"Package {pkg.PackageName} has {pkg.Classes.Count} classes");
+            Console.WriteLine($"Package {pkg.Name()} has {pkg.Classes.Count} classes");
         }
     }
 

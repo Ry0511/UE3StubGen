@@ -7,7 +7,7 @@ public class ExportEnum : BaseExport
 {
     public List<string> Ordinals { get; } = [];
 
-    public ExportEnum(ExportContext ctx, UnrealPackage pkg, UEnum obj) : base(ctx, pkg, obj)
+    public ExportEnum(ExportContext ctx, UnrealPackage pkg, UEnum obj) : base(pkg, obj)
     {
         if (IsImport(obj))
         {

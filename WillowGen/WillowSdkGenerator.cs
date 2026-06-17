@@ -1,4 +1,5 @@
 ﻿using UE3StubGenCore.ASG;
+using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.Render;
 
 namespace WillowGen;
@@ -20,5 +21,12 @@ public class WillowSdkGenerator : IExporter
         {
             Console.WriteLine($"  {node.TargetFullPath}");
         }
+
+        var cls = py
+            .Descendants()
+            .OfType<ClassDef>()
+            .Where(e => e.Module!.ExportPathName() == "WillowGame")
+            .First(e => e.Fields.Count > 3);
+        Console.WriteLine($"Class={cls!.ExportPathName()}");
     }
 }
