@@ -2,7 +2,7 @@
 
 namespace UE3StubGenCore.ASG.Defs;
 
-public class ClassDef : BaseElement, ISymbol
+public class ClassDef : BaseElement, ISymbol, INameable
 {
     public ExportClass Export { get; }
     public RefNode? Super { get; }
@@ -24,7 +24,7 @@ public class ClassDef : BaseElement, ISymbol
         Enums = export.Enums.Select(elem => new EnumDef(elem, this)).ToList();
         Structs = export.Structs.Select(elem => new StructDef(elem, this)).ToList();
         Fields = export.Fields.Select(elem => new TypedParamDef(elem, this)).ToList();
-        
+
         Functions = export.Functions
             .Where(elem => elem.IsRegularFunction)
             .Select(elem => new FunctionDef(elem, this))
@@ -42,5 +42,5 @@ public class ClassDef : BaseElement, ISymbol
     }
 
     public string ExportPathName() => Export.ObjectHandle.GetPath();
-    public bool CanBeReferenced() => true;
+    public string Name() => Export.Name();
 }

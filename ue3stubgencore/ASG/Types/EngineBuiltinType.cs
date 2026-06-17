@@ -19,4 +19,6 @@ public class EngineBuiltinType : BaseType
             _ => throw new Exception("property is not a valid primitive type: " + prop.GetType())
         };
     }
+
+    public override string Name() => FriendlyName;
 }

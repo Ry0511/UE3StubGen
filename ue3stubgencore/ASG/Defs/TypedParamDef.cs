@@ -3,7 +3,7 @@ using UE3StubGenCore.Export;
 
 namespace UE3StubGenCore.ASG.Defs;
 
-public class TypedParamDef : BaseElement, ISymbol
+public class TypedParamDef : BaseElement, INameable
 {
     public string ParamName { get; }
     public BaseType ParamType { get; }
@@ -14,6 +14,5 @@ public class TypedParamDef : BaseElement, ISymbol
         ParamType = BaseType.Create(prop, this);
     }
 
-    public string ExportPathName() => ParamName;
-    public bool CanBeReferenced() => false;
+    public string Name() => ParamName;
 }

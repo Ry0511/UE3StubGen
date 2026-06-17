@@ -21,4 +21,6 @@ public class ClassType : BaseType
             yield return MetaClass;
         }
     }
+
+    public override string Name() => MetaClass != null ? $"Class<{MetaClass.Name()}>" : "Class";
 }

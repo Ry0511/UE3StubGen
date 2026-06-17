@@ -2,7 +2,7 @@
 
 namespace UE3StubGenCore.ASG.Defs;
 
-public class PackageDef : BaseElement, ISymbol
+public class PackageDef : BaseElement, ISymbol, INameable
 {
     public ExportPackage Export { get; }
     public List<ClassDef> Classes { get; }
@@ -15,5 +15,5 @@ public class PackageDef : BaseElement, ISymbol
 
     public override IEnumerable<BaseElement> Children() => Classes;
     public string ExportPathName() => Export.ObjectHandle.GetPath();
-    public bool CanBeReferenced() => false;
+    public string Name() => Export.Name();
 }

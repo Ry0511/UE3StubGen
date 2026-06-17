@@ -2,7 +2,7 @@
 
 namespace UE3StubGenCore.ASG.Defs;
 
-public class FunctionDef : BaseElement, ISymbol
+public class FunctionDef : BaseElement, ISymbol, INameable
 {
     public ExportFunction Export { get; }
     public List<TypedParamDef> Params { get; }
@@ -14,6 +14,7 @@ public class FunctionDef : BaseElement, ISymbol
         {
             throw new Exception("only regular functions are supported (iterator and operator functions are not allowed)");
         }
+
         Export = export;
         Params = export.Parameters.Select(elem => new TypedParamDef(elem, this)).ToList();
         ReturnValue = export.ReturnParameter != null ? new TypedParamDef(export.ReturnParameter, this) : null;
@@ -26,5 +27,5 @@ public class FunctionDef : BaseElement, ISymbol
     }
 
     public string ExportPathName() => Export.ObjectHandle.GetPath();
-    public bool CanBeReferenced() => false;
+    public string Name() => Export.Name();
 }

@@ -6,7 +6,7 @@ public class SymbolTable
 
     public void Register(ISymbol sym)
     {
-        if (sym.CanBeReferenced() && sym is BaseElement elem)
+        if (sym is BaseElement elem)
         {
             _fullPathSymbols.Add(sym.ExportPathName(), elem);
         }

@@ -3,7 +3,7 @@ using UELib.Core;
 
 namespace UE3StubGenCore.ASG.Types;
 
-public abstract class BaseType(BaseElement? parent) : BaseElement(parent)
+public abstract class BaseType(BaseElement? parent) : BaseElement(parent), INameable
 {
     public static BaseType Create(ExportProperty elem, BaseElement? parent)
     {
@@ -42,4 +42,6 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent)
             }
         }
     }
+
+    public abstract string Name();
 }

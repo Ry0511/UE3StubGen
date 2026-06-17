@@ -15,4 +15,6 @@ public class DynArrayType : BaseType
     {
         yield return InnerType;
     }
+
+    public override string Name() => $"DynArray<{InnerType.Name()}>";
 }

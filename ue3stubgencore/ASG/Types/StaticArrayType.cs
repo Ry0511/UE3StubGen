@@ -22,4 +22,6 @@ public class StaticArrayType : BaseType
     {
         yield return HeldType;
     }
+
+    public override string Name() => $"{HeldType.Name()}[{ArrayDim}]";
 }

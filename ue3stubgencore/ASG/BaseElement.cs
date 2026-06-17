@@ -12,7 +12,7 @@ public abstract class BaseElement
         Parent = parent;
         Module = Ancestors().OfType<PackageDef>().FirstOrDefault();
     }
-    
+
     public virtual IEnumerable<BaseElement> Children() => [];
 
     public IEnumerable<BaseElement> Descendants()
@@ -36,5 +36,17 @@ public abstract class BaseElement
             node = node.Parent;
         }
     }
-    
+
+    public IEnumerable<BaseElement> WalkUp()
+    {
+        yield return this;
+        foreach (var elem in Ancestors())
+        {
+            yield return elem;
+        }
+    }
+
+    public string BuildName() => string.Join(".",
+        WalkUp().OfType<INameable>().Select(e => e.Name()).Reverse()
+    );
 }

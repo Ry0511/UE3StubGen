@@ -15,7 +15,7 @@ public class WillowSdkGenerator : IExporter
         {
             unresolved.Add(elem);
         }
-        
+
         Console.WriteLine($"unresolved: {unresolved.Count}");
         foreach (var node in unresolved)
         {
@@ -26,7 +26,14 @@ public class WillowSdkGenerator : IExporter
             .Descendants()
             .OfType<ClassDef>()
             .Where(e => e.Module!.ExportPathName() == "WillowGame")
-            .First(e => e.Fields.Count > 3);
-        Console.WriteLine($"Class={cls!.ExportPathName()}");
+            .Where(e => e.Fields.Count > 3)
+            .Take(10)
+            .Select(e => e.BuildName());
+
+        foreach (var elem in cls)
+        {
+            Console.WriteLine(elem);
+        }
+
     }
 }

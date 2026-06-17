@@ -13,4 +13,6 @@ public class NamedType : BaseType
     {
         yield return Ref;
     }
+
+    public override string Name() => Ref.TargetFullPath;
 }
