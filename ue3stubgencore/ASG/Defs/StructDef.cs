@@ -2,7 +2,7 @@
 
 namespace UE3StubGenCore.ASG.Defs;
 
-public class StructDef : BaseElement, ISymbol, INameable
+public class StructDef : BaseSymbol
 {
     public ExportStruct Export { get; }
     public RefNode? Super { get; }
@@ -29,6 +29,6 @@ public class StructDef : BaseElement, ISymbol, INameable
         foreach (var elem in ChildStructs) yield return elem;
     }
 
-    public string ExportPathName() => Export.ObjectHandle.GetPath();
-    public string Name() => Export.Name();
+    public override string ExportPathName() => Export.ObjectHandle.GetPath();
+    public override string Name() => Export.Name();
 }

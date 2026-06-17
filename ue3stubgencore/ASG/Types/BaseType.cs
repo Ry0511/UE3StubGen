@@ -36,9 +36,17 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
             case UComponentProperty e: return new NamedType(e.Object.GetPath(), parent);
             case UStructProperty e: return new NamedType(e.Struct.GetPath(), parent);
             case UObjectProperty e: return new NamedType(e.Object.GetPath(), parent);
+
             default:
             {
-                return new UnhandledType(prop, parent);
+                try
+                {
+                    return new EngineBuiltinType(prop, parent);
+                }
+                catch (Exception)
+                {
+                    return new UnhandledType(prop, parent);
+                }
             }
         }
     }

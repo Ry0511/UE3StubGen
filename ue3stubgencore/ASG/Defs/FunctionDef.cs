@@ -2,11 +2,12 @@
 
 namespace UE3StubGenCore.ASG.Defs;
 
-public class FunctionDef : BaseElement, ISymbol, INameable
+public class FunctionDef : BaseSymbol
 {
     public ExportFunction Export { get; }
     public List<TypedParamDef> Params { get; }
     public TypedParamDef? ReturnValue { get; }
+    public bool IsStatic => Export.IsStatic;
 
     public FunctionDef(ExportFunction export, BaseElement? parent = null) : base(parent)
     {
@@ -26,6 +27,6 @@ public class FunctionDef : BaseElement, ISymbol, INameable
         if (ReturnValue != null) yield return ReturnValue;
     }
 
-    public string ExportPathName() => Export.ObjectHandle.GetPath();
-    public string Name() => Export.Name();
+    public override string ExportPathName() => Export.ObjectHandle.GetPath();
+    public override string Name() => Export.Name();
 }

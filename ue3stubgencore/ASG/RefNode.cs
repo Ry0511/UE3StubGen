@@ -13,5 +13,5 @@ public class RefNode(string targetFullPath, BaseElement? parent = null) : BaseEl
     /**
      * The node element that this reference resolves to.
      */
-    public BaseElement? ResolvedTo { get; set; }
+    public BaseSymbol? ResolvedTo { get; set; }
 }

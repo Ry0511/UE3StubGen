@@ -17,7 +17,7 @@ public class MultiModuleProject : BaseElement
     public void LoadSymbols()
     {
         // walk through all modules and register every symbol that can be referenced
-        foreach (var sym in Descendants().OfType<ISymbol>())
+        foreach (var sym in Descendants().OfType<BaseSymbol>())
         {
             Symbols.Register(sym);
         }

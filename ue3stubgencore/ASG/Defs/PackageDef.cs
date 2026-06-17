@@ -2,7 +2,8 @@
 
 namespace UE3StubGenCore.ASG.Defs;
 
-public class PackageDef : BaseElement, ISymbol, INameable
+// TODO: should this be a symbol?
+public class PackageDef : BaseSymbol
 {
     public ExportPackage Export { get; }
     public List<ClassDef> Classes { get; }
@@ -14,6 +15,6 @@ public class PackageDef : BaseElement, ISymbol, INameable
     }
 
     public override IEnumerable<BaseElement> Children() => Classes;
-    public string ExportPathName() => Export.ObjectHandle.GetPath();
-    public string Name() => Export.Name();
+    public override string ExportPathName() => Export.ObjectHandle.GetPath();
+    public override string Name() => Export.Name();
 }
