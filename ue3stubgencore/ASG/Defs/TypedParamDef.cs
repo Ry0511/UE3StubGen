@@ -15,4 +15,9 @@ public class TypedParamDef : BaseElement, INameable
     }
 
     public string Name() => ParamName;
+
+    public override IEnumerable<BaseElement> Children()
+    {
+        yield return ParamType;
+    }
 }

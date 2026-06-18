@@ -15,20 +15,19 @@ public abstract class BaseElement
 
     public virtual IEnumerable<BaseElement> Children() => [];
 
-    public IEnumerable<BaseElement> Descendants()
+    public IEnumerable<BaseElement> Descendants(bool includeSelf = false)
     {
+        if (includeSelf) yield return this;
         foreach (var child in Children())
         {
             yield return child;
-            foreach (var descendant in child.Descendants())
-            {
-                yield return descendant;
-            }
+            foreach (var descendant in child.Descendants()) yield return descendant;
         }
     }
 
-    public IEnumerable<BaseElement> Ancestors()
+    public IEnumerable<BaseElement> Ancestors(bool includeSelf = false)
     {
+        if (includeSelf) yield return this;
         var node = Parent;
         while (node != null)
         {
@@ -37,16 +36,10 @@ public abstract class BaseElement
         }
     }
 
-    public IEnumerable<BaseElement> WalkUp()
-    {
-        yield return this;
-        foreach (var elem in Ancestors())
-        {
-            yield return elem;
-        }
-    }
-
     public string BuildName() => string.Join(".",
-        WalkUp().OfType<INameable>().Select(e => e.Name()).Reverse()
+        Ancestors(includeSelf: true)
+            .OfType<INameable>()
+            .Select(e => e.Name())
+            .Reverse()
     );
 }
