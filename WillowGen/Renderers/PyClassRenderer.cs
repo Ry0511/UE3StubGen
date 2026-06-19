@@ -68,6 +68,13 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
             renderer.Render(sink);
             sink.AppendLine();
         }
+
+        foreach (var e in elem.Functions.Where(e => e.IsDelegate))
+        {
+            var renderer = RendererUtils.Create(e);
+            renderer.Render(sink);
+            sink.AppendLine();
+        }
     }
 
     private void RenderClassHeader(Sink sink)
@@ -118,7 +125,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
     private void RenderClassFunctions(Sink sink)
     {
         var scratch = new StringSink(sink);
-        foreach (var func in elem.Functions)
+        foreach (var func in elem.Functions.Where(e => !e.IsDelegate))
         {
             scratch.Reset(sink);
             RendererUtils.Create(func).Render(scratch);
@@ -130,12 +137,10 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
     private void RenderImportAndPrefaceDefinitions(Sink sink)
     {
         sink.AppendLine("from enum import IntEnum");
-        sink.AppendLine("from typing import Any, Generic, TypeVar");
+        sink.AppendLine("from typing import Any, Callable, Protocol, Generic, TypeVar");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
 
-        // Core.Object
-        // WillowGame.WillowPlayerController
-        // from Core.Object import Object, Pointer
+        // TODO: refactor imports to try and reduce the number of imports per-file
         foreach (var (_, ty) in _namedTypes.Where(e => e.Value != null))
         {
             sink.Append($"from bl1.{ty!.Module!.Name()}");
@@ -143,6 +148,11 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
             if (ty is ClassDef cls)
             {
                 sink.AppendRaw($".{cls.Name()} import {cls.Name()}");
+            }
+            else if (ty is FunctionDef func)
+            {
+                var parent = func.Parent as ClassDef;
+                sink.AppendRaw($".{parent!.Name()} import _delegate_{func.Name()}");
             }
             else
             {

@@ -8,10 +8,14 @@ public class FunctionDef : BaseSymbol
     public List<TypedParamDef> Params { get; }
     public TypedParamDef? ReturnValue { get; }
     public bool IsStatic => Export.IsStatic;
+    public bool IsDelegate => Export.IsDelegate;
 
     public FunctionDef(ExportFunction export, BaseElement? parent = null) : base(parent)
     {
-        if (!export.IsRegularFunction) throw new Exception("only regular functions are supported (iterator and operator functions are not allowed)");
+        if (!export.IsRegularFunction && !export.IsDelegate)
+        {
+            throw new Exception("only regular functions are supported (iterator and operator functions are not allowed)");
+        }
 
         Export = export;
         Params = export.Parameters.Select(elem => new TypedParamDef(elem, this)).ToList();

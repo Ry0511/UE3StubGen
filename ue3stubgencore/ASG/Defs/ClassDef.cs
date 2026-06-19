@@ -23,7 +23,7 @@ public class ClassDef : BaseSymbol
         Fields = export.Fields.Select(elem => new TypedParamDef(elem, this)).ToList();
 
         Functions = export.Functions
-            .Where(elem => elem.IsRegularFunction)
+            .Where(elem => elem.IsRegularFunction || elem.IsDelegate)
             .Select(elem => new FunctionDef(elem, this))
             .ToList();
     }

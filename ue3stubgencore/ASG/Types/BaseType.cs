@@ -19,7 +19,7 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
             case UArrayProperty e: return new DynArrayType(e, parent);
             case UClassProperty e: return new ClassType(e, parent);
             case UMapProperty e: return new UnhandledType(e, parent);
-            case UDelegateProperty e: return new UnhandledType(e, parent);
+            case UDelegateProperty e: return new DelegateType(e, parent);
             case UByteProperty e:
             {
                 if (e.Enum != null) return new NamedType(e.Enum.GetPath(), parent);
