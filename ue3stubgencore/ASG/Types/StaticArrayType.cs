@@ -9,12 +9,9 @@ public class StaticArrayType : BaseType
 
     public StaticArrayType(UProperty prop, BaseElement? parent = null) : base(parent)
     {
-        if (prop.ArrayDim <= 1)
-        {
-            throw new Exception("ArrayDim <= 1");
-        }
+        if (prop.ArrayDim <= 1) throw new Exception("ArrayDim <= 1");
 
-        HeldType = Create(prop, this, ignoreArrayDim: true);
+        HeldType = Create(prop, this, true);
         ArrayDim = prop.ArrayDim;
     }
 
@@ -23,5 +20,8 @@ public class StaticArrayType : BaseType
         yield return HeldType;
     }
 
-    public override string Name() => $"{HeldType.Name()}[{ArrayDim}]";
+    public override string Name()
+    {
+        return $"{HeldType.Name()}[{ArrayDim}]";
+    }
 }

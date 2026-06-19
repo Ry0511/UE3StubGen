@@ -15,10 +15,7 @@ public class ClassDef : BaseSymbol
     public ClassDef(ExportClass export, BaseElement? parent) : base(parent)
     {
         Export = export;
-        if (export.Super != null)
-        {
-            Super = new RefNode(export.Super.GetPath(), this);
-        }
+        if (export.Super != null) Super = new RefNode(export.Super.GetPath(), this);
 
         Interfaces = export.Interfaces.Select(elem => new RefNode(elem.GetPath(), this)).ToList();
         Enums = export.Enums.Select(elem => new EnumDef(elem, this)).ToList();
@@ -41,6 +38,13 @@ public class ClassDef : BaseSymbol
         foreach (var elem in Functions) yield return elem;
     }
 
-    public override string ExportPathName() => Export.ObjectHandle.GetPath();
-    public override string Name() => Export.Name();
+    public override string ExportPathName()
+    {
+        return Export.ObjectHandle.GetPath();
+    }
+
+    public override string Name()
+    {
+        return Export.Name();
+    }
 }

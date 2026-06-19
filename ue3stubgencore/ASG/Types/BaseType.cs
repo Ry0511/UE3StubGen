@@ -12,10 +12,7 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
 
     protected static BaseType Create(UProperty prop, BaseElement? parent, bool ignoreArrayDim = false)
     {
-        if (prop.ArrayDim > 1 && !ignoreArrayDim)
-        {
-            return new StaticArrayType(prop, parent);
-        }
+        if (prop.ArrayDim > 1 && !ignoreArrayDim) return new StaticArrayType(prop, parent);
 
         switch (prop)
         {
@@ -25,10 +22,7 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
             case UDelegateProperty e: return new UnhandledType(e, parent);
             case UByteProperty e:
             {
-                if (e.Enum != null)
-                {
-                    return new NamedType(e.Enum.GetPath(), parent);
-                }
+                if (e.Enum != null) return new NamedType(e.Enum.GetPath(), parent);
 
                 return new EngineBuiltinType(e, parent);
             }

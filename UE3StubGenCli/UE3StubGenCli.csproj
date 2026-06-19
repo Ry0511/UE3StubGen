@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\UE3StubGenCore\UE3StubGenCore.csproj" />
-        <ProjectReference Include="..\WillowGen\WillowGen.csproj" />
+        <ProjectReference Include="..\UE3StubGenCore\UE3StubGenCore.csproj"/>
+        <ProjectReference Include="..\WillowGen\WillowGen.csproj"/>
     </ItemGroup>
 
 </Project>

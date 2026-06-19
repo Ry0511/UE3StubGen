@@ -14,7 +14,18 @@ public class PackageDef : BaseSymbol
         Classes = export.Classes.Select(cls => new ClassDef(cls, this)).ToList();
     }
 
-    public override IEnumerable<BaseElement> Children() => Classes;
-    public override string ExportPathName() => Export.ObjectHandle.GetPath();
-    public override string Name() => Export.Name();
+    public override IEnumerable<BaseElement> Children()
+    {
+        return Classes;
+    }
+
+    public override string ExportPathName()
+    {
+        return Export.ObjectHandle.GetPath();
+    }
+
+    public override string Name()
+    {
+        return Export.Name();
+    }
 }

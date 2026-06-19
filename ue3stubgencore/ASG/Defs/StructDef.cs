@@ -13,10 +13,7 @@ public class StructDef : BaseSymbol
     {
         Export = export;
 
-        if (export.Super != null)
-        {
-            Super = new RefNode(export.Super.GetPath(), this);
-        }
+        if (export.Super != null) Super = new RefNode(export.Super.GetPath(), this);
 
         Fields = export.Fields.Select(elem => new TypedParamDef(elem, this)).ToList();
         ChildStructs = export.ChildStructs.Select(elem => new StructDef(elem, this)).ToList();
@@ -29,6 +26,13 @@ public class StructDef : BaseSymbol
         foreach (var elem in ChildStructs) yield return elem;
     }
 
-    public override string ExportPathName() => Export.ObjectHandle.GetPath();
-    public override string Name() => Export.Name();
+    public override string ExportPathName()
+    {
+        return Export.ObjectHandle.GetPath();
+    }
+
+    public override string Name()
+    {
+        return Export.Name();
+    }
 }

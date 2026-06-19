@@ -15,16 +15,13 @@ public class ExportFunction : BaseExport
     public bool HasOptionalParms { get; }
     public IReadOnlyList<ExportProperty> Parameters { get; }
     public ExportProperty? ReturnParameter { get; }
-    
+
     public bool IsRegularFunction => !IsIterator && !IsDelegate && !IsOperator;
-    
+
     public ExportFunction(ExportContext ctx, UnrealPackage pkg, UFunction func)
         : base(pkg, func)
     {
-        if (IsImport(func))
-        {
-            func = ctx.ResolveImport<UFunction>(func);
-        }
+        if (IsImport(func)) func = ctx.ResolveImport<UFunction>(func);
 
         IsStatic = func.FunctionFlags.HasFlag(FunctionFlag.Static);
         IsNative = func.FunctionFlags.HasFlag(FunctionFlag.Native);

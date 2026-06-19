@@ -14,7 +14,10 @@ public class TypedParamDef : BaseElement, INameable
         ParamType = BaseType.Create(prop, this);
     }
 
-    public string Name() => ParamName;
+    public string Name()
+    {
+        return ParamName;
+    }
 
     public override IEnumerable<BaseElement> Children()
     {

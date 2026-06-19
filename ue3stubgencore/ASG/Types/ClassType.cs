@@ -8,19 +8,16 @@ public class ClassType : BaseType
 
     public ClassType(UClassProperty prop, BaseElement? parent) : base(parent)
     {
-        if (prop.MetaClass != null)
-        {
-            MetaClass = new NamedType(prop.MetaClass.GetPath(), this);
-        }
+        if (prop.MetaClass != null) MetaClass = new NamedType(prop.MetaClass.GetPath(), this);
     }
 
     public override IEnumerable<BaseElement> Children()
     {
-        if (MetaClass != null)
-        {
-            yield return MetaClass;
-        }
+        if (MetaClass != null) yield return MetaClass;
     }
 
-    public override string Name() => MetaClass != null ? $"Class<{MetaClass.Name()}>" : "Class";
+    public override string Name()
+    {
+        return MetaClass != null ? $"Class<{MetaClass.Name()}>" : "Class";
+    }
 }

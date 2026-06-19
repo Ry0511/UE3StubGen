@@ -11,10 +11,7 @@ public class FunctionDef : BaseSymbol
 
     public FunctionDef(ExportFunction export, BaseElement? parent = null) : base(parent)
     {
-        if (!export.IsRegularFunction)
-        {
-            throw new Exception("only regular functions are supported (iterator and operator functions are not allowed)");
-        }
+        if (!export.IsRegularFunction) throw new Exception("only regular functions are supported (iterator and operator functions are not allowed)");
 
         Export = export;
         Params = export.Parameters.Select(elem => new TypedParamDef(elem, this)).ToList();
@@ -27,6 +24,13 @@ public class FunctionDef : BaseSymbol
         if (ReturnValue != null) yield return ReturnValue;
     }
 
-    public override string ExportPathName() => Export.ObjectHandle.GetPath();
-    public override string Name() => Export.Name();
+    public override string ExportPathName()
+    {
+        return Export.ObjectHandle.GetPath();
+    }
+
+    public override string Name()
+    {
+        return Export.Name();
+    }
 }

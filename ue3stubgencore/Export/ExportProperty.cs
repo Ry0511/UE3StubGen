@@ -10,16 +10,48 @@ public class ExportProperty : BaseExport
     {
     }
 
-    private UProperty Obj() => (ObjectHandle as UProperty)!;
+    private UProperty Obj()
+    {
+        return (ObjectHandle as UProperty)!;
+    }
 
-    public bool IsClassMember() => Obj().Outer is UClass;
+    public bool IsClassMember()
+    {
+        return Obj().Outer is UClass;
+    }
 
-    public bool IsFunctionParameter() => Obj().Outer is UFunction;
-    public bool IsOutParam() => Obj().PropertyFlags.HasFlag(PropertyFlag.OutParm);
-    public bool IsOptionalParam() => Obj().PropertyFlags.HasFlag(PropertyFlag.OptionalParm);
-    public bool IsReturnParam() => Obj().PropertyFlags.HasFlag(PropertyFlag.ReturnParm);
+    public bool IsFunctionParameter()
+    {
+        return Obj().Outer is UFunction;
+    }
 
-    public bool IsStaticArray() => Obj().ArrayDim > 1;
-    public bool IsDynamicArray() => Obj() is UArrayProperty;
-    public bool IsArray() => IsStaticArray() || IsDynamicArray();
+    public bool IsOutParam()
+    {
+        return Obj().PropertyFlags.HasFlag(PropertyFlag.OutParm);
+    }
+
+    public bool IsOptionalParam()
+    {
+        return Obj().PropertyFlags.HasFlag(PropertyFlag.OptionalParm);
+    }
+
+    public bool IsReturnParam()
+    {
+        return Obj().PropertyFlags.HasFlag(PropertyFlag.ReturnParm);
+    }
+
+    public bool IsStaticArray()
+    {
+        return Obj().ArrayDim > 1;
+    }
+
+    public bool IsDynamicArray()
+    {
+        return Obj() is UArrayProperty;
+    }
+
+    public bool IsArray()
+    {
+        return IsStaticArray() || IsDynamicArray();
+    }
 }

@@ -17,17 +17,14 @@ public class MultiModuleProject : BaseElement
     public void LoadSymbols()
     {
         // walk through all modules and register every symbol that can be referenced
-        foreach (var sym in Descendants().OfType<BaseSymbol>())
-        {
-            Symbols.Register(sym);
-        }
+        foreach (var sym in Descendants().OfType<BaseSymbol>()) Symbols.Register(sym);
 
         // walk through all references and resolve them
-        foreach (var symbolRef in Descendants().OfType<RefNode>())
-        {
-            symbolRef.ResolvedTo = Symbols.Resolve(symbolRef);
-        }
+        foreach (var symbolRef in Descendants().OfType<RefNode>()) symbolRef.ResolvedTo = Symbols.Resolve(symbolRef);
     }
 
-    public override IEnumerable<BaseElement> Children() => Modules;
+    public override IEnumerable<BaseElement> Children()
+    {
+        return Modules;
+    }
 }

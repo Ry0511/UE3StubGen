@@ -15,15 +15,9 @@ public class ExportClass : BaseExport
 
     public ExportClass(ExportContext ctx, UnrealPackage pkg, UClass obj) : base(pkg, obj)
     {
-        if (IsImport(obj))
-        {
-            obj = ctx.ResolveImport<UClass>(obj);
-        }
+        if (IsImport(obj)) obj = ctx.ResolveImport<UClass>(obj);
 
-        if (obj.Super is UClass cls)
-        {
-            Super = ctx.CreateExport<ExportClass>(pkg, cls);
-        }
+        if (obj.Super is UClass cls) Super = ctx.CreateExport<ExportClass>(pkg, cls);
 
         Interfaces = (obj.ImplementedInterfaces ?? [])
             .Select(index => ctx.ResolveImport<UClass>(obj.Package, index))

@@ -6,12 +6,16 @@ public class SymbolTable
 
     public void Register(ISymbol sym)
     {
-        if (sym is BaseSymbol elem)
-        {
-            _fullPathSymbols.Add(sym.ExportPathName(), elem);
-        }
+        if (sym is BaseSymbol elem) _fullPathSymbols.Add(sym.ExportPathName(), elem);
     }
 
-    public BaseSymbol? Resolve(string fullPath) => _fullPathSymbols.GetValueOrDefault(fullPath);
-    public BaseSymbol? Resolve(RefNode refNode) => Resolve(refNode.TargetFullPath);
+    public BaseSymbol? Resolve(string fullPath)
+    {
+        return _fullPathSymbols.GetValueOrDefault(fullPath);
+    }
+
+    public BaseSymbol? Resolve(RefNode refNode)
+    {
+        return Resolve(refNode.TargetFullPath);
+    }
 }

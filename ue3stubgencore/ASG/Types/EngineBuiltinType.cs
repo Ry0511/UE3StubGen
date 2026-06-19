@@ -20,5 +20,8 @@ public class EngineBuiltinType : BaseType
         };
     }
 
-    public override string Name() => FriendlyName;
+    public override string Name()
+    {
+        return FriendlyName;
+    }
 }

@@ -8,16 +8,13 @@ internal class LoggingExporter : IExporter
 {
     public void Export(ExportModel model)
     {
-        foreach (var pkg in model.Packages)
-        {
-            Console.WriteLine($"Package {pkg.Name()} has {pkg.Classes.Count} classes");
-        }
+        foreach (var pkg in model.Packages) Console.WriteLine($"Package {pkg.Name()} has {pkg.Classes.Count} classes");
     }
 
     public static void Main(string[] args)
     {
-        string root = @"C:\mod_tools\decompressed_packages\BL1\decompressed";
-        ExportModel model = new ExportModel(new ExportContext(root));
+        var root = @"C:\mod_tools\decompressed_packages\BL1\decompressed";
+        var model = new ExportModel(new ExportContext(root));
         model.ExportAll(new LoggingExporter());
         model.ExportAll(new WillowSdkGenerator());
         Console.WriteLine("Cache Size = " + model.Context.CacheCount);

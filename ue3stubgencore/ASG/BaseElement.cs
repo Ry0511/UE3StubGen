@@ -13,7 +13,10 @@ public abstract class BaseElement
         Module = Ancestors().OfType<PackageDef>().FirstOrDefault();
     }
 
-    public virtual IEnumerable<BaseElement> Children() => [];
+    public virtual IEnumerable<BaseElement> Children()
+    {
+        return [];
+    }
 
     public IEnumerable<BaseElement> Descendants(bool includeSelf = false)
     {
@@ -36,10 +39,13 @@ public abstract class BaseElement
         }
     }
 
-    public string BuildName() => string.Join(".",
-        Ancestors(includeSelf: true)
-            .OfType<INameable>()
-            .Select(e => e.Name())
-            .Reverse()
-    );
+    public string BuildName()
+    {
+        return string.Join(".",
+            Ancestors(true)
+                .OfType<INameable>()
+                .Select(e => e.Name())
+                .Reverse()
+        );
+    }
 }

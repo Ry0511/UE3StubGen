@@ -5,5 +5,9 @@ namespace UE3StubGenCore.ASG.Types;
 public class UnhandledType(UProperty unhandledType, BaseElement? parent) : BaseType(parent)
 {
     public UProperty HeldType { get; } = unhandledType;
-    public override string Name() => "UnhandledType";
+
+    public override string Name()
+    {
+        return "UnhandledType";
+    }
 }

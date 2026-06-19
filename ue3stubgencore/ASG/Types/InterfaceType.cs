@@ -16,5 +16,8 @@ public class InterfaceType : BaseType
         yield return InterfaceClass;
     }
 
-    public override string Name() => InterfaceClass.Name();
+    public override string Name()
+    {
+        return InterfaceClass.Name();
+    }
 }

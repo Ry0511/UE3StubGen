@@ -10,11 +10,14 @@ public class DynArrayType : BaseType
     {
         InnerType = Create(prop.InnerProperty, this);
     }
-    
+
     public override IEnumerable<BaseElement> Children()
     {
         yield return InnerType;
     }
 
-    public override string Name() => $"DynArray<{InnerType.Name()}>";
+    public override string Name()
+    {
+        return $"DynArray<{InnerType.Name()}>";
+    }
 }
