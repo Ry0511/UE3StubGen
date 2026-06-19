@@ -1,11 +1,23 @@
+using UE3StubGenCore.ASG.Defs;
 using WillowGen.Renderer;
 
 namespace WillowGen.PyRenderers;
 
-public class PyStructRenderer : IRenderable
+public class PyStructRenderer(StructDef elem) : IRenderable
 {
-    public void Render(ISink sink)
+    public void Render(Sink sink)
     {
-        throw new NotImplementedException();
+        // TODO: inheritance list
+        sink.AppendLine($"class {sink}:");
+        sink.PushIndent();
+
+        foreach (var field in elem.Fields)
+        {
+            var scratch = new StringSink();
+            RendererUtils.Create(field).Render(scratch);
+            sink.AppendLine(scratch.ToString());
+        }
+
+        sink.PopIndent();
     }
 }

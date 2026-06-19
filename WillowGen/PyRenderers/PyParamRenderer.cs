@@ -1,11 +1,12 @@
+using UE3StubGenCore.ASG.Defs;
 using WillowGen.Renderer;
 
 namespace WillowGen.PyRenderers;
 
-public class PyParamRenderer : IRenderable
+public class PyParamRenderer(TypedParamDef elem) : IRenderable
 {
-    public void Render(ISink sink)
+    public void Render(Sink sink)
     {
-        throw new NotImplementedException();
+        sink.Append(elem.Name());
     }
 }
