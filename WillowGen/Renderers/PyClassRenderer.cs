@@ -17,19 +17,6 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         RenderClassHeader(scratch);
         scratch.PushIndent();
 
-        if (elem.Fields.Count == 0 && elem.Functions.Count == 0)
-        {
-            scratch.Append("...");
-            sink.AppendLineRaw(scratch.ToString());
-            return;
-        }
-
-        RenderClassFields(scratch);
-        if (elem.Fields.Count > 0) scratch.AppendLine();
-
-        RenderClassFunctions(scratch);
-        scratch.PopIndent();
-
         var preface = new StringSink(sink);
 
         foreach (var imp in elem.Descendants().OfType<RefNode>())
@@ -47,6 +34,20 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         }
 
         RenderImportAndPrefaceDefinitions(preface);
+
+        if (elem.Fields.Count == 0 && elem.Functions.Count == 0)
+        {
+            scratch.Append("...");
+            sink.AppendLineRaw(preface.ToString());
+            sink.AppendLineRaw(scratch.ToString());
+            return;
+        }
+
+        RenderClassFields(scratch);
+        if (elem.Fields.Count > 0) scratch.AppendLine();
+
+        RenderClassFunctions(scratch);
+        scratch.PopIndent();
 
         sink.AppendLineRaw(preface.ToString());
         sink.AppendLineRaw(scratch.ToString());
@@ -94,14 +95,13 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
                 scratch.Append(RendererUtils.GetRefTypeName(iface));
                 _namedTypes[iface.TargetFullPath] = iface.ResolvedTo;
             }
-            
+
             sink.AppendLineRaw(scratch + "):");
         }
         else
         {
             sink.AppendLineRaw(":");
         }
-        
     }
 
     private void RenderClassFields(Sink sink)

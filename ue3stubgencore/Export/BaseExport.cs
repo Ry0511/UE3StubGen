@@ -43,10 +43,12 @@ public abstract class BaseExport(UnrealPackage pkg, UObject obj)
         UnrealConfig.Indention = "  ";
         UnrealConfig.SuppressComments = true;
         UnrealConfig.SuppressSignature = true;
+        UnrealConfig.PreBeginBracket = "\n{0}";
+        UnrealConfig.PreEndBracket = "\n{0}";
 
         try
         {
-            return ObjectHandle.Decompile();
+            return ObjectHandle.Decompile().ReplaceLineEndings();
         }
         catch (Exception ex)
         {

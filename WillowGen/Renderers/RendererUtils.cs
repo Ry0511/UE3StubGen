@@ -30,7 +30,7 @@ public static class RendererUtils
             InterfaceType _ => "Interface",
             NamedType ty => GetRefTypeName(ty.Ref),
             StaticArrayType ty => $"WrappedArray[{GetTypeName(ty.HeldType)}]",
-            UnhandledType ty => $"unresolved.{ty.HeldType.Name}", // TODO: this is just Maps and Delegates
+            UnhandledType _ => $"Any", // TODO: maps and delegates
             _ => throw new ArgumentOutOfRangeException(nameof(elem))
         };
     }

@@ -33,13 +33,14 @@ public class ExportFunction : BaseExport
         HasOptionalParms = func.FunctionFlags.HasFlag(FunctionFlag.HasOptionalParms);
 
         Parameters = func.EnumerateFields<UProperty>()
+            .Where(e => e.IsParm() && !e.PropertyFlags.HasFlag(PropertyFlag.ReturnParm))
             .Select(e => new ExportProperty(ctx, pkg, e))
-            .Where(e => !e.IsReturnParam())
             .ToList();
 
         ReturnParameter = func.EnumerateFields<UProperty>()
+            .Where(e => e.IsParm())
             .Select(e => new ExportProperty(ctx, pkg, e))
-            .FirstOrDefault(e => e.IsReturnParam());
+            .FirstOrDefault(e => e.IsReturnParam() && e.IsFunctionParameter());
     }
 
     public override string GetObjectPath()

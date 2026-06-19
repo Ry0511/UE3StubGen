@@ -11,11 +11,10 @@ public class WillowSdkGenerator : IExporter
 {
     public class FileSink(string path) : Sink(0, DefaultIndentStep)
     {
-        private readonly FileStream _fs = File.OpenWrite(path);
+        private readonly FileStream _fs = new(path, FileMode.Truncate, FileAccess.Write, FileShare.Write);
 
         protected override void Write(string text)
         {
-            // Console.Write(text);
             _fs.Write(Encoding.UTF8.GetBytes(text));
         }
 
@@ -32,10 +31,7 @@ public class WillowSdkGenerator : IExporter
 
         var stubDir = @"C:\mod_tools\ue3stubs\bl1";
 
-        foreach (
-            var cls in py.Descendants()
-                .OfType<ClassDef>()
-        )
+        foreach (var cls in py.Descendants().OfType<ClassDef>())
         {
             var path = stubDir + $@"\{cls.Module!.Name()}\" + cls.Name() + ".pyi";
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);

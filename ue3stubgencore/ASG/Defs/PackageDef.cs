@@ -2,7 +2,6 @@
 
 namespace UE3StubGenCore.ASG.Defs;
 
-// TODO: should this be a symbol?
 public class PackageDef : BaseSymbol
 {
     public ExportPackage Export { get; }

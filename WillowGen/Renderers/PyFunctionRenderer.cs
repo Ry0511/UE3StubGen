@@ -43,7 +43,9 @@ public class PyFunctionRenderer(FunctionDef elem) : IRenderable
         sink.AppendLine(".. code-block:: text");
         sink.AppendLine();
         sink.PushIndent();
-        foreach (var line in elem.Export.Decompile().Split("\n"))
+        
+        var lines = elem.Export.Decompile().Split(Environment.NewLine);
+        foreach (var line in lines)
         {
             sink.AppendLine(line);
         }
