@@ -15,7 +15,7 @@ public class WillowSdkGenerator : IExporter
 
         protected override void Write(string text)
         {
-            Console.Write(text);
+            // Console.Write(text);
             _fs.Write(Encoding.UTF8.GetBytes(text));
         }
 
@@ -29,12 +29,19 @@ public class WillowSdkGenerator : IExporter
     public void Export(ExportModel model)
     {
         MultiModuleProject py = new(model);
-        var cls = py.Descendants().OfType<ClassDef>()
-            .FirstOrDefault(e => e.Name() == "Object")!;
 
-        var sink = new FileSink($"C:\\mod_tools\\decompressed_packages\\BL1\\decompressed\\test.py");
+        var stubDir = @"C:\mod_tools\ue3stubs\bl1";
 
-        new PyClassRenderer(cls).Render(sink);
-        sink.Dispose();
+        foreach (
+            var cls in py.Descendants()
+                .OfType<ClassDef>()
+        )
+        {
+            var path = stubDir + $@"\{cls.Module!.Name()}\" + cls.Name() + ".pyi";
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            var sink = new FileSink(path);
+            new PyClassRenderer(cls).Render(sink);
+            sink.Dispose();
+        }
     }
 }
