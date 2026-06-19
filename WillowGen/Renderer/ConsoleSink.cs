@@ -1,27 +1,13 @@
 namespace WillowGen.Renderer;
 
-public class ConsoleSink : ISink
+public class ConsoleSink(int indent = 0, int step = Sink.DefaultIndentStep) : Sink(indent, step)
 {
-    private const int IndentStep = 2;
-    private int _indent;
-
-    public void Append(string text)
+    public ConsoleSink(Sink parent) : this(parent.IndentLevel, parent.IndentStep)
     {
-        Console.Write(new string(' ', _indent) + text);
     }
 
-    public void AppendLine(string text)
+    protected override void Write(string text)
     {
-        Console.WriteLine(new string(' ', _indent) + text);
-    }
-
-    public void PushIndent()
-    {
-        _indent += IndentStep;
-    }
-
-    public void PopIndent()
-    {
-        _indent -= IndentStep;
+        Console.Write(text);
     }
 }
