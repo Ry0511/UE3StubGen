@@ -1,0 +1,23 @@
+using WillowGen.Sinks;
+
+namespace WillowGen.Renderers;
+
+public class PyStubApiRenderer : IRenderable
+{
+    public void Render(Sink sink)
+    {
+        sink.AppendLine("from typing import TypeVar, TypeAlias");
+        sink.AppendLine("from unrealsdk.unreal import UObject");
+        sink.AppendLine();
+        sink.AppendLine("type name = str");
+        sink.AppendLine("type byte = int");
+        sink.AppendLine("type UnresolvedClass = UObject | None");
+        sink.AppendLine();
+        sink.AppendLine("T = TypeVar(\"T\")");
+        sink.AppendLine("Opt: TypeAlias = T | None");
+        sink.AppendLine("Out: TypeAlias = T | None");
+        sink.AppendLine("OptOut: TypeAlias = T | None");
+        sink.AppendLine("Struct: TypeAlias = T");
+        sink.AppendLine("Enum: TypeAlias = T");
+    }
+}

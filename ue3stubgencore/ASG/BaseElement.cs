@@ -48,4 +48,19 @@ public abstract class BaseElement
                 .Reverse()
         );
     }
+
+    public IEnumerable<PackageDef> AllModules()
+    {
+        if (Module == null) yield break;
+        if (Module.Parent == null)
+        {
+            yield return Module;
+            yield break;
+        }
+
+        foreach (var module in Module.Parent.Children().OfType<PackageDef>())
+        {
+            yield return module;
+        }
+    }
 }

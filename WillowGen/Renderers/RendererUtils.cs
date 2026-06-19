@@ -1,9 +1,6 @@
-using System.Runtime.InteropServices.JavaScript;
-using System.Text;
 using UE3StubGenCore.ASG;
 using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.ASG.Types;
-using WillowGen.Sinks;
 
 namespace WillowGen.Renderers;
 
@@ -44,7 +41,16 @@ public static class RendererUtils
         {
             // pretty sure all of these are classes - we can check by validating the parent is a package
             // i.e., Engine.StaticMesh -> Engine is a Package
-            return "unresolved." + elem.TargetFullPath.Split('.').Last();
+
+            var split = elem.TargetFullPath.Split('.');
+
+            // direct child of a module is a class
+            if (elem.AllModules().Any(e => e.Name() == split[^2]))
+            {
+                return "UnresolvedClass";
+            }
+
+            return "Any";
         }
 
         return elem.ResolvedTo! switch

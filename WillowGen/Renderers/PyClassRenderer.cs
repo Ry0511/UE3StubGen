@@ -137,8 +137,9 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
     private void RenderImportAndPrefaceDefinitions(Sink sink)
     {
         sink.AppendLine("from enum import IntEnum");
-        sink.AppendLine("from typing import Any, Callable, Protocol, Generic, TypeVar, override");
+        sink.AppendLine("from typing import Any, Callable, Protocol, override");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
+        sink.AppendLine("from stubgenapi import name, byte, UnresolvedClass, Struct, Enum, Out, Opt, OptOut");
 
         // TODO: refactor imports to try and reduce the number of imports per-file
         foreach (var (_, ty) in _namedTypes.Where(e => e.Value != null))
@@ -162,24 +163,5 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
             sink.AppendLine();
         }
-
-        sink.AppendLine();
-        sink.AppendLine("type name = str");
-        sink.AppendLine("type byte = int");
-
-        foreach (var (path, _) in _namedTypes.Where(e => e.Value == null))
-        {
-            sink.AppendLine($"type {path.Split(".").Last()} = Any");
-        }
-
-        sink.AppendLine("_InternalGenericType = TypeVar(\"_InternalGenericType\")");
-        sink.AppendLine();
-        sink.AppendLine();
-        sink.AppendLine("class Struct(Generic[_InternalGenericType]): ...");
-        sink.AppendLine();
-        sink.AppendLine();
-        sink.AppendLine("class Enum(Generic[_InternalGenericType]): ...");
-
-        sink.AppendLine();
     }
 }
