@@ -7,9 +7,22 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 {
     public void Render(Sink sink)
     {
-        sink.AppendLine($"class {elem.Name()}:");
+        sink.Append($"class {elem.Name()}");
 
-        // TODO: inheritance list
+        var scratch = new StringSink(sink);
+        scratch.Append(
+            elem.Super != null
+                ? $"({RendererUtils.GetRefTypeName(elem.Super)}"
+                : "(UObject"
+        );
+
+        foreach (var iface in elem.Interfaces)
+        {
+            scratch.Append(", ");
+            scratch.Append(RendererUtils.GetRefTypeName(iface));
+        }
+
+        sink.AppendLineRaw(scratch + "):");
 
         sink.PushIndent();
 
@@ -19,8 +32,6 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
             sink.Append("...");
             return;
         }
-
-        var scratch = new StringSink(sink);
 
         // render all fields
         foreach (var field in elem.Fields)
@@ -33,15 +44,12 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         if (elem.Fields.Count > 0) sink.AppendLine();
 
         // render functions
-        var lastWasStatic = false;
         foreach (var func in elem.Functions)
         {
             scratch.Reset(sink);
             RendererUtils.Create(func).Render(scratch);
             sink.AppendLineRaw(scratch.ToString());
-
-            if (lastWasStatic && !func.IsStatic) sink.AppendLine();
-            lastWasStatic = func.IsStatic;
+            if (func != elem.Functions[^1]) sink.AppendLine();
         }
 
         sink.PopIndent();

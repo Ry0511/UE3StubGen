@@ -23,11 +23,8 @@ public class PyFunctionRenderer(FunctionDef elem) : IRenderable
         var isFirstParam = elem.IsStatic;
         foreach (var param in elem.Params)
         {
-            if (!isFirstParam)
-                scratch.Append(", ");
-            else
-                isFirstParam = false;
-
+            if (!isFirstParam) scratch.Append(", ");
+            isFirstParam = false;
             RendererUtils.Create(param).Render(scratch);
         }
 
