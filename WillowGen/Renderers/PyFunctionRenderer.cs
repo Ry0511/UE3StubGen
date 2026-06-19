@@ -7,6 +7,8 @@ public class PyFunctionRenderer(FunctionDef elem) : IRenderable
 {
     public void Render(Sink sink)
     {
+        if (elem.IsOverride) sink.AppendLine("@override");
+
         if (elem.IsStatic)
         {
             sink.AppendLine("@staticmethod");

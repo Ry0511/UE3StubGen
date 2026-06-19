@@ -47,4 +47,35 @@ public class ClassDef : BaseSymbol
     {
         return Export.Name();
     }
+
+    public IEnumerable<ClassDef> InheritedTypes()
+    {
+        var seen = new HashSet<ClassDef>();
+        var stack = new Stack<ClassDef>();
+
+        Push(Super?.ResolvedTo as ClassDef);
+        foreach (var iface in Interfaces)
+        {
+            Push(iface.ResolvedTo as ClassDef);
+        }
+
+        while (stack.Count > 0)
+        {
+            var c = stack.Pop();
+            yield return c;
+
+            Push(c.Super?.ResolvedTo as ClassDef);
+            foreach (var iface in c.Interfaces)
+            {
+                Push(iface.ResolvedTo as ClassDef);
+            }
+        }
+
+        yield break;
+
+        void Push(ClassDef? c)
+        {
+            if (c != null && seen.Add(c)) stack.Push(c);
+        }
+    }
 }

@@ -137,7 +137,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
     private void RenderImportAndPrefaceDefinitions(Sink sink)
     {
         sink.AppendLine("from enum import IntEnum");
-        sink.AppendLine("from typing import Any, Callable, Protocol, Generic, TypeVar");
+        sink.AppendLine("from typing import Any, Callable, Protocol, Generic, TypeVar, override");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
 
         // TODO: refactor imports to try and reduce the number of imports per-file

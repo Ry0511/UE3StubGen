@@ -9,6 +9,7 @@ public class FunctionDef : BaseSymbol
     public TypedParamDef? ReturnValue { get; }
     public bool IsStatic => Export.IsStatic;
     public bool IsDelegate => Export.IsDelegate;
+    public bool IsOverride { get; set; }
 
     public FunctionDef(ExportFunction export, BaseElement? parent = null) : base(parent)
     {
@@ -36,5 +37,16 @@ public class FunctionDef : BaseSymbol
     public override string Name()
     {
         return Export.Name();
+    }
+
+    public bool HasSameSignatureAs(FunctionDef other)
+    {
+        if (Params.Count != other.Params.Count) return false;
+        for (var i = 0; i < Params.Count; i++)
+        {
+            if (Params[i].ParamType.Name() != other.Params[i].ParamType.Name()) return false;
+        }
+
+        return ReturnValue?.ParamType.Name() == other.ReturnValue?.ParamType.Name();
     }
 }
