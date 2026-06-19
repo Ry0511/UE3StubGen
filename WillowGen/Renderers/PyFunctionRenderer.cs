@@ -7,8 +7,6 @@ public class PyFunctionRenderer(FunctionDef elem) : IRenderable
 {
     public void Render(Sink sink)
     {
-        // TODO: parameter types and return type
-
         if (elem.IsStatic)
         {
             sink.AppendLine("@staticmethod");
@@ -29,6 +27,30 @@ public class PyFunctionRenderer(FunctionDef elem) : IRenderable
         }
 
         sink.AppendRaw(scratch.ToString());
-        sink.AppendRaw("): ...");
+
+        sink.AppendLineRaw(
+            elem.ReturnValue != null
+                ? $") -> {RendererUtils.GetTypeName(elem.ReturnValue!.ParamType)}:"
+                : ") -> None:"
+        );
+
+        sink.PushIndent();
+        sink.AppendLine("\"\"\"");
+
+        sink.AppendLine($"object path {elem.Export.GetObjectPath()}");
+        sink.AppendLine();
+
+        sink.AppendLine(".. code-block:: text");
+        sink.AppendLine();
+        sink.PushIndent();
+        foreach (var line in elem.Export.Decompile().Split("\n"))
+        {
+            sink.AppendLine(line);
+        }
+
+        sink.PopIndent();
+
+        sink.AppendLine("\"\"\"");
+        sink.PopIndent();
     }
 }

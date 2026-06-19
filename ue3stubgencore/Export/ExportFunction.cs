@@ -1,4 +1,5 @@
-﻿using UELib;
+﻿using System.Text;
+using UELib;
 using UELib.Core;
 using UELib.Flags;
 
@@ -39,5 +40,11 @@ public class ExportFunction : BaseExport
         ReturnParameter = func.EnumerateFields<UProperty>()
             .Select(e => new ExportProperty(ctx, pkg, e))
             .FirstOrDefault(e => e.IsReturnParam());
+    }
+
+    public override string GetObjectPath()
+    {
+        var pathToOuter = ObjectHandle.Outer!.GetPath();
+        return $"{pathToOuter}:{Name()}";
     }
 }

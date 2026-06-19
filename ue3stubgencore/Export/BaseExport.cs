@@ -37,4 +37,25 @@ public abstract class BaseExport(UnrealPackage pkg, UObject obj)
     {
         return ObjectHandle.Name;
     }
+
+    public string Decompile()
+    {
+        UnrealConfig.Indention = "  ";
+        UnrealConfig.SuppressComments = true;
+        UnrealConfig.SuppressSignature = true;
+
+        try
+        {
+            return ObjectHandle.Decompile();
+        }
+        catch (Exception ex)
+        {
+            return "Exception decompiling object: " + ex.Message;
+        }
+    }
+
+    public virtual string GetObjectPath()
+    {
+        return ObjectHandle.GetPath();
+    }
 }
