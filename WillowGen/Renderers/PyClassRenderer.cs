@@ -20,6 +20,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         if (elem.Fields.Count == 0 && elem.Functions.Count == 0)
         {
             scratch.Append("...");
+            sink.AppendLineRaw(scratch.ToString());
             return;
         }
 
@@ -72,27 +73,35 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
     {
         sink.Append($"class {elem.Name()}");
 
-        var scratch = new StringSink(sink);
-
-        if (elem.Super != null)
+        if (elem.Name() != "Interface")
         {
-            _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
+            var scratch = new StringSink(sink);
+
+            if (elem.Super != null)
+            {
+                _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
+            }
+
+            scratch.Append(
+                elem.Super != null
+                    ? $"({RendererUtils.GetRefTypeName(elem.Super)}"
+                    : "(UObject"
+            );
+
+            foreach (var iface in elem.Interfaces)
+            {
+                scratch.Append(", ");
+                scratch.Append(RendererUtils.GetRefTypeName(iface));
+                _namedTypes[iface.TargetFullPath] = iface.ResolvedTo;
+            }
+            
+            sink.AppendLineRaw(scratch + "):");
         }
-
-        scratch.Append(
-            elem.Super != null
-                ? $"({RendererUtils.GetRefTypeName(elem.Super)}"
-                : "(UObject"
-        );
-
-        foreach (var iface in elem.Interfaces)
+        else
         {
-            scratch.Append(", ");
-            scratch.Append(RendererUtils.GetRefTypeName(iface));
-            _namedTypes[iface.TargetFullPath] = iface.ResolvedTo;
+            sink.AppendLineRaw(":");
         }
-
-        sink.AppendLineRaw(scratch + "):");
+        
     }
 
     private void RenderClassFields(Sink sink)
@@ -129,7 +138,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         // from Core.Object import Object, Pointer
         foreach (var (_, ty) in _namedTypes.Where(e => e.Value != null))
         {
-            sink.Append($"from {ty!.Module!.Name()}");
+            sink.Append($"from bl1.{ty!.Module!.Name()}");
 
             if (ty is ClassDef cls)
             {
