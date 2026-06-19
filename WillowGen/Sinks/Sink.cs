@@ -2,7 +2,7 @@ namespace WillowGen.Sinks;
 
 public abstract class Sink(int indent, int step)
 {
-    public const int DefaultIndentStep = 2;
+    public const int DefaultIndentStep = 4;
     public int IndentLevel { get; private set; } = indent;
     public int IndentStep { get; private set; } = step;
 

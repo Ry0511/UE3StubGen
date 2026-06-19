@@ -46,7 +46,7 @@ public static class RendererUtils
 
         return elem.ResolvedTo! switch
         {
-            ClassDef ty => ty.ExportPathName(),
+            ClassDef ty => ty.Name(),
             EnumDef ty => GetImportName(ty),
             StructDef ty => GetImportName(ty),
             _ => throw new Exception("invalid type hint: " + elem.ResolvedTo.Name())
