@@ -12,4 +12,8 @@
         <ProjectReference Include="..\UE3StubGenCore\UE3StubGenCore.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Renderers\Types\" />
+    </ItemGroup>
+
 </Project>

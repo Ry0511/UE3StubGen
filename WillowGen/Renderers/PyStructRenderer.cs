@@ -8,7 +8,9 @@ public class PyStructRenderer(StructDef elem) : IRenderable
     public void Render(Sink sink)
     {
         // TODO: inheritance list
-        sink.AppendLine($"class {sink}:");
+        sink.Append($"class {sink}");
+        sink.AppendLineRaw(elem.Super == null ? "(unrealsdk.unreal.WrappedStruct):" : ":");
+
         sink.PushIndent();
 
         foreach (var field in elem.Fields)
