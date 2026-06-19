@@ -27,7 +27,7 @@ public static class RendererUtils
             ClassType _ => "UClass",
             DynArrayType ty => $"WrappedArray[{GetTypeName(ty.InnerType)}]",
             EngineBuiltinType ty => GetBuiltinType(ty),
-            InterfaceType _ => "UClass",
+            InterfaceType _ => "Interface",
             NamedType ty => GetRefTypeName(ty.Ref),
             StaticArrayType ty => $"WrappedArray[{GetTypeName(ty.HeldType)}]",
             UnhandledType ty => $"unresolved.{ty.HeldType.Name}", // TODO: this is just Maps and Delegates
