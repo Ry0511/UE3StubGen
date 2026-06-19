@@ -1,8 +1,8 @@
 using UE3StubGenCore.ASG;
 using UE3StubGenCore.ASG.Defs;
-using WillowGen.Renderer;
+using WillowGen.Sinks;
 
-namespace WillowGen.PyRenderers;
+namespace WillowGen.Renderers;
 
 public static class RendererUtils
 {

@@ -1,7 +1,7 @@
 using UE3StubGenCore.ASG.Defs;
-using WillowGen.Renderer;
+using WillowGen.Sinks;
 
-namespace WillowGen.PyRenderers;
+namespace WillowGen.Renderers;
 
 public class PyEnumRenderer(EnumDef elem) : IRenderable
 {
@@ -9,10 +9,7 @@ public class PyEnumRenderer(EnumDef elem) : IRenderable
     {
         sink.AppendLine($"class {elem.Name()}(IntEnum):");
         sink.PushIndent();
-        for (var i = 0; i < elem.Values.Count; i++)
-        {
-            sink.AppendLine($"{elem.Values[i]} = {i}");
-        }
+        for (var i = 0; i < elem.Values.Count; i++) sink.AppendLine($"{elem.Values[i]} = {i}");
 
         sink.PopIndent();
     }

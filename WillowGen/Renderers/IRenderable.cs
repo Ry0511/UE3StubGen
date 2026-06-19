@@ -1,4 +1,4 @@
-namespace WillowGen.Renderer;
+namespace WillowGen.Sinks;
 
 public interface IRenderable
 {

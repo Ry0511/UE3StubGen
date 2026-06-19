@@ -1,7 +1,7 @@
 using UE3StubGenCore.ASG.Defs;
-using WillowGen.Renderer;
+using WillowGen.Sinks;
 
-namespace WillowGen.PyRenderers;
+namespace WillowGen.Renderers;
 
 public class PyFunctionRenderer(FunctionDef elem) : IRenderable
 {
@@ -20,17 +20,13 @@ public class PyFunctionRenderer(FunctionDef elem) : IRenderable
         }
 
         var scratch = new StringSink();
-        bool isFirstParam = elem.IsStatic;
+        var isFirstParam = elem.IsStatic;
         foreach (var param in elem.Params)
         {
             if (!isFirstParam)
-            {
                 scratch.Append(", ");
-            }
             else
-            {
                 isFirstParam = false;
-            }
 
             RendererUtils.Create(param).Render(scratch);
         }

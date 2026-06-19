@@ -1,4 +1,4 @@
-namespace WillowGen.Renderer;
+namespace WillowGen.Sinks;
 
 public class ConsoleSink(int indent = 0, int step = Sink.DefaultIndentStep) : Sink(indent, step)
 {

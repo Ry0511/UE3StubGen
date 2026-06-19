@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\UE3StubGenCore\UE3StubGenCore.csproj" />
+        <ProjectReference Include="..\UE3StubGenCore\UE3StubGenCore.csproj"/>
     </ItemGroup>
 
 </Project>

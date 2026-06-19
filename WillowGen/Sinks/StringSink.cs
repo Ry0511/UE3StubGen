@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace WillowGen.Renderer;
+namespace WillowGen.Sinks;
 
 public class StringSink(int level = 0, int step = Sink.DefaultIndentStep) : Sink(level, step)
 {
@@ -15,7 +15,19 @@ public class StringSink(int level = 0, int step = Sink.DefaultIndentStep) : Sink
         _sb.Append(text);
     }
 
-    public override string ToString() => _sb.ToString();
+    public override string ToString()
+    {
+        return _sb.ToString();
+    }
 
-    public void Clear() => _sb.Clear();
+    public void Clear()
+    {
+        _sb.Clear();
+    }
+
+    public override void Reset(Sink other)
+    {
+        base.Reset(other);
+        Clear();
+    }
 }

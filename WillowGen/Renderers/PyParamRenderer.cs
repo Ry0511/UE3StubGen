@@ -1,7 +1,7 @@
 using UE3StubGenCore.ASG.Defs;
-using WillowGen.Renderer;
+using WillowGen.Sinks;
 
-namespace WillowGen.PyRenderers;
+namespace WillowGen.Renderers;
 
 public class PyParamRenderer(TypedParamDef elem) : IRenderable
 {
