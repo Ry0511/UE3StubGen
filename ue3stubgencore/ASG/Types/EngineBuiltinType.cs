@@ -2,26 +2,28 @@ using UELib.Core;
 
 namespace UE3StubGenCore.ASG.Types;
 
-public class EngineBuiltinType : BaseType
+public enum EngineBuiltin
 {
-    public string FriendlyName { get; }
+    Integer,
+    Float,
+    Bool,
+    Byte,
+    Name,
+    String
+}
 
-    public EngineBuiltinType(UProperty prop, BaseElement? parent = null) : base(parent)
+public class EngineBuiltinType(UProperty prop, BaseElement? parent = null) : BaseType(parent)
+{
+    public EngineBuiltin Type { get; } = prop switch
     {
-        FriendlyName = prop switch
-        {
-            UIntProperty
-                or UFloatProperty
-                or UBoolProperty
-                or UByteProperty
-                or UNameProperty
-                or UStrProperty => prop.GetFriendlyType(),
-            _ => throw new Exception("property is not a valid primitive type: " + prop.GetType())
-        };
-    }
+        UIntProperty => EngineBuiltin.Integer,
+        UFloatProperty => EngineBuiltin.Float,
+        UBoolProperty => EngineBuiltin.Bool,
+        UByteProperty => EngineBuiltin.Byte,
+        UNameProperty => EngineBuiltin.Name,
+        UStrProperty => EngineBuiltin.String,
+        _ => throw new Exception("property is not a valid primitive type: " + prop.GetType())
+    };
 
-    public override string Name()
-    {
-        return FriendlyName;
-    }
+    public override string Name() => Type.ToString();
 }
