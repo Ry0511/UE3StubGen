@@ -9,7 +9,7 @@ namespace WillowGen;
 
 public class WillowSdkGenerator : IExporter
 {
-    public class FileSink(string path) : Sink(0, 2)
+    public class FileSink(string path) : Sink(0, DefaultIndentStep)
     {
         private readonly FileStream _fs = File.OpenWrite(path);
 
@@ -21,6 +21,7 @@ public class WillowSdkGenerator : IExporter
 
         public void Dispose()
         {
+            _fs.Flush();
             _fs.Dispose();
         }
     }
@@ -32,6 +33,7 @@ public class WillowSdkGenerator : IExporter
             .FirstOrDefault(e => e.Name() == "Object")!;
 
         var sink = new FileSink($"C:\\mod_tools\\decompressed_packages\\BL1\\decompressed\\test.py");
+
         new PyClassRenderer(cls).Render(sink);
         sink.Dispose();
     }
