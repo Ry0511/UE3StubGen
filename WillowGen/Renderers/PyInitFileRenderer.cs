@@ -9,7 +9,11 @@ public class PyInitFileRenderer(PackageDef elem) : IRenderable
     {
         foreach (var cls in elem.Classes)
         {
-            sink.AppendLine($"from bl1.{elem.Name()}.{cls.Name()} import {cls.Name()}");
+            sink.Append($"from bl1.{elem.Name()}.{cls.Name()} import {cls.Name()}");
+            foreach (var @enum in cls.Enums) sink.AppendRaw(", " + @enum.Name());
+            foreach (var @struct in cls.Structs) sink.AppendRaw(", " + @struct.Name());
+            foreach (var dele in cls.Functions.Where(e => e.IsDelegate)) sink.AppendRaw(", _delegate_" + dele.Name());
+            sink.AppendLine();
         }
 
         sink.AppendLine();
@@ -18,6 +22,9 @@ public class PyInitFileRenderer(PackageDef elem) : IRenderable
         foreach (var cls in elem.Classes)
         {
             sink.AppendLine($"\"{cls.Name()}\",");
+            foreach (var @enum in cls.Enums) sink.AppendLine($"\"{@enum.Name()}\",");
+            foreach (var @struct in cls.Structs) sink.AppendLine($"\"{@struct.Name()}\",");
+            foreach (var dele in cls.Functions.Where(e => e.IsDelegate)) sink.AppendLine($"\"_delegate_{dele.Name()}\",");
         }
 
         sink.PopIndent();
