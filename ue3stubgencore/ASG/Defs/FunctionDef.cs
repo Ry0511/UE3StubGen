@@ -10,6 +10,8 @@ public class FunctionDef : BaseSymbol
     public bool IsStatic => Export.IsStatic;
     public bool IsDelegate => Export.IsDelegate;
     public bool IsOverride { get; set; }
+    public bool HasOutParms => Export.HasOutParms;
+    public bool HasOptionalParms => Export.HasOptionalParms;
 
     public FunctionDef(ExportFunction export, BaseElement? parent = null) : base(parent)
     {

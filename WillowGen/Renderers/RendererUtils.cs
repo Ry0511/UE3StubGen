@@ -1,7 +1,6 @@
 using UE3StubGenCore.ASG;
 using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.ASG.Types;
-using UELib.Core;
 
 namespace WillowGen.Renderers;
 
@@ -24,9 +23,7 @@ public static class RendererUtils
     {
         return elem switch
         {
-            ClassType ty => ty.MetaClass != null
-                ? $"Class[{GetRefTypeName(ty.MetaClass!.Ref, scope)}]"
-                : "UClass",
+            ClassType _ => "UClass", // maybe expose the MetaClass since Class<bound=T> might be useful?
             DynArrayType ty => $"WrappedArray[{GetTypeName(ty.InnerType, scope)}]",
             EngineBuiltinType ty => GetBuiltinType(ty),
             InterfaceType ty => GetTypeName(ty.InterfaceClass, scope),

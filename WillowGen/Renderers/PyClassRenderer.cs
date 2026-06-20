@@ -84,7 +84,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
             if (!reserved.Contains(name)) continue;
 
             // Name -> NameA, NameB, ... (realistically never exceeds one or two)
-            string alias = name + 'A';
+            var alias = name + 'A';
             for (var c = 'B'; c != 'Z'; c++)
             {
                 if (taken.Add(alias)) break;
@@ -125,34 +125,27 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
     {
         sink.Append($"class {elem.Name()}");
 
-        if (elem.Name() != "Interface")
+        var scratch = new StringSink(sink);
+
+        if (elem.Super != null)
         {
-            var scratch = new StringSink(sink);
-
-            if (elem.Super != null)
-            {
-                _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
-            }
-
-            scratch.Append(
-                elem.Super != null
-                    ? $"({RendererUtils.GetRefTypeName(elem.Super, _scope)}"
-                    : "(UObject"
-            );
-
-            foreach (var iface in elem.Interfaces)
-            {
-                scratch.Append(", ");
-                scratch.Append(RendererUtils.GetRefTypeName(iface, _scope));
-                _namedTypes[iface.TargetFullPath] = iface.ResolvedTo;
-            }
-
-            sink.AppendLineRaw(scratch + "):");
+            _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
         }
-        else
+
+        scratch.Append(
+            elem.Super != null
+                ? $"({RendererUtils.GetRefTypeName(elem.Super, _scope)}"
+                : "(UObject"
+        );
+
+        foreach (var iface in elem.Interfaces)
         {
-            sink.AppendLineRaw(":");
+            scratch.Append(", ");
+            scratch.Append(RendererUtils.GetRefTypeName(iface, _scope));
+            _namedTypes[iface.TargetFullPath] = iface.ResolvedTo;
         }
+
+        sink.AppendLineRaw(scratch + "):");
     }
 
     private void RenderClassFields(Sink sink)
@@ -181,9 +174,9 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
     private void RenderImportAndPrefaceDefinitions(Sink sink)
     {
         sink.AppendLine("from enum import IntEnum");
-        sink.AppendLine("from typing import Any, Callable, Protocol, override");
+        sink.AppendLine("from typing import Any, Protocol, override");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
-        sink.AppendLine("from stubgenapi import name, byte, UnresolvedClass, Class");
+        sink.AppendLine("from stubgenapi import name, byte, UnresolvedClass");
 
         var imports = new SortedDictionary<string, SortedSet<string>>(StringComparer.Ordinal);
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))
