@@ -3,7 +3,7 @@ using WillowGen.Sinks;
 
 namespace WillowGen.Renderers;
 
-public class PyFunctionRenderer(FunctionDef elem) : IRenderable
+public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderable
 {
     public void Render(Sink sink)
     {
@@ -25,14 +25,14 @@ public class PyFunctionRenderer(FunctionDef elem) : IRenderable
         {
             if (!isFirstParam) scratch.Append(", ");
             isFirstParam = false;
-            RendererUtils.Create(param).Render(scratch);
+            RendererUtils.Create(param, scope).Render(scratch);
         }
 
         sink.AppendRaw(scratch.ToString());
 
         sink.AppendLineRaw(
             elem.ReturnValue != null
-                ? $") -> {RendererUtils.GetTypeName(elem.ReturnValue!.ParamType)}:"
+                ? $") -> {RendererUtils.GetTypeName(elem.ReturnValue!.ParamType, scope)}:"
                 : ") -> None:"
         );
 

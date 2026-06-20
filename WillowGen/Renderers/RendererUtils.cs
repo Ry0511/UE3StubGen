@@ -1,41 +1,42 @@
 using UE3StubGenCore.ASG;
 using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.ASG.Types;
+using UELib.Core;
 
 namespace WillowGen.Renderers;
 
 public static class RendererUtils
 {
-    public static IRenderable Create(BaseElement elem)
+    public static IRenderable Create(BaseElement elem, NamingScope scope)
     {
         return elem switch
         {
             ClassDef e => new PyClassRenderer(e),
-            StructDef e => new PyStructRenderer(e),
+            StructDef e => new PyStructRenderer(e, scope),
             EnumDef e => new PyEnumRenderer(e),
-            FunctionDef e => e.IsDelegate ? new PyDelegateRenderer(e) : new PyFunctionRenderer(e),
-            TypedParamDef e => new PyParamRenderer(e),
+            FunctionDef e => e.IsDelegate ? new PyDelegateRenderer(e, scope) : new PyFunctionRenderer(e, scope),
+            TypedParamDef e => new PyParamRenderer(e, scope),
             _ => throw new Exception("unsupported element type: " + elem.GetType().Name + "")
         };
     }
 
-    public static string GetTypeName(BaseType elem)
+    public static string GetTypeName(BaseType elem, NamingScope scope)
     {
         return elem switch
         {
             ClassType _ => "UClass",
-            DynArrayType ty => $"WrappedArray[{GetTypeName(ty.InnerType)}]",
+            DynArrayType ty => $"WrappedArray[{GetTypeName(ty.InnerType, scope)}]",
             EngineBuiltinType ty => GetBuiltinType(ty),
-            InterfaceType ty => GetTypeName(ty.InterfaceClass),
-            NamedType ty => GetRefTypeName(ty.Ref),
-            StaticArrayType ty => $"WrappedArray[{GetTypeName(ty.HeldType)}]",
-            DelegateType ty => CreateDelegateSignature(ty),
+            InterfaceType ty => GetTypeName(ty.InterfaceClass, scope),
+            NamedType ty => GetRefTypeName(ty.Ref, scope),
+            StaticArrayType ty => $"WrappedArray[{GetTypeName(ty.HeldType, scope)}]",
+            DelegateType ty => "name | " + CreateDelegateSignature(ty, scope),
             UnhandledType _ => "Any", // maps fall into this category
             _ => throw new ArgumentOutOfRangeException(nameof(elem))
         };
     }
 
-    public static string GetRefTypeName(RefNode elem)
+    public static string GetRefTypeName(RefNode elem, NamingScope scope)
     {
         if (elem.ResolvedTo == null)
         {
@@ -55,21 +56,11 @@ public static class RendererUtils
 
         return elem.ResolvedTo! switch
         {
-            ClassDef ty => ty.Name(),
-            EnumDef ty => GetImportName(ty),
-            StructDef ty => GetImportName(ty),
+            ClassDef ty => scope.LocalName(ty, ty.Name()),
+            EnumDef ty => $"Enum[{scope.LocalName(ty, ty.Name())}]",
+            StructDef ty => $"Struct[{scope.LocalName(ty, ty.Name())}]",
             _ => throw new Exception("invalid type hint: " + elem.ResolvedTo.Name())
         };
-
-        static string GetImportName(BaseSymbol elem)
-        {
-            return elem switch
-            {
-                EnumDef ty => $"Enum[{ty.Name()}]",
-                StructDef ty => $"Struct[{ty.Name()}]",
-                _ => throw new Exception("unexpected type: " + elem.GetType().Name)
-            };
-        }
     }
 
     public static string GetBuiltinType(EngineBuiltinType elem)
@@ -86,7 +77,7 @@ public static class RendererUtils
         };
     }
 
-    public static string CreateDelegateSignature(DelegateType elem)
+    public static string CreateDelegateSignature(DelegateType elem, NamingScope scope)
     {
         if (elem.Function.ResolvedTo == null)
         {
@@ -98,6 +89,16 @@ public static class RendererUtils
             throw new Exception("invalid delegate");
         }
 
-        return "name | " + "_delegate_" + func.Name();
+        return CreateDelegateSignature(func, scope);
+    }
+
+    public static string CreateDelegateSignature(FunctionDef func, NamingScope? scope = null)
+    {
+        if (scope == null)
+        {
+            return func.Name() + "Delegate";
+        }
+
+        return scope.LocalName(func, func.Name() + "Delegate");
     }
 }

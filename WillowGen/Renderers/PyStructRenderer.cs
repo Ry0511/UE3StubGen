@@ -3,7 +3,7 @@ using WillowGen.Sinks;
 
 namespace WillowGen.Renderers;
 
-public class PyStructRenderer(StructDef elem) : IRenderable
+public class PyStructRenderer(StructDef elem, NamingScope scope) : IRenderable
 {
     public void Render(Sink sink)
     {
@@ -11,7 +11,7 @@ public class PyStructRenderer(StructDef elem) : IRenderable
         sink.AppendLineRaw(
             elem.Super == null
                 ? "(WrappedStruct):"
-                : $"({RendererUtils.GetRefTypeName(elem.Super)}):"
+                : $"({RendererUtils.GetRefTypeName(elem.Super, scope)}):"
         );
 
         sink.PushIndent();
@@ -19,7 +19,7 @@ public class PyStructRenderer(StructDef elem) : IRenderable
         foreach (var field in elem.Fields)
         {
             var scratch = new StringSink();
-            RendererUtils.Create(field).Render(scratch);
+            RendererUtils.Create(field, scope).Render(scratch);
             sink.AppendLine(scratch.ToString());
         }
 
