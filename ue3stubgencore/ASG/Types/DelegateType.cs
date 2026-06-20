@@ -1,3 +1,5 @@
+using System.Text;
+using UE3StubGenCore.ASG.Defs;
 using UELib.Core;
 
 namespace UE3StubGenCore.ASG.Types;
@@ -18,10 +20,34 @@ public class DelegateType : BaseType
         Function = new RefNode(prop.Function.GetPath(), this);
     }
 
-    public override string Name() => $"delegate<{Function.ResolvedTo?.Name() ?? "NULL"}>";
-
     public override IEnumerable<BaseElement> Children()
     {
         yield return Function;
+    }
+
+    public override string Name()
+    {
+        if (Function.ResolvedTo is not FunctionDef func)
+        {
+            return $"Delegate<{Function.GetHashCode()}>";
+        }
+
+        // TODO: delegates can be treated as other delegates of the same shape i.e.,
+        //    delegate A(int B) == delegate B(int C)
+        //  but the Name() from the export will return A or B so it can't be used here as we use
+        //  this to determine 'is-same'...
+        StringBuilder sb = new();
+        sb.Append("Delegate,");
+        sb.Append($"{func.Params.Count},");
+        sb.Append('(');
+
+        foreach (var param in func.Params)
+        {
+            sb.Append(param.Name() + ";" + param.ParamType.Name());
+            sb.Append(',');
+        }
+
+        sb.Append(')');
+        return sb.ToString();
     }
 }

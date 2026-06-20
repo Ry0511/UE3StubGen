@@ -9,9 +9,13 @@ public class FunctionDef : BaseSymbol
     public TypedParamDef? ReturnValue { get; }
     public bool IsStatic => Export.IsStatic;
     public bool IsDelegate => Export.IsDelegate;
-    public bool IsOverride { get; set; }
     public bool HasOutParms => Export.HasOutParms;
     public bool HasOptionalParms => Export.HasOptionalParms;
+    
+    public FunctionDef? Overrides { get; private set; }
+    public bool IsOverride { get; private set; }
+    public bool IsNaughtyOverride { get; private set; }
+    public HashSet<FunctionDef> Overriders { get; } = [];
 
     public FunctionDef(ExportFunction export, BaseElement? parent = null) : base(parent)
     {
@@ -43,12 +47,41 @@ public class FunctionDef : BaseSymbol
 
     public bool HasSameSignatureAs(FunctionDef other)
     {
-        if (Params.Count != other.Params.Count) return false;
+        if (Params.Count != other.Params.Count)
+        {
+            return false;
+        }
+
         for (var i = 0; i < Params.Count; i++)
         {
-            if (Params[i].ParamType.Name() != other.Params[i].ParamType.Name()) return false;
+            if (Params[i].ParamType.Name() != other.Params[i].ParamType.Name())
+            {
+                return false;
+            }
         }
 
         return ReturnValue?.ParamType.Name() == other.ReturnValue?.ParamType.Name();
+    }
+
+    public bool ParameterNamesMatch(FunctionDef other)
+    {
+        return Params.Select(p => p.Name()).SequenceEqual(other.Params.Select(p => p.Name()));
+    }
+
+    public override void PostEvaluate(BaseElement root)
+    {
+        if (Parent is not ClassDef cls)
+        {
+            return;
+        }
+
+        var parentFunc = cls.InheritedTypes()
+            .SelectMany(inherited => inherited.Functions)
+            .FirstOrDefault(i => i.Name() == Name() && i.HasSameSignatureAs(this));
+
+        Overrides = parentFunc;
+        IsOverride = Overrides != null;
+        IsNaughtyOverride = IsOverride && !ParameterNamesMatch(parentFunc!);
+        parentFunc?.Overriders.Add(this);
     }
 }

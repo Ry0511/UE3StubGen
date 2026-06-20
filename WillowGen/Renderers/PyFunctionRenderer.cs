@@ -7,7 +7,15 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 {
     public void Render(Sink sink)
     {
-        if (elem.IsOverride) sink.AppendLine("@override");
+        if (elem.IsOverride)
+        {
+            if (elem.IsNaughtyOverride)
+            {
+                sink.AppendLine("# naughty override");
+            }
+
+            sink.AppendLine("@override");
+        }
 
         if (elem.IsStatic)
         {
@@ -28,6 +36,11 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             RendererUtils.Create(param, scope).Render(scratch);
         }
 
+        if (elem.Overriders.Any(e => e.IsNaughtyOverride))
+        {
+            scratch.Append(", /");
+        }
+
         sink.AppendRaw(scratch.ToString());
 
         sink.AppendLineRaw(
@@ -45,7 +58,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         sink.AppendLine("\"\"\"");
         sink.AppendLine($"Unreal Path: `{elem.Export.GetObjectPath()}`");
         sink.AppendLine();
-        
+
         // state all the optional/out parameters up front
         if (elem.HasOptionalParms || elem.HasOutParms)
         {
@@ -58,10 +71,11 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
                 if (param.IsOutParam) modifiers += "out ";
                 sink.AppendLine($"{modifiers}{param.Name()}");
             }
+
             sink.PopIndent();
             sink.AppendLine();
         }
-        
+
         // Render the script body as a code block, use C style highlighting when supported
         sink.AppendLine(".. Decompiled UnrealScript:: c");
         sink.PushIndent();

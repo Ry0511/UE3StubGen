@@ -39,16 +39,6 @@ public abstract class BaseElement
         }
     }
 
-    public string BuildName()
-    {
-        return string.Join(".",
-            Ancestors(true)
-                .OfType<INameable>()
-                .Select(e => e.Name())
-                .Reverse()
-        );
-    }
-
     public IEnumerable<PackageDef> AllModules()
     {
         if (Module == null) yield break;
@@ -62,5 +52,10 @@ public abstract class BaseElement
         {
             yield return module;
         }
+    }
+    
+    public virtual void PostEvaluate(BaseElement root)
+    {
+        
     }
 }

@@ -1,5 +1,6 @@
 using UE3StubGenCore.ASG;
 using UE3StubGenCore.ASG.Defs;
+using UE3StubGenCore.ASG.Types;
 using WillowGen.Sinks;
 
 namespace WillowGen.Renderers;
@@ -56,7 +57,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         sink.AppendLineRaw(preface.ToString());
         sink.AppendLineRaw(scratch.ToString());
     }
-    
+
     private static string LocalBaseName(BaseSymbol ty)
     {
         return ty is FunctionDef { IsDelegate: true } func
@@ -150,22 +151,23 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
     private void RenderClassFields(Sink sink)
     {
-        var scratch = new StringSink(sink);
+        var scratch = new StringSink();
         foreach (var field in elem.Fields)
         {
-            scratch.Reset(sink);
-            RendererUtils.Create(field, _scope).Render(scratch);
-            sink.AppendLineRaw(scratch.ToString());
+            scratch.Clear();
+            if (field.ParamType is DelegateType) scratch.Append("# ");
+            new PyParamRenderer(field, _scope).Render(scratch);
+            sink.AppendLine(scratch.ToString());
         }
     }
 
     private void RenderClassFunctions(Sink sink)
     {
         var scratch = new StringSink(sink);
-        foreach (var func in elem.Functions.Where(e => !e.IsDelegate))
+        foreach (var func in elem.Functions)
         {
             scratch.Reset(sink);
-            RendererUtils.Create(func, _scope).Render(scratch);
+            new PyFunctionRenderer(func, _scope).Render(scratch);
             sink.AppendLineRaw(scratch.ToString());
             if (func != elem.Functions[^1]) sink.AppendLine();
         }
@@ -176,7 +178,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         sink.AppendLine("from enum import IntEnum");
         sink.AppendLine("from typing import Any, Protocol, override");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
-        sink.AppendLine("from stubgenapi import name, byte, UnresolvedClass");
+        sink.AppendLine("from bl1.stubgenapi import name, byte, UnresolvedClass");
 
         var imports = new SortedDictionary<string, SortedSet<string>>(StringComparer.Ordinal);
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))

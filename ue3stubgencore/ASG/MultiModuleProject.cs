@@ -12,7 +12,10 @@ public class MultiModuleProject : BaseElement
     {
         Modules = model.Packages.Select(elem => new PackageDef(elem, this)).ToList();
         LoadSymbols();
-        LinkOverrides();
+        foreach (var elem in Descendants())
+        {
+            elem.PostEvaluate(this);
+        }
     }
 
     public void LoadSymbols()
@@ -28,19 +31,6 @@ public class MultiModuleProject : BaseElement
         {
             var x = Symbols.Resolve(symbolRef);
             symbolRef.ResolvedTo = x;
-        }
-    }
-
-    public void LinkOverrides()
-    {
-        foreach (var cls in Descendants().OfType<ClassDef>())
-        foreach (var fn in cls.Functions.Where(f => !f.IsDelegate))
-        {
-            fn.IsOverride = cls.InheritedTypes().Any(inherited =>
-                inherited.Functions.Any(b =>
-                    !b.IsDelegate
-                    && string.Equals(b.Name(), fn.Name(), StringComparison.OrdinalIgnoreCase)
-                    && b.HasSameSignatureAs(fn)));
         }
     }
 
