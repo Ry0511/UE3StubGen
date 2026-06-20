@@ -58,25 +58,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         sink.AppendLine("\"\"\"");
         sink.AppendLine($"Unreal Path: `{elem.Export.GetObjectPath()}`");
         sink.AppendLine();
-
-        // state all the optional/out parameters up front
-        if (elem.HasOptionalParms || elem.HasOutParms)
-        {
-            sink.AppendLine(".. Optional/Output Parameters:: text");
-            sink.PushIndent();
-            foreach (var param in elem.Params.Where(p => p.IsOptionalParam || p.IsOutParam))
-            {
-                var modifiers = "";
-                if (param.IsOptionalParam) modifiers += "optional ";
-                if (param.IsOutParam) modifiers += "out ";
-                sink.AppendLine($"{modifiers}{PyIdentifier.Sanitize(param.Name())}");
-            }
-
-            sink.PopIndent();
-            sink.AppendLine();
-        }
-
-        // Render the script body as a code block, use C style highlighting when supported
+        
         sink.AppendLine(".. Decompiled UnrealScript:: c");
         sink.PushIndent();
         var lines = elem.Export.Decompile().Split(Environment.NewLine);

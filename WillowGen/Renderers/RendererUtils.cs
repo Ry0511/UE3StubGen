@@ -45,7 +45,10 @@ public static class RendererUtils
             var split = elem.TargetFullPath.Split('.');
 
             // direct child of a module is a class
-            if (elem.AllModules().Any(e => e.Name() == split[^2])) return "UnresolvedClass";
+            if (elem.AllModules().Any(e => e.Name() == split[^2]))
+            {
+                return "UnresolvedClass";
+            }
 
             return "Any";
         }
