@@ -1,4 +1,5 @@
 using UE3StubGenCore.ASG.Defs;
+using UE3StubGenCore.ASG.Types;
 using WillowGen.Sinks;
 
 namespace WillowGen.Renderers;
@@ -15,8 +16,23 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
         }
         else
         {
-            sink.Append($"{elem.Name()}: {type}");
-            if (elem.IsFunctionParam && (elem.IsOutParam || elem.IsOptionalParam)) sink.AppendRaw(" | None");
+            sink.Append($"{elem.Name()}: ");
+
+            if (elem.IsOptionalParam) sink.AppendRaw("Opt");
+            if (elem.IsOutParam) sink.AppendRaw("Out");
+
+            if (elem.IsOptionalParam || elem.IsOutParam)
+            {
+                sink.AppendRaw($"[{type}]");
+            }
+            else
+            {
+                sink.AppendRaw(type);
+                if (elem.ParamType is NamedType nt && nt.IsClassRef())
+                {
+                    sink.AppendRaw(" | None");
+                }
+            }
         }
     }
 }

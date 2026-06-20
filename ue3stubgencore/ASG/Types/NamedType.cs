@@ -1,3 +1,5 @@
+using UE3StubGenCore.ASG.Defs;
+
 namespace UE3StubGenCore.ASG.Types;
 
 public class NamedType : BaseType
@@ -17,5 +19,12 @@ public class NamedType : BaseType
     public override string Name()
     {
         return Ref.TargetFullPath;
+    }
+
+    public bool IsClassRef()
+    {
+        if (Ref.ResolvedTo == null) return false;
+        var r = Ref.ResolvedTo;
+        return r is ClassDef;
     }
 }

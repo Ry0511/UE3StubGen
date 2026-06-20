@@ -171,7 +171,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         sink.AppendLine("from enum import IntEnum");
         sink.AppendLine("from typing import Any, Protocol, override");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
-        sink.AppendLine("from bl1.stubgenapi import name, byte, UnresolvedClass");
+        sink.AppendLine("from bl1.stubgenapi import name, byte, Opt, Out, OptOut, UnresolvedClass");
 
         var imports = new SortedDictionary<string, SortedSet<string>>(StringComparer.Ordinal);
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))
