@@ -36,19 +36,42 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
                 : ") -> None:"
         );
 
+        RenderDocumentation(sink);
+    }
+
+    private void RenderDocumentation(Sink sink)
+    {
         sink.PushIndent();
         sink.AppendLine("\"\"\"");
-
-        sink.AppendLine($"object path {elem.Export.GetObjectPath()}");
+        sink.AppendLine($"Unreal Path: `{elem.Export.GetObjectPath()}`");
         sink.AppendLine();
-
-        sink.AppendLine(".. code-block:: text");
-        sink.AppendLine();
-        sink.PushIndent();
         
+        // state all the optional/out parameters up front
+        if (elem.HasOptionalParms || elem.HasOutParms)
+        {
+            sink.AppendLine(".. Optional/Output Parameters:: text");
+            sink.PushIndent();
+            foreach (var param in elem.Params.Where(p => p.IsOptionalParam || p.IsOutParam))
+            {
+                var modifiers = "";
+                if (param.IsOptionalParam) modifiers += "optional ";
+                if (param.IsOutParam) modifiers += "out ";
+                sink.AppendLine($"{modifiers}{param.Name()}");
+            }
+            sink.PopIndent();
+            sink.AppendLine();
+        }
+        
+        // Render the script body as a code block, use C style highlighting when supported
+        sink.AppendLine(".. Decompiled UnrealScript:: c");
+        sink.PushIndent();
         var lines = elem.Export.Decompile().Split(Environment.NewLine);
+        var bLastWasBlank = false;
         foreach (var line in lines)
         {
+            var isBlank = line.Trim().Length == 0;
+            if (isBlank && bLastWasBlank) continue;
+            bLastWasBlank = isBlank;
             sink.AppendLine(line);
         }
 

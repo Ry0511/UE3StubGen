@@ -7,33 +7,19 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
 {
     public void Render(Sink sink)
     {
+        var type = RendererUtils.GetTypeName(elem.ParamType, scope);
+
         if (elem.Parent is ClassDef cls && cls.Name() == "Object")
         {
-            sink.Append($"# {elem.Name()}: {RendererUtils.GetTypeName(elem.ParamType, scope)}");
-        }
-        else if (elem.IsFunctionParam)
-        {
-            // TODO: try to simplify this a bit since its all the same
-            if (elem.IsOptionalParam && elem.IsOutParam)
-            {
-                sink.Append($"{elem.Name()}: OptOut[{RendererUtils.GetTypeName(elem.ParamType, scope)}]");
-            }
-            else if (elem.IsOptionalParam)
-            {
-                sink.Append($"{elem.Name()}: Opt[{RendererUtils.GetTypeName(elem.ParamType, scope)}]");
-            }
-            else if (elem.IsOutParam)
-            {
-                sink.Append($"{elem.Name()}: Out[{RendererUtils.GetTypeName(elem.ParamType, scope)}]");
-            }
-            else
-            {
-                sink.Append($"{elem.Name()}: {RendererUtils.GetTypeName(elem.ParamType, scope)}");
-            }
+            sink.Append($"# {elem.Name()}: {type}");
         }
         else
         {
-            sink.Append($"{elem.Name()}: {RendererUtils.GetTypeName(elem.ParamType, scope)}");
+            sink.Append($"{elem.Name()}: {type}");
+            if (elem.IsFunctionParam && (elem.IsOutParam || elem.IsOptionalParam))
+            {
+                sink.AppendRaw(" | None");
+            }
         }
     }
 }
