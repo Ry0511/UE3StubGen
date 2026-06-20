@@ -48,14 +48,10 @@ public abstract class BaseElement
             yield break;
         }
 
-        foreach (var module in Module.Parent.Children().OfType<PackageDef>())
-        {
-            yield return module;
-        }
+        foreach (var module in Module.Parent.Children().OfType<PackageDef>()) yield return module;
     }
-    
+
     public virtual void PostEvaluate(BaseElement root)
     {
-        
     }
 }

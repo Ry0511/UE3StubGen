@@ -17,18 +17,14 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
         // collect every referenced type up front so import aliases are known before we render hints
         foreach (var imp in elem.Descendants().OfType<RefNode>())
-        {
             if (
                 imp.ResolvedTo == null
                 || imp.ResolvedTo
-                    .Ancestors(includeSelf: true)
+                    .Ancestors(true)
                     .OfType<ClassDef>()
                     .All(e => e.Name() != elem.Name())
             )
-            {
                 _namedTypes[imp.TargetFullPath] = imp.ResolvedTo;
-            }
-        }
 
         BuildNamingScope();
 
@@ -128,10 +124,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
         var scratch = new StringSink(sink);
 
-        if (elem.Super != null)
-        {
-            _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
-        }
+        if (elem.Super != null) _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
 
         scratch.Append(
             elem.Super != null
@@ -188,17 +181,11 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
             var local = _localNames.GetValueOrDefault(path, name);
             var symbol = local == name ? name : $"{name} as {local}";
 
-            if (!imports.TryGetValue(module, out var symbols))
-            {
-                imports[module] = symbols = new SortedSet<string>(StringComparer.Ordinal);
-            }
+            if (!imports.TryGetValue(module, out var symbols)) imports[module] = symbols = new SortedSet<string>(StringComparer.Ordinal);
 
             symbols.Add(symbol);
         }
 
-        foreach (var (module, symbols) in imports)
-        {
-            sink.AppendLine($"from {module} import {string.Join(", ", symbols)}");
-        }
+        foreach (var (module, symbols) in imports) sink.AppendLine($"from {module} import {string.Join(", ", symbols)}");
     }
 }

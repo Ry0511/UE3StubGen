@@ -12,10 +12,7 @@ public class PyInitFileRenderer(PackageDef elem) : IRenderable
             sink.Append($"from bl1.{elem.Name()}.{cls.Name()} import {cls.Name()}");
             foreach (var @enum in cls.Enums) sink.AppendRaw(", " + @enum.Name());
             foreach (var @struct in cls.Structs) sink.AppendRaw(", " + @struct.Name());
-            foreach (var dele in cls.Functions.Where(e => e.IsDelegate))
-            {
-                sink.AppendRaw(", " + RendererUtils.CreateDelegateSignature(dele));
-            }
+            foreach (var dele in cls.Functions.Where(e => e.IsDelegate)) sink.AppendRaw(", " + RendererUtils.CreateDelegateSignature(dele));
 
             sink.AppendLine();
         }
@@ -28,10 +25,7 @@ public class PyInitFileRenderer(PackageDef elem) : IRenderable
             sink.AppendLine($"\"{cls.Name()}\",");
             foreach (var @enum in cls.Enums) sink.AppendLine($"\"{@enum.Name()}\",");
             foreach (var @struct in cls.Structs) sink.AppendLine($"\"{@struct.Name()}\",");
-            foreach (var dele in cls.Functions.Where(e => e.IsDelegate))
-            {
-                sink.AppendLine($"\"{RendererUtils.CreateDelegateSignature(dele)}\",");
-            }
+            foreach (var dele in cls.Functions.Where(e => e.IsDelegate)) sink.AppendLine($"\"{RendererUtils.CreateDelegateSignature(dele)}\",");
         }
 
         sink.PopIndent();

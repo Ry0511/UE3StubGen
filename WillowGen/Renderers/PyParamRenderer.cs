@@ -16,10 +16,7 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
         else
         {
             sink.Append($"{elem.Name()}: {type}");
-            if (elem.IsFunctionParam && (elem.IsOutParam || elem.IsOptionalParam))
-            {
-                sink.AppendRaw(" | None");
-            }
+            if (elem.IsFunctionParam && (elem.IsOutParam || elem.IsOptionalParam)) sink.AppendRaw(" | None");
         }
     }
 }

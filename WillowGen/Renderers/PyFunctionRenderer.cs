@@ -9,10 +9,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
     {
         if (elem.IsOverride)
         {
-            if (elem.IsNaughtyOverride)
-            {
-                sink.AppendLine("# naughty override");
-            }
+            if (elem.IsNaughtyOverride) sink.AppendLine("# naughty override");
 
             sink.AppendLine("@override");
         }
@@ -36,10 +33,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             RendererUtils.Create(param, scope).Render(scratch);
         }
 
-        if (elem.Overriders.Any(e => e.IsNaughtyOverride))
-        {
-            scratch.Append(", /");
-        }
+        if (elem.Overriders.Any(e => e.IsNaughtyOverride)) scratch.Append(", /");
 
         sink.AppendRaw(scratch.ToString());
 

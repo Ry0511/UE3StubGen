@@ -35,7 +35,7 @@ public class ExportClass : BaseExport
         Fields = obj.EnumerateFields<UProperty>()
             .Select(elem => new ExportProperty(ctx, pkg, elem))
             .ToList();
-        
+
         Functions = obj.EnumerateFields<UFunction>()
             .Select(elem => new ExportFunction(ctx, pkg, elem))
             .OrderBy(GetFunctionRank)

@@ -25,5 +25,8 @@ public class EngineBuiltinType(UProperty prop, BaseElement? parent = null) : Bas
         _ => throw new Exception("property is not a valid primitive type: " + prop.GetType())
     };
 
-    public override string Name() => Type.ToString();
+    public override string Name()
+    {
+        return Type.ToString();
+    }
 }

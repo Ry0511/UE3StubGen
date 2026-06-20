@@ -54,10 +54,7 @@ public class ClassDef : BaseSymbol
         var stack = new Stack<ClassDef>();
 
         Push(Super?.ResolvedTo as ClassDef);
-        foreach (var iface in Interfaces)
-        {
-            Push(iface.ResolvedTo as ClassDef);
-        }
+        foreach (var iface in Interfaces) Push(iface.ResolvedTo as ClassDef);
 
         while (stack.Count > 0)
         {
@@ -65,10 +62,7 @@ public class ClassDef : BaseSymbol
             yield return c;
 
             Push(c.Super?.ResolvedTo as ClassDef);
-            foreach (var iface in c.Interfaces)
-            {
-                Push(iface.ResolvedTo as ClassDef);
-            }
+            foreach (var iface in c.Interfaces) Push(iface.ResolvedTo as ClassDef);
         }
 
         yield break;

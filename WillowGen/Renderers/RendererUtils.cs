@@ -45,10 +45,7 @@ public static class RendererUtils
             var split = elem.TargetFullPath.Split('.');
 
             // direct child of a module is a class
-            if (elem.AllModules().Any(e => e.Name() == split[^2]))
-            {
-                return "UnresolvedClass";
-            }
+            if (elem.AllModules().Any(e => e.Name() == split[^2])) return "UnresolvedClass";
 
             return "Any";
         }
@@ -78,25 +75,16 @@ public static class RendererUtils
 
     public static string CreateDelegateSignature(DelegateType elem, NamingScope scope)
     {
-        if (elem.Function.ResolvedTo == null)
-        {
-            throw new Exception("unresolved delegate");
-        }
+        if (elem.Function.ResolvedTo == null) throw new Exception("unresolved delegate");
 
-        if (elem.Function.ResolvedTo is not FunctionDef func)
-        {
-            throw new Exception("invalid delegate");
-        }
+        if (elem.Function.ResolvedTo is not FunctionDef func) throw new Exception("invalid delegate");
 
         return CreateDelegateSignature(func, scope);
     }
 
     public static string CreateDelegateSignature(FunctionDef func, NamingScope? scope = null)
     {
-        if (scope == null)
-        {
-            return func.Name() + "Delegate";
-        }
+        if (scope == null) return func.Name() + "Delegate";
 
         return scope.LocalName(func, func.Name() + "Delegate");
     }
