@@ -59,8 +59,8 @@ public static class RendererUtils
         return elem.ResolvedTo! switch
         {
             ClassDef ty => scope.LocalName(ty, ty.Name()),
-            EnumDef ty => $"Enum[{scope.LocalName(ty, ty.Name())}]",
-            StructDef ty => $"Struct[{scope.LocalName(ty, ty.Name())}]",
+            EnumDef ty => $"{scope.LocalName(ty, ty.Name())}",
+            StructDef ty => $"{scope.LocalName(ty, ty.Name())}",
             _ => throw new Exception("invalid type hint: " + elem.ResolvedTo.Name())
         };
     }

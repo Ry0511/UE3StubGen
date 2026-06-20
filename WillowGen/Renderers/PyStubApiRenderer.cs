@@ -17,8 +17,6 @@ public class PyStubApiRenderer : IRenderable
         sink.AppendLine("Opt: TypeAlias = T | None");
         sink.AppendLine("Out: TypeAlias = T | None");
         sink.AppendLine("OptOut: TypeAlias = T | None");
-        sink.AppendLine("Struct: TypeAlias = T");
-        sink.AppendLine("Enum: TypeAlias = T");
         sink.AppendLine();
         sink.AppendLine("_ClassType = TypeVar(\"_ClassType\", bound=UObject, covariant=True)");
         sink.AppendLine("class Class(UClass, Generic[_ClassType]): ...");
