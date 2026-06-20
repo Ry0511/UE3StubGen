@@ -19,6 +19,11 @@ public class PyDelegateRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             RendererUtils.Create(param, scope).Render(scratch);
         }
 
+        if (elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))
+        {
+            scratch.Append(", /");
+        }
+
         sink.AppendRaw(scratch.ToString());
 
         sink.AppendLineRaw(

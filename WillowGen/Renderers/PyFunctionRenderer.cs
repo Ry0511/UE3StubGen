@@ -33,7 +33,13 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             RendererUtils.Create(param, scope).Render(scratch);
         }
 
-        if (elem.Overriders.Any(e => e.IsNaughtyOverride)) scratch.Append(", /");
+        if (
+            elem.Overriders.Any(e => e.IsNaughtyOverride)
+            || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name()))
+        )
+        {
+            scratch.Append(", /");
+        }
 
         sink.AppendRaw(scratch.ToString());
 
@@ -63,7 +69,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
                 var modifiers = "";
                 if (param.IsOptionalParam) modifiers += "optional ";
                 if (param.IsOutParam) modifiers += "out ";
-                sink.AppendLine($"{modifiers}{param.Name()}");
+                sink.AppendLine($"{modifiers}{PyIdentifier.Sanitize(param.Name())}");
             }
 
             sink.PopIndent();
