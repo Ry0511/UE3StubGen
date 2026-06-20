@@ -17,17 +17,28 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
         // collect every referenced type up front so import aliases are known before we render hints
         foreach (var imp in elem.Descendants().OfType<RefNode>())
-            if (
-                imp.ResolvedTo == null
-                || imp.ResolvedTo
-                    .Ancestors(true)
-                    .OfType<ClassDef>()
-                    .All(e => e.Name() != elem.Name())
-            )
+        {
+            if (imp.ResolvedTo == null)
+            {
+                _namedTypes[imp.TargetFullPath] = null;
+                continue;
+            }
+
+            // no need to import the metaclass name i.e., class<DamageType>
+            if (imp.Ancestors().OfType<ClassType>().Any())
+            {
+                continue;
+            }
+
+            // external import
+            var owner = imp.ResolvedTo!.Ancestors(true).OfType<ClassDef>().FirstOrDefault();
+            if (owner == null || owner != elem)
+            {
                 _namedTypes[imp.TargetFullPath] = imp.ResolvedTo;
+            }
+        }
 
         BuildNamingScope();
-
         RenderStructsAndEnums(scratch);
 
         RenderClassHeader(scratch);
@@ -69,11 +80,21 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         foreach (var field in elem.Fields) reserved.Add(field.Name());
         foreach (var func in elem.Functions) reserved.Add(LocalBaseName(func));
         foreach (var @enum in elem.Enums) reserved.Add(@enum.Name());
-        foreach (var @struct in elem.Structs) reserved.Add(@struct.Name());
+        foreach (var @struct in elem.Structs)
+        {
+            reserved.Add(@struct.Name());
+            foreach (var child in @struct.ChildStructs)
+            {
+                reserved.Add(child.Name());
+            }
+        }
 
         // aliases must also avoid colliding with other imports' original names
         var taken = new HashSet<string>(reserved, StringComparer.Ordinal);
-        foreach (var (_, ty) in _namedTypes.Where(e => e.Value != null)) taken.Add(LocalBaseName(ty!));
+        foreach (var (_, ty) in _namedTypes.Where(e => e.Value != null))
+        {
+            taken.Add(LocalBaseName(ty!));
+        }
 
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))
         {
@@ -183,15 +204,29 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))
         {
             var module = $"bl1.{ty!.Module!.Name()}";
+
+            // not exported to the module so need to go a level deeper
+            if (!ty.IsModuleUnique)
+            {
+                var cls = ty.Ancestors().OfType<ClassDef>().FirstOrDefault();
+                module += '.' + cls!.Name();
+            }
+
             var name = LocalBaseName(ty);
             var local = _localNames.GetValueOrDefault(path, name);
             var symbol = local == name ? name : $"{name} as {local}";
 
-            if (!imports.TryGetValue(module, out var symbols)) imports[module] = symbols = new SortedSet<string>(StringComparer.Ordinal);
+            if (!imports.TryGetValue(module, out var symbols))
+            {
+                imports[module] = symbols = new SortedSet<string>(StringComparer.Ordinal);
+            }
 
             symbols.Add(symbol);
         }
 
-        foreach (var (module, symbols) in imports) sink.AppendLine($"from {module} import {string.Join(", ", symbols)}");
+        foreach (var (module, symbols) in imports)
+        {
+            sink.AppendLine($"from {module} import {string.Join(", ", symbols)}");
+        }
     }
 }

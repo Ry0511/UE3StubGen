@@ -35,4 +35,10 @@ public class StructDef : BaseSymbol
     {
         return Export.Name();
     }
+
+    public override void PostEvaluate(BaseElement root)
+    {
+        base.PostEvaluate(root);
+        IsModuleUnique = Module!.NameTable[Name()].Count == 1;
+    }
 }

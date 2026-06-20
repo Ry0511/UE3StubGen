@@ -1,3 +1,4 @@
+using UE3StubGenCore.ASG;
 using UE3StubGenCore.ASG.Defs;
 using WillowGen.Sinks;
 
@@ -7,12 +8,20 @@ public class PyInitFileRenderer(PackageDef elem) : IRenderable
 {
     public void Render(Sink sink)
     {
-        foreach (var cls in elem.Classes)
+        var exported = new List<string>();
+
+        foreach (var cls in elem.Classes.Where(e => e.IsModuleUnique))
         {
+            // import the class
             sink.Append($"from bl1.{elem.Name()}.{cls.Name()} import {cls.Name()}");
-            foreach (var @enum in cls.Enums) sink.AppendRaw(", " + @enum.Name());
-            foreach (var @struct in cls.Structs) sink.AppendRaw(", " + @struct.Name());
-            foreach (var dele in cls.Functions.Where(e => e.IsDelegate)) sink.AppendRaw(", " + RendererUtils.CreateDelegateSignature(dele));
+            exported.Add(cls.Name());
+
+            // import all the module unique children
+            foreach (var child in cls.Descendants().OfType<BaseSymbol>().Where(e => e.IsModuleUnique))
+            {
+                sink.AppendRaw($", {child.Name()}");
+                exported.Add(child.Name());
+            }
 
             sink.AppendLine();
         }
@@ -20,12 +29,9 @@ public class PyInitFileRenderer(PackageDef elem) : IRenderable
         sink.AppendLine();
         sink.AppendLine("__all__: tuple[str, ...] = (");
         sink.PushIndent();
-        foreach (var cls in elem.Classes)
+        foreach (var name in exported)
         {
-            sink.AppendLine($"\"{cls.Name()}\",");
-            foreach (var @enum in cls.Enums) sink.AppendLine($"\"{@enum.Name()}\",");
-            foreach (var @struct in cls.Structs) sink.AppendLine($"\"{@struct.Name()}\",");
-            foreach (var dele in cls.Functions.Where(e => e.IsDelegate)) sink.AppendLine($"\"{RendererUtils.CreateDelegateSignature(dele)}\",");
+            sink.AppendLine($"\"{name}\",");
         }
 
         sink.PopIndent();

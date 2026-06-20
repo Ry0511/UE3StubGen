@@ -12,7 +12,15 @@ public class MultiModuleProject : BaseElement
     {
         Modules = model.Packages.Select(elem => new PackageDef(elem, this)).ToList();
         LoadSymbols();
-        foreach (var elem in Descendants()) elem.PostEvaluate(this);
+        
+        var seen = new HashSet<BaseElement>();
+        foreach (var elem in Descendants())
+        {
+            if (seen.Add(elem))
+            {
+                elem.PostEvaluate(this);
+            }
+        }
     }
 
     public void LoadSymbols()

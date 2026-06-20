@@ -16,4 +16,10 @@ public class EnumDef(ExportEnum export, BaseElement? parent = null) : BaseSymbol
     {
         return Export.Name();
     }
+
+    public override void PostEvaluate(BaseElement root)
+    {
+        base.PostEvaluate(root);
+        IsModuleUnique = Module!.NameTable[Name()].Count == 1;
+    }
 }

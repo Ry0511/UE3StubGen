@@ -23,7 +23,7 @@ public static class RendererUtils
     {
         return elem switch
         {
-            ClassType _ => "UClass", // maybe expose the MetaClass since Class<bound=T> might be useful?
+            ClassType _ => "UClass | None",
             DynArrayType ty => $"WrappedArray[{GetTypeName(ty.InnerType, scope)}]",
             EngineBuiltinType ty => GetBuiltinType(ty),
             InterfaceType ty => GetTypeName(ty.InterfaceClass, scope),

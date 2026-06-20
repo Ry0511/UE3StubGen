@@ -61,7 +61,7 @@ public class FunctionDef : BaseSymbol
     public override void PostEvaluate(BaseElement root)
     {
         if (Parent is not ClassDef cls) return;
-
+        
         var parentFunc = cls.InheritedTypes()
             .SelectMany(inherited => inherited.Functions)
             .FirstOrDefault(i => i.Name() == Name() && i.HasSameSignatureAs(this));

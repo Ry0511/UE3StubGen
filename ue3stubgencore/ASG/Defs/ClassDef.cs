@@ -72,4 +72,10 @@ public class ClassDef : BaseSymbol
             if (c != null && seen.Add(c)) stack.Push(c);
         }
     }
+
+    public override void PostEvaluate(BaseElement root)
+    {
+        base.PostEvaluate(root);
+        IsModuleUnique = Module!.NameTable[Name()].Count == 1;
+    }
 }
