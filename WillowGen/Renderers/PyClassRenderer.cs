@@ -105,8 +105,14 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
         foreach (var e in elem.Structs)
         {
-            var renderer = RendererUtils.Create(e, _scope);
-            renderer.Render(sink);
+            // literally only exists because of one struct deciding to be different
+            foreach (var child in e.ChildStructs)
+            {
+                new PyStructRenderer(child, _scope).Render(sink);
+                sink.AppendLine();
+            }
+
+            new PyStructRenderer(e, _scope).Render(sink);
             sink.AppendLine();
         }
 
