@@ -24,7 +24,9 @@ public static class RendererUtils
     {
         return elem switch
         {
-            ClassType _ => "UClass",
+            ClassType ty => ty.MetaClass != null
+                ? $"Class[{GetRefTypeName(ty.MetaClass!.Ref, scope)}]"
+                : "UClass",
             DynArrayType ty => $"WrappedArray[{GetTypeName(ty.InnerType, scope)}]",
             EngineBuiltinType ty => GetBuiltinType(ty),
             InterfaceType ty => GetTypeName(ty.InterfaceClass, scope),
