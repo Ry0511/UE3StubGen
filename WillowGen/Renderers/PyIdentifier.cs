@@ -5,7 +5,7 @@ namespace WillowGen.Renderers;
 public static class PyIdentifier
 {
     // shoutouts to that one twat who decided to name their parameter `del`
-    private static readonly HashSet<string> Keywords = new(StringComparer.Ordinal)
+    private static readonly HashSet<string> Keywords = new (StringComparer.Ordinal)
     {
         "False",
         "None",
@@ -47,11 +47,20 @@ public static class PyIdentifier
     public static bool IsValid(string name)
     {
         if (name.Length == 0)
+        {
             return false;
+        }
+
         if (Keywords.Contains(name))
+        {
             return false;
+        }
+
         if (!(char.IsLetter(name[0]) || name[0] == '_'))
+        {
             return false;
+        }
+
         return name.All(c => char.IsLetterOrDigit(c) || c == '_');
     }
 

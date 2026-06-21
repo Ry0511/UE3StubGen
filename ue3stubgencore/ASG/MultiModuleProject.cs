@@ -6,7 +6,8 @@ namespace UE3StubGenCore.ASG;
 public class MultiModuleProject : BaseElement
 {
     public IReadOnlyList<PackageDef> Modules { get; }
-    public SymbolTable Symbols { get; } = new();
+
+    public SymbolTable Symbols { get; } = new ();
 
     public MultiModuleProject(ExportModel model)
     {
@@ -31,17 +32,21 @@ public class MultiModuleProject : BaseElement
 
         foreach (var cls in Descendants().OfType<ClassDef>())
         {
-            var visible = cls.Functions.Concat(cls.InheritedTypes().SelectMany(t => t.Functions));
+            var visible = cls.Functions.Concat(cls.InheritedTypes().SelectMany(elem => elem.Functions));
 
-            foreach (var group in visible.GroupBy(f => f.SignatureKey()))
+            foreach (var group in visible.GroupBy(func => func.SignatureKey()))
             {
                 FunctionDef? anchor = null;
-                foreach (var f in group)
+                foreach (var func in group)
                 {
                     if (anchor == null)
-                        anchor = f;
+                    {
+                        anchor = func;
+                    }
                     else
-                        Union(anchor, f);
+                    {
+                        Union(anchor, func);
+                    }
                 }
             }
         }
@@ -50,34 +55,40 @@ public class MultiModuleProject : BaseElement
         {
             var members = family.ToList();
             var distinct = members
-                .Select(f => string.Join("\0", f.Params.Select(p => p.Name())))
+                .Select(func => string.Join("\0", func.Params.Select(p => p.Name())))
                 .Distinct()
                 .Count();
 
             if (distinct > 1)
-                foreach (var f in members)
-                    f.FamilyHasNaughtyOverride = true;
+            {
+                foreach (var func in members)
+                {
+                    func.FamilyHasNaughtyOverride = true;
+                }
+            }
         }
 
         return;
 
-        FunctionDef Find(FunctionDef f)
+        FunctionDef Find(FunctionDef func)
         {
-            if (!parent.TryGetValue(f, out var p))
+            if (!parent.TryGetValue(func, out var p))
             {
-                parent[f] = f;
-                return f;
+                parent[func] = func;
+                return func;
             }
 
-            return p == f ? f : parent[f] = Find(p);
+            return p == func ? func : parent[func] = Find(p);
         }
 
-        void Union(FunctionDef a, FunctionDef b)
+        void Union(FunctionDef lhs, FunctionDef rhs)
         {
-            var ra = Find(a);
-            var rb = Find(b);
+            var ra = Find(lhs);
+            var rb = Find(rhs);
             if (ra != rb)
+            {
                 parent[ra] = rb;
+            }
         }
     }
 
@@ -85,7 +96,9 @@ public class MultiModuleProject : BaseElement
     {
         // walk through all modules and register every symbol that can be referenced
         foreach (var sym in Descendants().OfType<BaseSymbol>())
+        {
             Symbols.Register(sym);
+        }
 
         // walk through all references and resolve them
         foreach (var symbolRef in Descendants().OfType<RefNode>())

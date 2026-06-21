@@ -5,15 +5,15 @@ namespace UE3StubGenCore.Export;
 
 public class ExportContext
 {
-    private readonly DirectoryInfo _packageRoot;
-    private readonly Dictionary<string, UnrealPackage> _packages = new();
-    private readonly Dictionary<string, BaseExport> _exportCache = new();
+    private readonly DirectoryInfo packageRoot;
+    private readonly Dictionary<string, UnrealPackage> packages = new ();
+    private readonly Dictionary<string, BaseExport> exportCache = new ();
 
-    public int CacheCount => _exportCache.Count;
+    public int CacheCount => exportCache.Count;
 
     private void LoadAndInitialiseAllPackages()
     {
-        var packageList = _packageRoot
+        var packageList = packageRoot
             .GetFiles("*.u", SearchOption.AllDirectories)
             .Select(file => file)
             .ToList();
@@ -24,8 +24,7 @@ public class ExportContext
         var ntlPath = Path.Combine(
             AppContext.BaseDirectory,
             "NativeTables",
-            "NativesTableList_UDK-2012-05.NTL"
-        );
+            "NativesTableList_UDK-2012-05.NTL");
 
         NativesTablePackage? ntlPackage = null;
 
@@ -35,8 +34,7 @@ public class ExportContext
                 ntlPath,
                 FileMode.Open,
                 FileAccess.Read,
-                FileShare.Read
-            );
+                FileShare.Read);
             ntlPackage = new NativesTablePackage();
             ntlPackage.Deserialize(ntlFileStream);
         }
@@ -46,6 +44,7 @@ public class ExportContext
         }
 
         foreach (var pkgPath in packageList)
+        {
             try
             {
                 Console.SetOut(TextWriter.Null);
@@ -53,7 +52,9 @@ public class ExportContext
                 var pkg = UnrealLoader.LoadPackage(pkgPath.FullName);
                 UnrealConfig.SuppressSignature = false;
                 if (ntlPackage != null)
+                {
                     pkg.NTLPackage = ntlPackage;
+                }
 
                 pkg.InitializePackage();
                 Console.SetOut(consoleOut);
@@ -62,8 +63,7 @@ public class ExportContext
                 if (pkg.Summary.CompressedChunks != null && pkg.Summary.CompressedChunks.Any())
                 {
                     Console.WriteLine(
-                        $"Skipping {pkgPath.Name} because it is a compressed package"
-                    );
+                        $"Skipping {pkgPath.Name} because it is a compressed package");
                     pkg.Stream.Close();
                     continue;
                 }
@@ -86,31 +86,34 @@ public class ExportContext
             {
                 Console.SetOut(consoleOut);
             }
+        }
     }
 
     public ExportContext(string path)
     {
-        _packageRoot = new DirectoryInfo(path);
-        if (!_packageRoot.Exists)
+        packageRoot = new DirectoryInfo(path);
+        if (!packageRoot.Exists)
+        {
             throw new Exception($"path specified does not exist: {path}");
+        }
 
-        _exportCache.EnsureCapacity(8192);
+        exportCache.EnsureCapacity(8192);
         LoadAndInitialiseAllPackages();
     }
 
     private void AddPackage(UnrealPackage pkg)
     {
-        _packages[pkg.PackageName] = pkg;
+        packages[pkg.PackageName] = pkg;
     }
 
     public UnrealPackage? GetPackage(string name)
     {
-        return _packages.GetValueOrDefault(name);
+        return packages.GetValueOrDefault(name);
     }
 
     public IEnumerable<UnrealPackage> GetPackages()
     {
-        return _packages.Values;
+        return packages.Values;
     }
 
     public T ResolveImport<T>(UObject obj, bool checkSubclasses = false)
@@ -118,7 +121,9 @@ public class ExportContext
     {
         var index = (int)obj;
         if (index > 0)
-            return (obj as T)!;
+        {
+            return (obj as T) !;
+        }
 
         return ResolveImport<T>(obj.Package, index, checkSubclasses);
     }
@@ -131,7 +136,9 @@ public class ExportContext
         {
             var export = pkg.Exports[index - 1];
             if (export.Object is T obj)
+            {
                 return obj;
+            }
 
             throw new Exception("export is null or of different type");
         }
@@ -143,15 +150,18 @@ public class ExportContext
 
             var packageToImport = imp.Outer;
             while (packageToImport?.Outer != null)
+            {
                 packageToImport = packageToImport.Outer;
+            }
 
             var loaded = GetPackage(packageToImport!.ObjectName);
             var found = loaded?.FindObject<T>(imp.ObjectName, checkSubclasses);
 
             if (found == null)
+            {
                 throw new Exception(
-                    $"Could not resolve import: {imp.GetReferencePath()} from {packageToImport!.ObjectName}"
-                );
+                    $"Could not resolve import: {imp.GetReferencePath()} from {packageToImport!.ObjectName}");
+            }
 
             return found;
         }
@@ -162,10 +172,12 @@ public class ExportContext
     public T CreateExport<T>(UnrealPackage pkg, UObject obj)
         where T : BaseExport
     {
-        if (_exportCache.TryGetValue(obj.GetPath(), out var cachedExport))
+        if (exportCache.TryGetValue(obj.GetPath(), out var cachedExport))
         {
             if (cachedExport is T cachedExportAs)
+            {
                 return cachedExportAs;
+            }
 
             throw new Exception("cached export is of a different type or is null");
         }
@@ -174,7 +186,9 @@ public class ExportContext
         {
             var super = cls.Super;
             while (super != null && super.Super != null)
+            {
                 super = super.Super;
+            }
 
             return super != null
                 && string.Compare(super.Name, "Interface", StringComparison.OrdinalIgnoreCase) == 0;
@@ -193,9 +207,11 @@ public class ExportContext
         };
 
         if (createdExport is not T createdExportAs)
+        {
             throw new Exception("export is not of expected type");
+        }
 
-        _exportCache.Add(obj.GetPath(), createdExportAs);
+        exportCache.Add(obj.GetPath(), createdExportAs);
         return createdExportAs;
     }
 }

@@ -5,6 +5,7 @@ namespace UE3StubGenCore.ASG;
 public abstract class BaseElement
 {
     public BaseElement? Parent { get; }
+
     public PackageDef? Module { get; }
 
     protected BaseElement(BaseElement? parent = null)
@@ -15,25 +16,33 @@ public abstract class BaseElement
 
     public virtual IEnumerable<BaseElement> Children()
     {
-        return [];
+        return[];
     }
 
     public IEnumerable<BaseElement> Descendants(bool includeSelf = false)
     {
         if (includeSelf)
+        {
             yield return this;
+        }
+
         foreach (var child in Children())
         {
             yield return child;
             foreach (var descendant in child.Descendants())
+            {
                 yield return descendant;
+            }
         }
     }
 
     public IEnumerable<BaseElement> Ancestors(bool includeSelf = false)
     {
         if (includeSelf)
+        {
             yield return this;
+        }
+
         var node = Parent;
         while (node != null)
         {
@@ -45,7 +54,10 @@ public abstract class BaseElement
     public IEnumerable<PackageDef> AllModules()
     {
         if (Module == null)
+        {
             yield break;
+        }
+
         if (Module.Parent == null)
         {
             yield return Module;
@@ -53,8 +65,12 @@ public abstract class BaseElement
         }
 
         foreach (var module in Module.Parent.Children().OfType<PackageDef>())
+        {
             yield return module;
+        }
     }
 
-    public virtual void PostEvaluate(BaseElement root) { }
+    public virtual void PostEvaluate(BaseElement root)
+    {
+    }
 }

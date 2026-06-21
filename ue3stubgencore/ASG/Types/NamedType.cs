@@ -25,7 +25,10 @@ public class NamedType : BaseType
     public bool IsClassRef()
     {
         if (Ref.ResolvedTo == null)
+        {
             return false;
+        }
+
         var r = Ref.ResolvedTo;
         return r is ClassDef;
     }
@@ -33,7 +36,10 @@ public class NamedType : BaseType
     public bool IsStructRef()
     {
         if (Ref.ResolvedTo == null)
+        {
             return false;
+        }
+
         var r = Ref.ResolvedTo;
         return r is StructDef;
     }
@@ -41,7 +47,10 @@ public class NamedType : BaseType
     public bool IsEnumRef()
     {
         if (Ref.ResolvedTo == null)
+        {
             return false;
+        }
+
         var r = Ref.ResolvedTo;
         return r is EnumDef;
     }

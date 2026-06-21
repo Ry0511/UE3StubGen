@@ -10,7 +10,9 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         if (elem.IsOverride)
         {
             if (elem.IsNaughtyOverride)
+            {
                 sink.AppendLine("# naughty override");
+            }
 
             sink.AppendLine("@override");
         }
@@ -30,14 +32,16 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         foreach (var param in elem.Params)
         {
             if (!isFirstParam)
+            {
                 scratch.Append(", ");
+            }
+
             isFirstParam = false;
             RendererUtils.Create(param, scope).Render(scratch);
         }
 
         if (
-            elem.FamilyHasNaughtyOverride || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name()))
-        )
+            elem.FamilyHasNaughtyOverride || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))
         {
             scratch.Append(", /");
         }
@@ -59,7 +63,10 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             foreach (var param in elem.Params.Where(p => p.IsOutParam))
             {
                 if (!isFirst)
+                {
                     sink.AppendRaw(", ");
+                }
+
                 isFirst = false;
                 var paramType = RendererUtils.GetReturnTypeName(param.ParamType, scope);
                 sink.AppendRaw(paramType);
@@ -95,7 +102,10 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         {
             var isBlank = line.Trim().Length == 0;
             if (isBlank && bLastWasBlank)
+            {
                 continue;
+            }
+
             bLastWasBlank = isBlank;
             sink.AppendLine(line);
         }

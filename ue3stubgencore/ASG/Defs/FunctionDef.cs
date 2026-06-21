@@ -5,25 +5,35 @@ namespace UE3StubGenCore.ASG.Defs;
 public class FunctionDef : BaseSymbol
 {
     public ExportFunction Export { get; }
+
     public List<TypedParamDef> Params { get; }
+
     public TypedParamDef? ReturnValue { get; }
+
     public bool IsStatic => Export.IsStatic;
+
     public bool IsDelegate => Export.IsDelegate;
+
     public bool HasOutParms => Export.HasOutParms;
+
     public bool HasOptionalParms => Export.HasOptionalParms;
 
     public FunctionDef? Overrides { get; private set; }
+
     public bool IsOverride { get; private set; }
+
     public bool IsNaughtyOverride { get; private set; }
+
     public bool FamilyHasNaughtyOverride { get; internal set; }
 
     public FunctionDef(ExportFunction export, BaseElement? parent = null)
         : base(parent)
     {
         if (!export.IsRegularFunction && !export.IsDelegate)
+        {
             throw new Exception(
-                "only regular functions are supported (iterator and operator functions are not allowed)"
-            );
+                "only regular functions are supported (iterator and operator functions are not allowed)");
+        }
 
         Export = export;
         Params = export.Parameters.Select(elem => new TypedParamDef(elem, this)).ToList();
@@ -34,9 +44,14 @@ public class FunctionDef : BaseSymbol
     public override IEnumerable<BaseElement> Children()
     {
         foreach (var elem in Params)
+        {
             yield return elem;
+        }
+
         if (ReturnValue != null)
+        {
             yield return ReturnValue;
+        }
     }
 
     public override string ExportPathName()
@@ -52,11 +67,17 @@ public class FunctionDef : BaseSymbol
     public bool HasSameSignatureAs(FunctionDef other)
     {
         if (Params.Count != other.Params.Count)
+        {
             return false;
+        }
 
         for (var i = 0; i < Params.Count; i++)
+        {
             if (Params[i].ParamType.Name() != other.Params[i].ParamType.Name())
+            {
                 return false;
+            }
+        }
 
         return ReturnValue?.ParamType.Name() == other.ReturnValue?.ParamType.Name();
     }
@@ -69,7 +90,9 @@ public class FunctionDef : BaseSymbol
     public override void PostEvaluate(BaseElement root)
     {
         if (Parent is not ClassDef cls)
+        {
             return;
+        }
 
         var parentFunc = cls.InheritedTypes()
             .SelectMany(inherited => inherited.Functions)
@@ -79,10 +102,10 @@ public class FunctionDef : BaseSymbol
         IsOverride = Overrides != null;
         IsNaughtyOverride = IsOverride && !ParameterNamesMatch(parentFunc!);
     }
-    
+
     public string SignatureKey()
     {
         var ps = string.Join(",", Params.Select(p => p.ParamType.Name()));
-        return $"{Name()}({ps}):{ReturnValue?.ParamType.Name() ?? ""}";
+        return $"{Name()}({ps}):{ReturnValue?.ParamType.Name() ?? string.Empty}";
     }
 }

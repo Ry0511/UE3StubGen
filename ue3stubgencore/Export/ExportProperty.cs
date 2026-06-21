@@ -7,11 +7,13 @@ namespace UE3StubGenCore.Export;
 public class ExportProperty : BaseExport
 {
     public ExportProperty(ExportContext _, UnrealPackage pkg, UProperty obj)
-        : base(pkg, obj) { }
+        : base(pkg, obj)
+    {
+    }
 
     private UProperty Obj()
     {
-        return (ObjectHandle as UProperty)!;
+        return (ObjectHandle as UProperty) !;
     }
 
     public bool IsClassMember()

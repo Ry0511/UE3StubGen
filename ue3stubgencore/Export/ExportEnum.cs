@@ -11,10 +11,14 @@ public class ExportEnum : BaseExport
         : base(pkg, obj)
     {
         if (IsImport(obj))
+        {
             obj = ctx.ResolveImport<UEnum>(obj);
+        }
 
         // the ordinal value is implied from index
         foreach (var name in obj.Names)
+        {
             Ordinals.Add(name.ToString());
+        }
     }
 }

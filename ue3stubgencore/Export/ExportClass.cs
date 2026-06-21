@@ -8,19 +8,27 @@ public class ExportClass : BaseExport
     public ExportClass? Super { get; }
 
     public IReadOnlyList<ExportInterface> Interfaces { get; }
+
     public IReadOnlyList<ExportStruct> Structs { get; }
+
     public IReadOnlyList<ExportEnum> Enums { get; }
+
     public IReadOnlyList<ExportProperty> Fields { get; }
+
     public IReadOnlyList<ExportFunction> Functions { get; }
 
     public ExportClass(ExportContext ctx, UnrealPackage pkg, UClass obj)
         : base(pkg, obj)
     {
         if (IsImport(obj))
+        {
             obj = ctx.ResolveImport<UClass>(obj);
+        }
 
         if (obj.Super is UClass cls)
+        {
             Super = ctx.CreateExport<ExportClass>(pkg, cls);
+        }
 
         Interfaces = (obj.ImplementedInterfaces ?? [])
             .Select(index => ctx.ResolveImport<UClass>(obj.Package, index))

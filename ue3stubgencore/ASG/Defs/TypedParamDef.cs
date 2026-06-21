@@ -6,9 +6,13 @@ namespace UE3StubGenCore.ASG.Defs;
 public class TypedParamDef : BaseElement, INameable
 {
     public string ParamName { get; }
+
     public BaseType ParamType { get; }
+
     public bool IsFunctionParam { get; }
+
     public bool IsOptionalParam { get; }
+
     public bool IsOutParam { get; }
 
     public TypedParamDef(ExportProperty prop, BaseElement? parent = null)

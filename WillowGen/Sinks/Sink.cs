@@ -3,11 +3,15 @@ namespace WillowGen.Sinks;
 public abstract class Sink(int indent, int step)
 {
     public const int DefaultIndentStep = 4;
+
     public int IndentLevel { get; private set; } = indent;
+
     public int IndentStep { get; private set; } = step;
 
     protected Sink(Sink other)
-        : this(other.IndentLevel, other.IndentStep) { }
+        : this(other.IndentLevel, other.IndentStep)
+    {
+    }
 
     public void AppendRaw(string text)
     {
@@ -27,9 +31,13 @@ public abstract class Sink(int indent, int step)
     public void AppendLine(string text = "")
     {
         if (text.Length == 0)
+        {
             Write("\n");
+        }
         else
+        {
             Write(Indent() + text + "\n");
+        }
     }
 
     public void PushIndent()

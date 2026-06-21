@@ -9,5 +9,6 @@ public abstract class BaseSymbol(BaseElement? parent) : BaseElement(parent), ISy
     public bool IsUniqueCrossModule { get; protected set; } = false;
 
     public abstract string ExportPathName();
+
     public abstract string Name();
 }

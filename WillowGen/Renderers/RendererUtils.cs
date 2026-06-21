@@ -17,7 +17,7 @@ public static class RendererUtils
                 ? new PyDelegateRenderer(e, scope)
                 : new PyFunctionRenderer(e, scope),
             TypedParamDef e => new PyParamRenderer(e, scope),
-            _ => throw new Exception("unsupported element type: " + elem.GetType().Name + ""),
+            _ => throw new Exception("unsupported element type: " + elem.GetType().Name + string.Empty),
         };
     }
 
@@ -81,7 +81,6 @@ public static class RendererUtils
         {
             // pretty sure all of these are classes - we can check by validating the parent is a package
             // i.e., Engine.StaticMesh -> Engine is a Package
-
             var split = elem.TargetFullPath.Split('.');
 
             // direct child of a module is a class
@@ -119,10 +118,14 @@ public static class RendererUtils
     public static string CreateDelegateSignature(DelegateType elem, NamingScope scope)
     {
         if (elem.Function.ResolvedTo == null)
+        {
             throw new Exception("unresolved delegate");
+        }
 
         if (elem.Function.ResolvedTo is not FunctionDef func)
+        {
             throw new Exception("invalid delegate");
+        }
 
         return CreateDelegateSignature(func, scope);
     }
@@ -130,7 +133,9 @@ public static class RendererUtils
     public static string CreateDelegateSignature(FunctionDef func, NamingScope? scope = null)
     {
         if (scope == null)
+        {
             return func.Name() + "Fn";
+        }
 
         return scope.LocalName(func, func.Name() + "Fn");
     }

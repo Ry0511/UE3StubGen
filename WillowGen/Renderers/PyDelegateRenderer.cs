@@ -29,8 +29,7 @@ public class PyDelegateRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         sink.AppendLineRaw(
             elem.ReturnValue != null
                 ? $") -> {RendererUtils.GetTypeName(elem.ReturnValue!.ParamType, scope)}: ..."
-                : ") -> None: ..."
-        );
+                : ") -> None: ...");
         sink.PopIndent();
     }
 }

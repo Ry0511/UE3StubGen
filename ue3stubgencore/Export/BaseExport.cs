@@ -21,6 +21,7 @@ public abstract class BaseExport(UnrealPackage pkg, UObject obj)
     }
 
     public UnrealPackage Package { get; } = pkg;
+
     public UObject ObjectHandle { get; } = obj;
 
     public string GetPath()

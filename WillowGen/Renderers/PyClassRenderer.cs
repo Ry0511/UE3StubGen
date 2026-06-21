@@ -7,9 +7,9 @@ namespace WillowGen.Renderers;
 
 public class PyClassRenderer(ClassDef elem) : IRenderable
 {
-    private readonly Dictionary<string, BaseSymbol?> _namedTypes = new();
-    private readonly Dictionary<string, string> _localNames = new();
-    private NamingScope _scope = NamingScope.Empty;
+    private readonly Dictionary<string, BaseSymbol?> namedTypes = new ();
+    private readonly Dictionary<string, string> localNames = new ();
+    private NamingScope scope = NamingScope.Empty;
 
     public void Render(Sink sink)
     {
@@ -20,7 +20,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         {
             if (imp.ResolvedTo == null)
             {
-                _namedTypes[imp.TargetFullPath] = null;
+                namedTypes[imp.TargetFullPath] = null;
                 continue;
             }
 
@@ -34,7 +34,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
             var owner = imp.ResolvedTo!.Ancestors(true).OfType<ClassDef>().FirstOrDefault();
             if (owner == null || owner != elem)
             {
-                _namedTypes[imp.TargetFullPath] = imp.ResolvedTo;
+                namedTypes[imp.TargetFullPath] = imp.ResolvedTo;
             }
         }
 
@@ -57,7 +57,9 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
         RenderClassFields(scratch);
         if (elem.Fields.Count > 0)
+        {
             scratch.AppendLine();
+        }
 
         RenderClassFunctions(scratch);
         scratch.PopIndent();
@@ -90,11 +92,20 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
         // build up the reserved names that cannot change
         foreach (var field in elem.Fields)
+        {
             reserved.Add(field.Name());
+        }
+
         foreach (var func in elem.Functions)
+        {
             reserved.Add(LocalBaseName(func));
+        }
+
         foreach (var @enum in elem.Enums)
+        {
             reserved.Add(@enum.Name());
+        }
+
         foreach (var @struct in elem.Structs)
         {
             reserved.Add(@struct.Name());
@@ -106,37 +117,42 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
         // aliases must also avoid colliding with other imports' original names
         var taken = new HashSet<string>(reserved, StringComparer.Ordinal);
-        foreach (var (_, ty) in _namedTypes.Where(e => e.Value != null))
+        foreach (var (_, ty) in namedTypes.Where(e => e.Value != null))
         {
             taken.Add(LocalBaseName(ty!));
         }
 
-        foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))
+        foreach (var (path, ty) in namedTypes.Where(e => e.Value != null))
         {
             var name = LocalBaseName(ty!);
             if (!reserved.Contains(name))
+            {
                 continue;
+            }
 
             // Name -> NameA, NameB, ... (realistically never exceeds one or two)
             var alias = name + 'A';
             for (var c = 'B'; c != 'Z'; c++)
             {
                 if (taken.Add(alias))
+                {
                     break;
+                }
+
                 alias = name + c;
             }
 
-            _localNames[path] = alias;
+            localNames[path] = alias;
         }
 
-        _scope = new NamingScope(_localNames);
+        scope = new NamingScope(localNames);
     }
 
     private void RenderStructsAndEnums(Sink sink)
     {
         foreach (var e in elem.Enums)
         {
-            var renderer = RendererUtils.Create(e, _scope);
+            var renderer = RendererUtils.Create(e, scope);
             renderer.Render(sink);
             sink.AppendLine();
         }
@@ -146,17 +162,17 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
             // literally only exists because of one struct deciding to be different
             foreach (var child in e.ChildStructs)
             {
-                new PyStructRenderer(child, _scope).Render(sink);
+                new PyStructRenderer(child, scope).Render(sink);
                 sink.AppendLine();
             }
 
-            new PyStructRenderer(e, _scope).Render(sink);
+            new PyStructRenderer(e, scope).Render(sink);
             sink.AppendLine();
         }
 
         foreach (var e in elem.Functions.Where(e => e.IsDelegate))
         {
-            var renderer = RendererUtils.Create(e, _scope);
+            var renderer = RendererUtils.Create(e, scope);
             renderer.Render(sink);
             sink.AppendLine();
         }
@@ -169,19 +185,20 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         var scratch = new StringSink(sink);
 
         if (elem.Super != null)
-            _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
+        {
+            namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
+        }
 
         scratch.Append(
             elem.Super != null && elem.Name() != "Interface"
-                ? $"({RendererUtils.GetRefTypeName(elem.Super, _scope)}"
-                : "(UObject"
-        );
+                ? $"({RendererUtils.GetRefTypeName(elem.Super, scope)}"
+                : "(UObject");
 
         foreach (var iface in elem.Interfaces)
         {
             scratch.Append(", ");
-            scratch.Append(RendererUtils.GetRefTypeName(iface, _scope));
-            _namedTypes[iface.TargetFullPath] = iface.ResolvedTo;
+            scratch.Append(RendererUtils.GetRefTypeName(iface, scope));
+            namedTypes[iface.TargetFullPath] = iface.ResolvedTo;
         }
 
         sink.AppendLineRaw(scratch + "):");
@@ -194,8 +211,11 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         {
             scratch.Clear();
             if (field.ParamType is DelegateType)
+            {
                 scratch.Append("# ");
-            new PyParamRenderer(field, _scope).Render(scratch);
+            }
+
+            new PyParamRenderer(field, scope).Render(scratch);
             sink.AppendLine(scratch.ToString());
         }
     }
@@ -206,10 +226,12 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         foreach (var func in elem.Functions)
         {
             scratch.Reset(sink);
-            new PyFunctionRenderer(func, _scope).Render(scratch);
+            new PyFunctionRenderer(func, scope).Render(scratch);
             sink.AppendLineRaw(scratch.ToString());
             if (func != elem.Functions[^1])
+            {
                 sink.AppendLine();
+            }
         }
     }
 
@@ -218,14 +240,12 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         sink.AppendLine("from enum import IntEnum");
         sink.AppendLine("from typing import Any, Protocol, override");
         sink.AppendLine(
-            "from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct"
-        );
+            "from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
         sink.AppendLine(
-            "from bl1.stubgenapi import name, byte, Opt, Out, OptOut, Array, Delegate, UnresolvedClass"
-        );
+            "from bl1.stubgenapi import name, byte, Opt, Out, OptOut, Array, Delegate, UnresolvedClass");
 
         var imports = new SortedDictionary<string, SortedSet<string>>(StringComparer.Ordinal);
-        foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))
+        foreach (var (path, ty) in namedTypes.Where(e => e.Value != null))
         {
             var module = $"bl1.{ty!.Module!.Name()}";
 
@@ -237,7 +257,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
             }
 
             var name = LocalBaseName(ty);
-            var local = _localNames.GetValueOrDefault(path, name);
+            var local = localNames.GetValueOrDefault(path, name);
             var symbol = local == name ? name : $"{name} as {local}";
 
             if (!imports.TryGetValue(module, out var symbols))

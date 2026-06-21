@@ -5,6 +5,7 @@ namespace UE3StubGenCore.Render;
 public class ExportModel
 {
     public ExportContext Context { get; }
+
     public IReadOnlyList<ExportPackage> Packages { get; private set; }
 
     public ExportModel(ExportContext ctx)

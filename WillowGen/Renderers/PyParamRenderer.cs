@@ -22,9 +22,14 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
             sink.Append($"{name}: ");
 
             if (elem.IsOptionalParam)
+            {
                 sink.AppendRaw("Opt");
+            }
+
             if (elem.IsOutParam)
+            {
                 sink.AppendRaw("Out");
+            }
 
             if (elem.IsOptionalParam || elem.IsOutParam)
             {
@@ -33,6 +38,7 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
             else
             {
                 sink.AppendRaw(type);
+
                 // if (elem.ParamType is NamedType nt && nt.IsClassRef())
                 // {
                 //     sink.AppendRaw(" | None");

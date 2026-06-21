@@ -10,13 +10,17 @@ public class ClassType : BaseType
         : base(parent)
     {
         if (prop.MetaClass != null)
+        {
             MetaClass = new NamedType(prop.MetaClass.GetPath(), this);
+        }
     }
 
     public override IEnumerable<BaseElement> Children()
     {
         if (MetaClass != null)
+        {
             yield return MetaClass;
+        }
     }
 
     public override string Name()

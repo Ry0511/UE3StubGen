@@ -7,17 +7,18 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
 {
     public static BaseType Create(ExportProperty elem, BaseElement? parent)
     {
-        return Create((elem.ObjectHandle as UProperty)!, parent);
+        return Create((elem.ObjectHandle as UProperty) !, parent);
     }
 
     protected static BaseType Create(
         UProperty prop,
         BaseElement? parent,
-        bool ignoreArrayDim = false
-    )
+        bool ignoreArrayDim = false)
     {
         if (prop.ArrayDim > 1 && !ignoreArrayDim)
+        {
             return new StaticArrayType(prop, parent);
+        }
 
         switch (prop)
         {
@@ -32,10 +33,13 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
             case UByteProperty e:
             {
                 if (e.Enum != null)
-                    return new NamedType(e.Enum.GetPath(), parent);
+                    {
+                        return new NamedType(e.Enum.GetPath(), parent);
+                    }
 
                 return new EngineBuiltinType(e, parent);
             }
+
             case UInterfaceProperty e:
                 return new InterfaceType(e, parent);
             case UComponentProperty e:
