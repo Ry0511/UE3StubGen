@@ -1,4 +1,4 @@
-namespace WillowGen.Sinks;
+namespace UE3StubGenCore.Sinks;
 
 public class ConsoleSink(int indent = 0, int step = Sink.DefaultIndentStep) : Sink(indent, step)
 {

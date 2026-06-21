@@ -1,6 +1,6 @@
 using UE3StubGenCore.ASG;
 using UE3StubGenCore.ASG.Defs;
-using WillowGen.Sinks;
+using UE3StubGenCore.Sinks;
 
 namespace WillowGen.Renderers;
 

@@ -1,39 +1,13 @@
-﻿using System.Text;
-using UE3StubGenCore.ASG;
+﻿using UE3StubGenCore.ASG;
 using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.Render;
+using UE3StubGenCore.Sinks;
 using WillowGen.Renderers;
-using WillowGen.Sinks;
 
 namespace WillowGen;
 
 public class WillowSdkGenerator : IExporter
 {
-    // TODO: the sdk has custom return types for out parameters
-    //
-    // TODO: WrappedStruct[T] can represent function parameters i.e., all hook functions use
-    //  WrappedStruct[T] to capture the parameters. Would want to type-hint the hookable functions
-    //  as well if possible without duplicating every functions signature
-    public class FileSink(string path) : Sink(0, DefaultIndentStep)
-    {
-        private readonly FileStream fs = new (
-            path,
-            FileMode.Truncate,
-            FileAccess.Write,
-            FileShare.Write);
-
-        protected override void Write(string text)
-        {
-            fs.Write(Encoding.UTF8.GetBytes(text));
-        }
-
-        public void Dispose()
-        {
-            fs.Flush();
-            fs.Dispose();
-        }
-    }
-
     public void Export(ExportModel model)
     {
         MultiModuleProject py = new (model);

@@ -1,4 +1,4 @@
-using WillowGen.Sinks;
+using UE3StubGenCore.Sinks;
 
 namespace WillowGen.Renderers;
 
