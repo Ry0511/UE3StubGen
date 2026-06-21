@@ -86,7 +86,7 @@ public static class RendererUtils
             // direct child of a module is a class
             if (elem.AllModules().Any(e => e.Name() == split[^2]))
             {
-                return "UnresolvedClass";
+                return $"Unresolved[Literal[\"{elem.TargetFullPath}\"]]";
             }
 
             return "Any";

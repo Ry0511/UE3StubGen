@@ -10,7 +10,7 @@ public class PyStubApiRenderer : IRenderable
         sink.AppendLine();
         sink.AppendLine("type name = str | None");
         sink.AppendLine("type byte = int");
-        sink.AppendLine("type UnresolvedClass = UObject | None");
+        sink.AppendLine("type Unresolved[T] = UObject | None");
         sink.AppendLine("type Opt[T] = T");
         sink.AppendLine("type Out[T] = T");
         sink.AppendLine("type OptOut[T] = T");
