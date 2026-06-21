@@ -16,7 +16,7 @@ public class PyDelegateRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         foreach (var param in elem.Params)
         {
             scratch.Append(", ");
-            RendererUtils.Create(param, scope).Render(scratch);
+            new PyParamRenderer(param, scope).Render(scratch);
         }
 
         if (elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))

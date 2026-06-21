@@ -16,10 +16,27 @@ internal class LoggingExporter : IExporter
 
     public static void Main(string[] args)
     {
-        var root = @"C:\mod_tools\decompressed_packages\BL1\decompressed";
-        var model = new ExportModel(new ExportContext(root));
-        model.ExportAll(new LoggingExporter());
-        model.ExportAll(new WillowSdkGenerator());
-        Console.WriteLine("Cache Size = " + model.Context.CacheCount);
+        try
+        {
+            var cli = new CommandLineArgs(args);
+
+            var input = cli.Result.GetValue(cli.InputDirectory);
+            var output = cli.Result.GetValue(cli.OutputDirectory);
+            var importPath = cli.Result.GetValue(cli.ImportRoot);
+
+            var model = new ExportModel(
+                output!,
+                importPath ?? string.Empty,
+                new ExportContext(input!));
+            model.ExportAll(new LoggingExporter());
+            model.ExportAll(new WillowSdkGenerator());
+
+            Console.WriteLine("Willow SDK generation complete");
+            Console.WriteLine(" * it is recommended to run `ruff check . --fix && ruff format .` on the generated files");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 }

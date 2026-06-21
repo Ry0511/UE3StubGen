@@ -6,21 +6,6 @@ namespace WillowGen.Renderers;
 
 public static class RendererUtils
 {
-    public static IRenderable Create(BaseElement elem, NamingScope scope)
-    {
-        return elem switch
-        {
-            ClassDef e => new PyClassRenderer(e),
-            StructDef e => new PyStructRenderer(e, scope),
-            EnumDef e => new PyEnumRenderer(e),
-            FunctionDef e => e.IsDelegate
-                ? new PyDelegateRenderer(e, scope)
-                : new PyFunctionRenderer(e, scope),
-            TypedParamDef e => new PyParamRenderer(e, scope),
-            _ => throw new Exception("unsupported element type: " + elem.GetType().Name + string.Empty),
-        };
-    }
-
     public static string GetTypeName(BaseType elem, NamingScope scope)
     {
         return elem switch

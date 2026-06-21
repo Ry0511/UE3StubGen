@@ -18,7 +18,7 @@ public class PyStructRenderer(StructDef elem, NamingScope scope) : IRenderable
         foreach (var field in elem.Fields)
         {
             var scratch = new StringSink();
-            RendererUtils.Create(field, scope).Render(scratch);
+            new PyParamRenderer(field, scope).Render(scratch);
             sink.AppendLine(scratch.ToString());
         }
 

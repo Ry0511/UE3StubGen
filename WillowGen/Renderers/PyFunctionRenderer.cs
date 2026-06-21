@@ -37,7 +37,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             }
 
             isFirstParam = false;
-            RendererUtils.Create(param, scope).Render(scratch);
+            new PyParamRenderer(param, scope).Render(scratch);
         }
 
         if (

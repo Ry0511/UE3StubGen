@@ -10,4 +10,8 @@
     <ProjectReference Include="..\UE3StubGenCore\UE3StubGenCore.csproj" />
     <ProjectReference Include="..\WillowGen\WillowGen.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.9" />
+  </ItemGroup>
 </Project>

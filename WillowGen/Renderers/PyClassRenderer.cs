@@ -5,10 +5,11 @@ using UE3StubGenCore.Sinks;
 
 namespace WillowGen.Renderers;
 
-public class PyClassRenderer(ClassDef elem) : IRenderable
+public class PyClassRenderer(string importRoot, ClassDef elem) : IRenderable
 {
-    private readonly Dictionary<string, BaseSymbol?> _namedTypes = new ();
-    private readonly Dictionary<string, string> _localNames = new ();
+    private readonly string _importRoot = importRoot.Length == 0 ? string.Empty : importRoot + '.';
+    private readonly Dictionary<string, BaseSymbol?> _namedTypes = new();
+    private readonly Dictionary<string, string> _localNames = new();
     private NamingScope _scope = NamingScope.Empty;
 
     public void Render(Sink sink)
@@ -161,7 +162,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
     {
         foreach (var e in elem.Enums)
         {
-            var renderer = RendererUtils.Create(e, _scope);
+            var renderer = new PyEnumRenderer(e);
             renderer.Render(sink);
             sink.AppendLine();
         }
@@ -181,7 +182,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
         foreach (var e in elem.Functions.Where(e => e.IsDelegate))
         {
-            var renderer = RendererUtils.Create(e, _scope);
+            var renderer = new PyDelegateRenderer(e, _scope);
             renderer.Render(sink);
             sink.AppendLine();
         }
@@ -251,12 +252,12 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         sink.AppendLine(
             "from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
         sink.AppendLine(
-            "from bl1.stubgenapi import name, byte, Opt, Out, OptOut, Array, Delegate, Unresolved");
+            $"from {_importRoot}stubgenapi import name, byte, Opt, Out, OptOut, Array, Delegate, Unresolved");
 
         var imports = new SortedDictionary<string, SortedSet<string>>(StringComparer.Ordinal);
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))
         {
-            var module = $"bl1.{ty!.Module!.Name()}";
+            var module = $"{_importRoot}{ty!.Module!.Name()}";
 
             // not exported to the module so need to go a level deeper
             if (!ty.IsModuleUnique)
