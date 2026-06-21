@@ -15,6 +15,6 @@ public class PyStubApiRenderer : IRenderable
         sink.AppendLine("type Out[T] = T");
         sink.AppendLine("type OptOut[T] = T");
         sink.AppendLine("type Array[T] = WrappedArray[T] | list[T]");
-        sink.AppendLine("type Delegate[T] = name | T");
+        sink.AppendLine("type Delegate[T] = name");
     }
 }

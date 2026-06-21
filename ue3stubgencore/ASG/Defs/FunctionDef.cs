@@ -94,13 +94,15 @@ public class FunctionDef : BaseSymbol
             return;
         }
 
-        var parentFunc = cls.InheritedTypes()
+        var matches = cls.InheritedTypes()
             .SelectMany(inherited => inherited.Functions)
-            .FirstOrDefault(i => i.Name() == Name() && i.HasSameSignatureAs(this));
+            .Where(i => i.Name() == Name())
+            .ToList();
 
-        Overrides = parentFunc;
+        Overrides = matches.FirstOrDefault(i => i.HasSameSignatureAs(this))
+                    ?? matches.FirstOrDefault();
         IsOverride = Overrides != null;
-        IsNaughtyOverride = IsOverride && !ParameterNamesMatch(parentFunc!);
+        IsNaughtyOverride = IsOverride && !ParameterNamesMatch(Overrides!);
     }
 
     public string SignatureKey()
