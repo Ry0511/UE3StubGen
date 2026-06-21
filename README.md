@@ -40,7 +40,7 @@ from unrealsdk import find_object
 if TYPE_CHECKING:
     from bl1.WillowGame import ItemPool, InventoryBalanceDefinition
 
-pool: ItemPool = cast(ItemPool, find_object("ItemPool", ""))
+pool: ItemPool = cast("ItemPool", find_object("ItemPool", ""))
 
 # @staticmethod
 # def SpawnBalancedInventoryFromInventoryBalanceDefinition(
@@ -54,7 +54,7 @@ pool: ItemPool = cast(ItemPool, find_object("ItemPool", ""))
 
 ret, items = pool.SpawnBalancedInventoryFromInventoryBalanceDefinition(
     InvBalanceDefinition=cast(
-        InventoryBalanceDefinition, find_object("InventoryBalanceDefinition", "")
+        "InventoryBalanceDefinition", find_object("InventoryBalanceDefinition", "")
     ),
     Quantity=0,
     GameStage=50,
