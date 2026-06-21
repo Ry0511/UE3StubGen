@@ -26,9 +26,10 @@ public class WillowSdkGenerator : IExporter
         // from Module import Class|Enum|Struct|Delegate
         foreach (var module in py.Modules)
         {
-            var path = stubDir + $@"\{module.Name()}\__init__.pyi";
+            FileInfo path = new(stubDir + $@"\{module.Name()}\__init__.pyi");
+            path.Directory!.Create();
             Console.WriteLine($"creating {path}");
-            var sink = new FileSink(path);
+            var sink = new FileSink(path.FullName);
             new PyInitFileRenderer(module).Render(sink);
             sink.Dispose();
         }
