@@ -165,10 +165,11 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         if (elem.Super != null) _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
 
         scratch.Append(
-            elem.Super != null
+            elem.Super != null && elem.Name() != "Interface"
                 ? $"({RendererUtils.GetRefTypeName(elem.Super, _scope)}"
                 : "(UObject"
         );
+
 
         foreach (var iface in elem.Interfaces)
         {
