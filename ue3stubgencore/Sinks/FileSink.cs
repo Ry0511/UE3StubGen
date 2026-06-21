@@ -4,7 +4,13 @@ namespace UE3StubGenCore.Sinks;
 
 public sealed class FileSink(string path) : Sink(0, DefaultIndentStep), IDisposable
 {
-    private readonly StreamWriter _fs = new(path, append: false, Encoding.UTF8);
+    private readonly StreamWriter _fs = new(
+        path,
+        append: false,
+        new UTF8Encoding(
+            encoderShouldEmitUTF8Identifier: false,
+            throwOnInvalidBytes: true)
+    );
 
     protected override void Write(string text)
     {
