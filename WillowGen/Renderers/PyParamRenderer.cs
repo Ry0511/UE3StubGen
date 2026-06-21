@@ -33,10 +33,10 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
             else
             {
                 sink.AppendRaw(type);
-                if (elem.ParamType is NamedType nt && nt.IsClassRef())
-                {
-                    sink.AppendRaw(" | None");
-                }
+                // if (elem.ParamType is NamedType nt && nt.IsClassRef())
+                // {
+                //     sink.AppendRaw(" | None");
+                // }
             }
         }
     }

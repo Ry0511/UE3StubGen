@@ -74,7 +74,18 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
     private void BuildNamingScope()
     {
-        var reserved = new HashSet<string>(StringComparer.Ordinal) { elem.Name() };
+        var reserved = new HashSet<string>(StringComparer.Ordinal)
+        {
+            elem.Name(),
+            "name",
+            "byte",
+            "UnresolvedClass",
+            "Opt",
+            "Out",
+            "OptOut",
+            "Array",
+            "Delegate",
+        };
 
         // build up the reserved names that cannot change
         foreach (var field in elem.Fields) reserved.Add(field.Name());
@@ -198,7 +209,7 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         sink.AppendLine("from enum import IntEnum");
         sink.AppendLine("from typing import Any, Protocol, override");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
-        sink.AppendLine("from bl1.stubgenapi import name, byte, Opt, Out, OptOut, UnresolvedClass");
+        sink.AppendLine("from bl1.stubgenapi import name, byte, Opt, Out, OptOut, Array, Delegate, UnresolvedClass");
 
         var imports = new SortedDictionary<string, SortedSet<string>>(StringComparer.Ordinal);
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))

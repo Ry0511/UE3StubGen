@@ -42,12 +42,38 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         }
 
         sink.AppendRaw(scratch.ToString());
+        sink.AppendRaw(") -> ");
 
-        sink.AppendLineRaw(
-            elem.ReturnValue != null
-                ? $") -> {RendererUtils.GetTypeName(elem.ReturnValue!.ParamType, scope)}:"
-                : ") -> None:"
-        );
+        if (elem.HasOutParms)
+        {
+            var isFirst = elem.ReturnValue == null;
+            sink.AppendRaw("tuple[");
+            if (elem.ReturnValue != null)
+            {
+                var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
+                sink.AppendRaw($"{retType}");
+            }
+
+            // output parameters are returned directly
+            foreach (var param in elem.Params.Where(p => p.IsOutParam))
+            {
+                if (!isFirst) sink.AppendRaw(", ");
+                isFirst = false;
+                var paramType = RendererUtils.GetReturnTypeName(param.ParamType, scope);
+                sink.AppendRaw(paramType);
+            }
+
+            sink.AppendLineRaw("]:");
+        }
+        else if (elem.ReturnValue != null)
+        {
+            var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
+            sink.AppendLineRaw($"{retType}:");
+        }
+        else
+        {
+            sink.AppendLineRaw("None:");
+        }
 
         RenderDocumentation(sink);
     }
@@ -58,7 +84,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         sink.AppendLine("\"\"\"");
         sink.AppendLine($"Unreal Path: `{elem.Export.GetObjectPath()}`");
         sink.AppendLine();
-        
+
         sink.AppendLine(".. Decompiled UnrealScript:: c");
         sink.PushIndent();
         var lines = elem.Export.Decompile().Split(Environment.NewLine);

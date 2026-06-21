@@ -24,17 +24,55 @@ public static class RendererUtils
         return elem switch
         {
             ClassType _ => "UClass | None",
-            DynArrayType ty => $"WrappedArray[{GetTypeName(ty.InnerType, scope)}]",
+            DynArrayType ty => $"Array[{GetTypeName(ty.InnerType, scope)}]",
             EngineBuiltinType ty => GetBuiltinType(ty),
             InterfaceType ty => GetTypeName(ty.InterfaceClass, scope),
-            NamedType ty => GetRefTypeName(ty.Ref, scope),
-            StaticArrayType ty => $"WrappedArray[{GetTypeName(ty.HeldType, scope)}]",
-            DelegateType ty => "name | " + CreateDelegateSignature(ty, scope),
+            NamedType ty => GetNamedTypeName(ty, scope),
+            StaticArrayType ty => $"Array[{GetTypeName(ty.HeldType, scope)}]",
+            DelegateType ty => $"Delegate[{CreateDelegateSignature(ty, scope)}]",
             UnhandledType _ => "Any", // maps fall into this category
             _ => throw new ArgumentOutOfRangeException(nameof(elem))
         };
     }
 
+    public static string GetReturnTypeName(BaseType elem, NamingScope scope)
+    {
+        return elem switch
+        {
+            ClassType _ => "UClass | None",
+            DynArrayType ty => $"WrappedArray[{GetReturnTypeName(ty.InnerType, scope)}]",
+            EngineBuiltinType ty => GetBuiltinType(ty),
+            InterfaceType ty => GetReturnTypeName(ty.InterfaceClass, scope),
+            NamedType ty => GetNamedTypeName(ty, scope),
+            StaticArrayType ty => $"WrappedArray[{GetReturnTypeName(ty.HeldType, scope)}]",
+            DelegateType ty => $"{CreateDelegateSignature(ty, scope)}",
+            UnhandledType _ => "Any", // maps fall into this category
+            _ => throw new ArgumentOutOfRangeException(nameof(elem))
+        };
+    }
+
+    public static string GetNamedTypeName(NamedType elem, NamingScope scope)
+    {
+        var name = GetRefTypeName(elem.Ref, scope);
+        
+        if (elem.IsClassRef())
+        {
+            return name + " | None"; // UObject | None
+        }
+        
+        if (elem.IsStructRef())
+        {
+            return name + " | WrappedStruct"; // T | WrappedStruct (T is a WrappedStruct)
+        } 
+        
+        if (elem.IsEnumRef())
+        {
+            return name + " | int"; // Enum | int
+        } 
+        
+        return name;
+    }
+    
     public static string GetRefTypeName(RefNode elem, NamingScope scope)
     {
         if (elem.ResolvedTo == null)
@@ -87,8 +125,8 @@ public static class RendererUtils
 
     public static string CreateDelegateSignature(FunctionDef func, NamingScope? scope = null)
     {
-        if (scope == null) return func.Name() + "Delegate";
+        if (scope == null) return func.Name() + "Fn";
 
-        return scope.LocalName(func, func.Name() + "Delegate");
+        return scope.LocalName(func, func.Name() + "Fn");
     }
 }

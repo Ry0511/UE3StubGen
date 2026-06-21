@@ -27,4 +27,18 @@ public class NamedType : BaseType
         var r = Ref.ResolvedTo;
         return r is ClassDef;
     }
+
+    public bool IsStructRef()
+    {
+        if (Ref.ResolvedTo == null) return false;
+        var r = Ref.ResolvedTo;
+        return r is StructDef;
+    }
+
+    public bool IsEnumRef()
+    {
+        if (Ref.ResolvedTo == null) return false;
+        var r = Ref.ResolvedTo;
+        return r is EnumDef;
+    }
 }
