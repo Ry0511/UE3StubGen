@@ -35,7 +35,9 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             RendererUtils.Create(param, scope).Render(scratch);
         }
 
-        if (elem.HasAnyNaughtyOverrides() || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))
+        if (
+            elem.FamilyHasNaughtyOverride || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name()))
+        )
         {
             scratch.Append(", /");
         }

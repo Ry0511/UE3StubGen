@@ -15,7 +15,7 @@ public class FunctionDef : BaseSymbol
     public FunctionDef? Overrides { get; private set; }
     public bool IsOverride { get; private set; }
     public bool IsNaughtyOverride { get; private set; }
-    public HashSet<FunctionDef> Overriders { get; } = [];
+    public bool FamilyHasNaughtyOverride { get; internal set; }
 
     public FunctionDef(ExportFunction export, BaseElement? parent = null)
         : base(parent)
@@ -78,13 +78,11 @@ public class FunctionDef : BaseSymbol
         Overrides = parentFunc;
         IsOverride = Overrides != null;
         IsNaughtyOverride = IsOverride && !ParameterNamesMatch(parentFunc!);
-        parentFunc?.Overriders.Add(this);
     }
-
-    public bool HasAnyNaughtyOverrides()
+    
+    public string SignatureKey()
     {
-        if (Overriders.Any(e => e.IsNaughtyOverride))
-            return true;
-        return Overrides != null && Overrides.HasAnyNaughtyOverrides();
+        var ps = string.Join(",", Params.Select(p => p.ParamType.Name()));
+        return $"{Name()}({ps}):{ReturnValue?.ParamType.Name() ?? ""}";
     }
 }
