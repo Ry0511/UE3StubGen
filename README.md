@@ -54,7 +54,7 @@ pool: ItemPool = cast(ItemPool, find_object("ItemPool", ""))
 
 ret, items = pool.SpawnBalancedInventoryFromInventoryBalanceDefinition(
     InvBalanceDefinition=cast(
-        InventoryBalanceDefinition, find_object("InvBalanceDefinition", "")
+        InventoryBalanceDefinition, find_object("InventoryBalanceDefinition", "")
     ),
     Quantity=0,
     GameStage=50,
