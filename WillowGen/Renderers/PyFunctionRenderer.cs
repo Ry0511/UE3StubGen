@@ -98,7 +98,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         sink.PushIndent();
         var lines = elem.Export.Decompile().Split(Environment.NewLine);
         var bLastWasBlank = false;
-        foreach (var line in lines)
+        foreach (var line in lines.Select(e => e.TrimEnd()))
         {
             var isBlank = line.Trim().Length == 0;
             if (isBlank && bLastWasBlank)

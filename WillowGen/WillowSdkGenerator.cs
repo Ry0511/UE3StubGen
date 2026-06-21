@@ -15,7 +15,6 @@ public class WillowSdkGenerator : IExporter
         var stubDir = @"C:\mod_tools\ue3stubs\bl1";
         {
             var path = stubDir + @"\stubgenapi.pyi";
-            File.Create(path).Dispose();
             var sink = new FileSink(path);
             new PyStubApiRenderer().Render(sink);
             sink.Dispose();
@@ -24,7 +23,6 @@ public class WillowSdkGenerator : IExporter
         foreach (var module in py.Modules)
         {
             var path = stubDir + $@"\{module.Name()}\__init__.pyi";
-            File.Create(path).Dispose();
             var sink = new FileSink(path);
             new PyInitFileRenderer(module).Render(sink);
             sink.Dispose();

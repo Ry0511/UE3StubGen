@@ -49,7 +49,10 @@ public abstract class BaseExport(UnrealPackage pkg, UObject obj)
 
         try
         {
-            return ObjectHandle.Decompile().ReplaceLineEndings();
+            return ObjectHandle.Decompile()
+                .ReplaceLineEndings()
+                .Replace("\t", "  ")
+                .Trim();
         }
         catch (Exception ex)
         {
