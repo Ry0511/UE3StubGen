@@ -30,7 +30,7 @@ public class WillowSdkGenerator : IExporter
             path.Directory!.Create();
             Console.WriteLine($"creating {path}");
             var sink = new FileSink(path.FullName);
-            new PyInitFileRenderer(module).Render(sink);
+            new PyInitFileRenderer(model.ImportRoot, module).Render(sink);
             sink.Dispose();
         }
 

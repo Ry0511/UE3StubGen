@@ -4,8 +4,10 @@ using UE3StubGenCore.Sinks;
 
 namespace WillowGen.Renderers;
 
-public class PyInitFileRenderer(PackageDef elem) : IRenderable
+public class PyInitFileRenderer(string importRoot, PackageDef elem) : IRenderable
 {
+    private readonly string _importRoot = importRoot.Length == 0 ? string.Empty : importRoot + '.';
+
     public void Render(Sink sink)
     {
         var exported = new List<string>();
@@ -13,7 +15,7 @@ public class PyInitFileRenderer(PackageDef elem) : IRenderable
         foreach (var cls in elem.Classes.Where(e => e.IsModuleUnique))
         {
             // import the class
-            sink.Append($"from bl1.{elem.Name()}.{cls.Name()} import {cls.Name()}");
+            sink.Append($"from {_importRoot}{elem.Name()}.{cls.Name()} import {cls.Name()}");
             exported.Add(cls.Name());
 
             // import all the module unique children
