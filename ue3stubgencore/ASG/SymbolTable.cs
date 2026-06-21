@@ -6,7 +6,8 @@ public class SymbolTable
 
     public void Register(ISymbol sym)
     {
-        if (sym is BaseSymbol elem) _fullPathSymbols.Add(sym.ExportPathName(), elem);
+        if (sym is BaseSymbol elem)
+            _fullPathSymbols.Add(sym.ExportPathName(), elem);
     }
 
     public BaseSymbol? Resolve(string fullPath)

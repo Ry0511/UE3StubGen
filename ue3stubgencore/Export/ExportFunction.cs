@@ -22,7 +22,8 @@ public class ExportFunction : BaseExport
     public ExportFunction(ExportContext ctx, UnrealPackage pkg, UFunction func)
         : base(pkg, func)
     {
-        if (IsImport(func)) func = ctx.ResolveImport<UFunction>(func);
+        if (IsImport(func))
+            func = ctx.ResolveImport<UFunction>(func);
 
         IsStatic = func.FunctionFlags.HasFlag(FunctionFlag.Static);
         IsNative = func.FunctionFlags.HasFlag(FunctionFlag.Native);

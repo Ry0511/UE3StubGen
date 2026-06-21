@@ -13,11 +13,14 @@ public class ExportClass : BaseExport
     public IReadOnlyList<ExportProperty> Fields { get; }
     public IReadOnlyList<ExportFunction> Functions { get; }
 
-    public ExportClass(ExportContext ctx, UnrealPackage pkg, UClass obj) : base(pkg, obj)
+    public ExportClass(ExportContext ctx, UnrealPackage pkg, UClass obj)
+        : base(pkg, obj)
     {
-        if (IsImport(obj)) obj = ctx.ResolveImport<UClass>(obj);
+        if (IsImport(obj))
+            obj = ctx.ResolveImport<UClass>(obj);
 
-        if (obj.Super is UClass cls) Super = ctx.CreateExport<ExportClass>(pkg, cls);
+        if (obj.Super is UClass cls)
+            Super = ctx.CreateExport<ExportClass>(pkg, cls);
 
         Interfaces = (obj.ImplementedInterfaces ?? [])
             .Select(index => ctx.ResolveImport<UClass>(obj.Package, index))
@@ -50,7 +53,7 @@ public class ExportClass : BaseExport
             { IsStatic: true } => 1,
             { IsNative: true, IsRegularFunction: true } => 2,
             { IsRegularFunction: true } => 3,
-            _ => 99
+            _ => 99,
         };
     }
 }

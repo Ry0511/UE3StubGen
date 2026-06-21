@@ -6,7 +6,8 @@ public class DynArrayType : BaseType
 {
     public BaseType InnerType { get; }
 
-    public DynArrayType(UArrayProperty prop, BaseElement? parent = null) : base(parent)
+    public DynArrayType(UArrayProperty prop, BaseElement? parent = null)
+        : base(parent)
     {
         InnerType = Create(prop.InnerProperty, this);
     }

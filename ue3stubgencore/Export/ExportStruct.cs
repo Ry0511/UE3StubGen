@@ -9,11 +9,14 @@ public class ExportStruct : BaseExport
     public IReadOnlyList<ExportProperty> Fields { get; } = [];
     public IReadOnlyList<ExportStruct> ChildStructs { get; }
 
-    public ExportStruct(ExportContext ctx, UnrealPackage pkg, UStruct obj) : base(pkg, obj)
+    public ExportStruct(ExportContext ctx, UnrealPackage pkg, UStruct obj)
+        : base(pkg, obj)
     {
-        if (IsImport(obj)) obj = ctx.ResolveImport<UScriptStruct>(obj);
+        if (IsImport(obj))
+            obj = ctx.ResolveImport<UScriptStruct>(obj);
 
-        if (obj.Super != null) Super = ctx.CreateExport<ExportStruct>(pkg, obj.Super);
+        if (obj.Super != null)
+            Super = ctx.CreateExport<ExportStruct>(pkg, obj.Super);
 
         Fields = obj.EnumerateFields<UProperty>()
             .Select(e => new ExportProperty(ctx, pkg, e))

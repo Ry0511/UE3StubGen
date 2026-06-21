@@ -56,7 +56,8 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         }
 
         RenderClassFields(scratch);
-        if (elem.Fields.Count > 0) scratch.AppendLine();
+        if (elem.Fields.Count > 0)
+            scratch.AppendLine();
 
         RenderClassFunctions(scratch);
         scratch.PopIndent();
@@ -88,9 +89,12 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         };
 
         // build up the reserved names that cannot change
-        foreach (var field in elem.Fields) reserved.Add(field.Name());
-        foreach (var func in elem.Functions) reserved.Add(LocalBaseName(func));
-        foreach (var @enum in elem.Enums) reserved.Add(@enum.Name());
+        foreach (var field in elem.Fields)
+            reserved.Add(field.Name());
+        foreach (var func in elem.Functions)
+            reserved.Add(LocalBaseName(func));
+        foreach (var @enum in elem.Enums)
+            reserved.Add(@enum.Name());
         foreach (var @struct in elem.Structs)
         {
             reserved.Add(@struct.Name());
@@ -110,13 +114,15 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))
         {
             var name = LocalBaseName(ty!);
-            if (!reserved.Contains(name)) continue;
+            if (!reserved.Contains(name))
+                continue;
 
             // Name -> NameA, NameB, ... (realistically never exceeds one or two)
             var alias = name + 'A';
             for (var c = 'B'; c != 'Z'; c++)
             {
-                if (taken.Add(alias)) break;
+                if (taken.Add(alias))
+                    break;
                 alias = name + c;
             }
 
@@ -162,14 +168,14 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
 
         var scratch = new StringSink(sink);
 
-        if (elem.Super != null) _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
+        if (elem.Super != null)
+            _namedTypes[elem.Super.TargetFullPath] = elem.Super.ResolvedTo;
 
         scratch.Append(
             elem.Super != null && elem.Name() != "Interface"
                 ? $"({RendererUtils.GetRefTypeName(elem.Super, _scope)}"
                 : "(UObject"
         );
-
 
         foreach (var iface in elem.Interfaces)
         {
@@ -187,7 +193,8 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
         foreach (var field in elem.Fields)
         {
             scratch.Clear();
-            if (field.ParamType is DelegateType) scratch.Append("# ");
+            if (field.ParamType is DelegateType)
+                scratch.Append("# ");
             new PyParamRenderer(field, _scope).Render(scratch);
             sink.AppendLine(scratch.ToString());
         }
@@ -201,7 +208,8 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
             scratch.Reset(sink);
             new PyFunctionRenderer(func, _scope).Render(scratch);
             sink.AppendLineRaw(scratch.ToString());
-            if (func != elem.Functions[^1]) sink.AppendLine();
+            if (func != elem.Functions[^1])
+                sink.AppendLine();
         }
     }
 
@@ -209,8 +217,12 @@ public class PyClassRenderer(ClassDef elem) : IRenderable
     {
         sink.AppendLine("from enum import IntEnum");
         sink.AppendLine("from typing import Any, Protocol, override");
-        sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
-        sink.AppendLine("from bl1.stubgenapi import name, byte, Opt, Out, OptOut, Array, Delegate, UnresolvedClass");
+        sink.AppendLine(
+            "from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct"
+        );
+        sink.AppendLine(
+            "from bl1.stubgenapi import name, byte, Opt, Out, OptOut, Array, Delegate, UnresolvedClass"
+        );
 
         var imports = new SortedDictionary<string, SortedSet<string>>(StringComparer.Ordinal);
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))

@@ -6,7 +6,8 @@ public class InterfaceType : BaseType
 {
     public NamedType InterfaceClass { get; }
 
-    public InterfaceType(UInterfaceProperty prop, BaseElement? parent) : base(parent)
+    public InterfaceType(UInterfaceProperty prop, BaseElement? parent)
+        : base(parent)
     {
         InterfaceClass = new NamedType(prop.InterfaceClass.GetPath(), this);
     }

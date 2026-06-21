@@ -1,15 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>WillowGen</AssemblyName>
+    <RootNamespace>WillowGen</RootNamespace>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <AssemblyName>WillowGen</AssemblyName>
-        <RootNamespace>WillowGen</RootNamespace>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\UE3StubGenCore\UE3StubGenCore.csproj"/>
-    </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\UE3StubGenCore\UE3StubGenCore.csproj" />
+  </ItemGroup>
 </Project>

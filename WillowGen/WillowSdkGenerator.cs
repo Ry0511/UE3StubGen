@@ -14,11 +14,16 @@ public class WillowSdkGenerator : IExporter
     // TODO: WrappedStruct[T] can represent function parameters i.e., all hook functions use
     //  WrappedStruct[T] to capture the parameters. Would want to type-hint the hookable functions
     //  as well if possible without duplicating every functions signature
-    //  
+    //
 
     public class FileSink(string path) : Sink(0, DefaultIndentStep)
     {
-        private readonly FileStream _fs = new(path, FileMode.Truncate, FileAccess.Write, FileShare.Write);
+        private readonly FileStream _fs = new(
+            path,
+            FileMode.Truncate,
+            FileAccess.Write,
+            FileShare.Write
+        );
 
         protected override void Write(string text)
         {

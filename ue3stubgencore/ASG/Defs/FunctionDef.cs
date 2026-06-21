@@ -17,19 +17,26 @@ public class FunctionDef : BaseSymbol
     public bool IsNaughtyOverride { get; private set; }
     public HashSet<FunctionDef> Overriders { get; } = [];
 
-    public FunctionDef(ExportFunction export, BaseElement? parent = null) : base(parent)
+    public FunctionDef(ExportFunction export, BaseElement? parent = null)
+        : base(parent)
     {
-        if (!export.IsRegularFunction && !export.IsDelegate) throw new Exception("only regular functions are supported (iterator and operator functions are not allowed)");
+        if (!export.IsRegularFunction && !export.IsDelegate)
+            throw new Exception(
+                "only regular functions are supported (iterator and operator functions are not allowed)"
+            );
 
         Export = export;
         Params = export.Parameters.Select(elem => new TypedParamDef(elem, this)).ToList();
-        ReturnValue = export.ReturnParameter != null ? new TypedParamDef(export.ReturnParameter, this) : null;
+        ReturnValue =
+            export.ReturnParameter != null ? new TypedParamDef(export.ReturnParameter, this) : null;
     }
 
     public override IEnumerable<BaseElement> Children()
     {
-        foreach (var elem in Params) yield return elem;
-        if (ReturnValue != null) yield return ReturnValue;
+        foreach (var elem in Params)
+            yield return elem;
+        if (ReturnValue != null)
+            yield return ReturnValue;
     }
 
     public override string ExportPathName()
@@ -44,7 +51,8 @@ public class FunctionDef : BaseSymbol
 
     public bool HasSameSignatureAs(FunctionDef other)
     {
-        if (Params.Count != other.Params.Count) return false;
+        if (Params.Count != other.Params.Count)
+            return false;
 
         for (var i = 0; i < Params.Count; i++)
             if (Params[i].ParamType.Name() != other.Params[i].ParamType.Name())
@@ -60,8 +68,9 @@ public class FunctionDef : BaseSymbol
 
     public override void PostEvaluate(BaseElement root)
     {
-        if (Parent is not ClassDef cls) return;
-        
+        if (Parent is not ClassDef cls)
+            return;
+
         var parentFunc = cls.InheritedTypes()
             .SelectMany(inherited => inherited.Functions)
             .FirstOrDefault(i => i.Name() == Name() && i.HasSameSignatureAs(this));
@@ -70,5 +79,12 @@ public class FunctionDef : BaseSymbol
         IsOverride = Overrides != null;
         IsNaughtyOverride = IsOverride && !ParameterNamesMatch(parentFunc!);
         parentFunc?.Overriders.Add(this);
+    }
+
+    public bool HasAnyNaughtyOverrides()
+    {
+        if (Overriders.Any(e => e.IsNaughtyOverride))
+            return true;
+        return Overrides != null && Overrides.HasAnyNaughtyOverrides();
     }
 }

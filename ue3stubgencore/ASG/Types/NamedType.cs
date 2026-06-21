@@ -6,7 +6,8 @@ public class NamedType : BaseType
 {
     public RefNode Ref { get; }
 
-    public NamedType(string fullPath, BaseElement? parent) : base(parent)
+    public NamedType(string fullPath, BaseElement? parent)
+        : base(parent)
     {
         Ref = new RefNode(fullPath, this);
     }
@@ -23,21 +24,24 @@ public class NamedType : BaseType
 
     public bool IsClassRef()
     {
-        if (Ref.ResolvedTo == null) return false;
+        if (Ref.ResolvedTo == null)
+            return false;
         var r = Ref.ResolvedTo;
         return r is ClassDef;
     }
 
     public bool IsStructRef()
     {
-        if (Ref.ResolvedTo == null) return false;
+        if (Ref.ResolvedTo == null)
+            return false;
         var r = Ref.ResolvedTo;
         return r is StructDef;
     }
 
     public bool IsEnumRef()
     {
-        if (Ref.ResolvedTo == null) return false;
+        if (Ref.ResolvedTo == null)
+            return false;
         var r = Ref.ResolvedTo;
         return r is EnumDef;
     }

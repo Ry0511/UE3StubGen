@@ -10,26 +10,40 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
         return Create((elem.ObjectHandle as UProperty)!, parent);
     }
 
-    protected static BaseType Create(UProperty prop, BaseElement? parent, bool ignoreArrayDim = false)
+    protected static BaseType Create(
+        UProperty prop,
+        BaseElement? parent,
+        bool ignoreArrayDim = false
+    )
     {
-        if (prop.ArrayDim > 1 && !ignoreArrayDim) return new StaticArrayType(prop, parent);
+        if (prop.ArrayDim > 1 && !ignoreArrayDim)
+            return new StaticArrayType(prop, parent);
 
         switch (prop)
         {
-            case UArrayProperty e: return new DynArrayType(e, parent);
-            case UClassProperty e: return new ClassType(e, parent);
-            case UMapProperty e: return new UnhandledType(e, parent);
-            case UDelegateProperty e: return new DelegateType(e, parent);
+            case UArrayProperty e:
+                return new DynArrayType(e, parent);
+            case UClassProperty e:
+                return new ClassType(e, parent);
+            case UMapProperty e:
+                return new UnhandledType(e, parent);
+            case UDelegateProperty e:
+                return new DelegateType(e, parent);
             case UByteProperty e:
             {
-                if (e.Enum != null) return new NamedType(e.Enum.GetPath(), parent);
+                if (e.Enum != null)
+                    return new NamedType(e.Enum.GetPath(), parent);
 
                 return new EngineBuiltinType(e, parent);
             }
-            case UInterfaceProperty e: return new InterfaceType(e, parent);
-            case UComponentProperty e: return new NamedType(e.Object.GetPath(), parent);
-            case UStructProperty e: return new NamedType(e.Struct.GetPath(), parent);
-            case UObjectProperty e: return new NamedType(e.Object.GetPath(), parent);
+            case UInterfaceProperty e:
+                return new InterfaceType(e, parent);
+            case UComponentProperty e:
+                return new NamedType(e.Object.GetPath(), parent);
+            case UStructProperty e:
+                return new NamedType(e.Struct.GetPath(), parent);
+            case UObjectProperty e:
+                return new NamedType(e.Object.GetPath(), parent);
 
             default:
             {

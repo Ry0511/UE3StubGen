@@ -9,7 +9,8 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
     {
         if (elem.IsOverride)
         {
-            if (elem.IsNaughtyOverride) sink.AppendLine("# naughty override");
+            if (elem.IsNaughtyOverride)
+                sink.AppendLine("# naughty override");
 
             sink.AppendLine("@override");
         }
@@ -28,15 +29,13 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         var isFirstParam = elem.IsStatic;
         foreach (var param in elem.Params)
         {
-            if (!isFirstParam) scratch.Append(", ");
+            if (!isFirstParam)
+                scratch.Append(", ");
             isFirstParam = false;
             RendererUtils.Create(param, scope).Render(scratch);
         }
 
-        if (
-            elem.Overriders.Any(e => e.IsNaughtyOverride)
-            || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name()))
-        )
+        if (elem.HasAnyNaughtyOverrides() || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))
         {
             scratch.Append(", /");
         }
@@ -57,7 +56,8 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             // output parameters are returned directly
             foreach (var param in elem.Params.Where(p => p.IsOutParam))
             {
-                if (!isFirst) sink.AppendRaw(", ");
+                if (!isFirst)
+                    sink.AppendRaw(", ");
                 isFirst = false;
                 var paramType = RendererUtils.GetReturnTypeName(param.ParamType, scope);
                 sink.AppendRaw(paramType);
@@ -92,7 +92,8 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         foreach (var line in lines)
         {
             var isBlank = line.Trim().Length == 0;
-            if (isBlank && bLastWasBlank) continue;
+            if (isBlank && bLastWasBlank)
+                continue;
             bLastWasBlank = isBlank;
             sink.AppendLine(line);
         }

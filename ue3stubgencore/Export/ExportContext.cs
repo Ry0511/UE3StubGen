@@ -13,7 +13,8 @@ public class ExportContext
 
     private void LoadAndInitialiseAllPackages()
     {
-        var packageList = _packageRoot.GetFiles("*.u", SearchOption.AllDirectories)
+        var packageList = _packageRoot
+            .GetFiles("*.u", SearchOption.AllDirectories)
             .Select(file => file)
             .ToList();
 
@@ -30,8 +31,12 @@ public class ExportContext
 
         if (File.Exists(ntlPath))
         {
-            using var ntlFileStream =
-                File.Open(ntlPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var ntlFileStream = File.Open(
+                ntlPath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read
+            );
             ntlPackage = new NativesTablePackage();
             ntlPackage.Deserialize(ntlFileStream);
         }
@@ -47,7 +52,8 @@ public class ExportContext
                 UnrealConfig.SuppressSignature = true;
                 var pkg = UnrealLoader.LoadPackage(pkgPath.FullName);
                 UnrealConfig.SuppressSignature = false;
-                if (ntlPackage != null) pkg.NTLPackage = ntlPackage;
+                if (ntlPackage != null)
+                    pkg.NTLPackage = ntlPackage;
 
                 pkg.InitializePackage();
                 Console.SetOut(consoleOut);
@@ -56,7 +62,8 @@ public class ExportContext
                 if (pkg.Summary.CompressedChunks != null && pkg.Summary.CompressedChunks.Any())
                 {
                     Console.WriteLine(
-                        $"Skipping {pkgPath.Name} because it is a compressed package");
+                        $"Skipping {pkgPath.Name} because it is a compressed package"
+                    );
                     pkg.Stream.Close();
                     continue;
                 }
@@ -84,7 +91,8 @@ public class ExportContext
     public ExportContext(string path)
     {
         _packageRoot = new DirectoryInfo(path);
-        if (!_packageRoot.Exists) throw new Exception($"path specified does not exist: {path}");
+        if (!_packageRoot.Exists)
+            throw new Exception($"path specified does not exist: {path}");
 
         _exportCache.EnsureCapacity(8192);
         LoadAndInitialiseAllPackages();
@@ -105,21 +113,25 @@ public class ExportContext
         return _packages.Values;
     }
 
-    public T ResolveImport<T>(UObject obj, bool checkSubclasses = false) where T : UObject
+    public T ResolveImport<T>(UObject obj, bool checkSubclasses = false)
+        where T : UObject
     {
         var index = (int)obj;
-        if (index > 0) return (obj as T)!;
+        if (index > 0)
+            return (obj as T)!;
 
         return ResolveImport<T>(obj.Package, index, checkSubclasses);
     }
 
-    public T ResolveImport<T>(UnrealPackage pkg, int index, bool checkSubclasses = false) where T : UObject
+    public T ResolveImport<T>(UnrealPackage pkg, int index, bool checkSubclasses = false)
+        where T : UObject
     {
         // this is an export, so just load it from package
         if (index > 0)
         {
             var export = pkg.Exports[index - 1];
-            if (export.Object is T obj) return obj;
+            if (export.Object is T obj)
+                return obj;
 
             throw new Exception("export is null or of different type");
         }
@@ -130,14 +142,16 @@ public class ExportContext
             var imp = pkg.Imports[-(index + 1)];
 
             var packageToImport = imp.Outer;
-            while (packageToImport?.Outer != null) packageToImport = packageToImport.Outer;
+            while (packageToImport?.Outer != null)
+                packageToImport = packageToImport.Outer;
 
             var loaded = GetPackage(packageToImport!.ObjectName);
             var found = loaded?.FindObject<T>(imp.ObjectName, checkSubclasses);
 
             if (found == null)
                 throw new Exception(
-                    $"Could not resolve import: {imp.GetReferencePath()} from {packageToImport!.ObjectName}");
+                    $"Could not resolve import: {imp.GetReferencePath()} from {packageToImport!.ObjectName}"
+                );
 
             return found;
         }
@@ -145,11 +159,13 @@ public class ExportContext
         throw new Exception("null import cannot be resolved");
     }
 
-    public T CreateExport<T>(UnrealPackage pkg, UObject obj) where T : BaseExport
+    public T CreateExport<T>(UnrealPackage pkg, UObject obj)
+        where T : BaseExport
     {
         if (_exportCache.TryGetValue(obj.GetPath(), out var cachedExport))
         {
-            if (cachedExport is T cachedExportAs) return cachedExportAs;
+            if (cachedExport is T cachedExportAs)
+                return cachedExportAs;
 
             throw new Exception("cached export is of a different type or is null");
         }
@@ -157,9 +173,11 @@ public class ExportContext
         static bool IsInterface(UClass cls)
         {
             var super = cls.Super;
-            while (super != null && super.Super != null) super = super.Super;
+            while (super != null && super.Super != null)
+                super = super.Super;
 
-            return super != null && string.Compare(super.Name, "Interface", StringComparison.OrdinalIgnoreCase) == 0;
+            return super != null
+                && string.Compare(super.Name, "Interface", StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         BaseExport createdExport = obj switch
@@ -171,10 +189,11 @@ public class ExportContext
             UFunction elem => new ExportFunction(this, pkg, elem),
             UProperty elem => new ExportProperty(this, pkg, elem),
             UStruct elem => new ExportStruct(this, pkg, elem),
-            _ => throw new Exception($"unsupported object type: {obj.GetType().Name}")
+            _ => throw new Exception($"unsupported object type: {obj.GetType().Name}"),
         };
 
-        if (createdExport is not T createdExportAs) throw new Exception("export is not of expected type");
+        if (createdExport is not T createdExportAs)
+            throw new Exception("export is not of expected type");
 
         _exportCache.Add(obj.GetPath(), createdExportAs);
         return createdExportAs;

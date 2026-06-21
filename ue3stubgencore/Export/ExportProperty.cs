@@ -6,9 +6,8 @@ namespace UE3StubGenCore.Export;
 
 public class ExportProperty : BaseExport
 {
-    public ExportProperty(ExportContext _, UnrealPackage pkg, UProperty obj) : base(pkg, obj)
-    {
-    }
+    public ExportProperty(ExportContext _, UnrealPackage pkg, UProperty obj)
+        : base(pkg, obj) { }
 
     private UProperty Obj()
     {

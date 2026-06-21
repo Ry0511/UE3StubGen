@@ -6,9 +6,8 @@ public abstract class Sink(int indent, int step)
     public int IndentLevel { get; private set; } = indent;
     public int IndentStep { get; private set; } = step;
 
-    protected Sink(Sink other) : this(other.IndentLevel, other.IndentStep)
-    {
-    }
+    protected Sink(Sink other)
+        : this(other.IndentLevel, other.IndentStep) { }
 
     public void AppendRaw(string text)
     {

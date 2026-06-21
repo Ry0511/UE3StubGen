@@ -9,12 +9,10 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
     public void Render(Sink sink)
     {
         var type = RendererUtils.GetTypeName(elem.ParamType, scope);
-        
+
         // sanitise only function parameters
-        var name = elem.Parent is FunctionDef
-            ? PyIdentifier.Sanitize(elem.Name())
-            : elem.Name();
-        
+        var name = elem.Parent is FunctionDef ? PyIdentifier.Sanitize(elem.Name()) : elem.Name();
+
         if (elem.Parent is ClassDef cls && (cls.Name() == "Object" || !PyIdentifier.IsValid(name)))
         {
             sink.Append($"# {name}: {type}");
@@ -23,8 +21,10 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
         {
             sink.Append($"{name}: ");
 
-            if (elem.IsOptionalParam) sink.AppendRaw("Opt");
-            if (elem.IsOutParam) sink.AppendRaw("Out");
+            if (elem.IsOptionalParam)
+                sink.AppendRaw("Opt");
+            if (elem.IsOutParam)
+                sink.AppendRaw("Out");
 
             if (elem.IsOptionalParam || elem.IsOutParam)
             {

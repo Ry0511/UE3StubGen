@@ -11,7 +11,8 @@ public class TypedParamDef : BaseElement, INameable
     public bool IsOptionalParam { get; }
     public bool IsOutParam { get; }
 
-    public TypedParamDef(ExportProperty prop, BaseElement? parent = null) : base(parent)
+    public TypedParamDef(ExportProperty prop, BaseElement? parent = null)
+        : base(parent)
     {
         ParamName = prop.Name();
         ParamType = BaseType.Create(prop, this);

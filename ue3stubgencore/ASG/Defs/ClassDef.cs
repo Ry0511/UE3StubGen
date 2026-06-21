@@ -12,30 +12,38 @@ public class ClassDef : BaseSymbol
     public IReadOnlyList<TypedParamDef> Fields { get; }
     public IReadOnlyList<FunctionDef> Functions { get; }
 
-    public ClassDef(ExportClass export, BaseElement? parent) : base(parent)
+    public ClassDef(ExportClass export, BaseElement? parent)
+        : base(parent)
     {
         Export = export;
-        if (export.Super != null) Super = new RefNode(export.Super.GetPath(), this);
+        if (export.Super != null)
+            Super = new RefNode(export.Super.GetPath(), this);
 
         Interfaces = export.Interfaces.Select(elem => new RefNode(elem.GetPath(), this)).ToList();
         Enums = export.Enums.Select(elem => new EnumDef(elem, this)).ToList();
         Structs = export.Structs.Select(elem => new StructDef(elem, this)).ToList();
         Fields = export.Fields.Select(elem => new TypedParamDef(elem, this)).ToList();
 
-        Functions = export.Functions
-            .Where(elem => elem.IsRegularFunction || elem.IsDelegate)
+        Functions = export
+            .Functions.Where(elem => elem.IsRegularFunction || elem.IsDelegate)
             .Select(elem => new FunctionDef(elem, this))
             .ToList();
     }
 
     public override IEnumerable<BaseElement> Children()
     {
-        if (Super != null) yield return Super;
-        foreach (var elem in Interfaces) yield return elem;
-        foreach (var elem in Enums) yield return elem;
-        foreach (var elem in Structs) yield return elem;
-        foreach (var elem in Fields) yield return elem;
-        foreach (var elem in Functions) yield return elem;
+        if (Super != null)
+            yield return Super;
+        foreach (var elem in Interfaces)
+            yield return elem;
+        foreach (var elem in Enums)
+            yield return elem;
+        foreach (var elem in Structs)
+            yield return elem;
+        foreach (var elem in Fields)
+            yield return elem;
+        foreach (var elem in Functions)
+            yield return elem;
     }
 
     public override string ExportPathName()
@@ -54,7 +62,8 @@ public class ClassDef : BaseSymbol
         var stack = new Stack<ClassDef>();
 
         Push(Super?.ResolvedTo as ClassDef);
-        foreach (var iface in Interfaces) Push(iface.ResolvedTo as ClassDef);
+        foreach (var iface in Interfaces)
+            Push(iface.ResolvedTo as ClassDef);
 
         while (stack.Count > 0)
         {
@@ -62,14 +71,16 @@ public class ClassDef : BaseSymbol
             yield return c;
 
             Push(c.Super?.ResolvedTo as ClassDef);
-            foreach (var iface in c.Interfaces) Push(iface.ResolvedTo as ClassDef);
+            foreach (var iface in c.Interfaces)
+                Push(iface.ResolvedTo as ClassDef);
         }
 
         yield break;
 
         void Push(ClassDef? c)
         {
-            if (c != null && seen.Add(c)) stack.Push(c);
+            if (c != null && seen.Add(c))
+                stack.Push(c);
         }
     }
 

@@ -13,9 +13,11 @@ public static class RendererUtils
             ClassDef e => new PyClassRenderer(e),
             StructDef e => new PyStructRenderer(e, scope),
             EnumDef e => new PyEnumRenderer(e),
-            FunctionDef e => e.IsDelegate ? new PyDelegateRenderer(e, scope) : new PyFunctionRenderer(e, scope),
+            FunctionDef e => e.IsDelegate
+                ? new PyDelegateRenderer(e, scope)
+                : new PyFunctionRenderer(e, scope),
             TypedParamDef e => new PyParamRenderer(e, scope),
-            _ => throw new Exception("unsupported element type: " + elem.GetType().Name + "")
+            _ => throw new Exception("unsupported element type: " + elem.GetType().Name + ""),
         };
     }
 
@@ -31,7 +33,7 @@ public static class RendererUtils
             StaticArrayType ty => $"Array[{GetTypeName(ty.HeldType, scope)}]",
             DelegateType ty => $"Delegate[{CreateDelegateSignature(ty, scope)}]",
             UnhandledType _ => "Any", // maps fall into this category
-            _ => throw new ArgumentOutOfRangeException(nameof(elem))
+            _ => throw new ArgumentOutOfRangeException(nameof(elem)),
         };
     }
 
@@ -47,32 +49,32 @@ public static class RendererUtils
             StaticArrayType ty => $"WrappedArray[{GetReturnTypeName(ty.HeldType, scope)}]",
             DelegateType ty => $"{CreateDelegateSignature(ty, scope)}",
             UnhandledType _ => "Any", // maps fall into this category
-            _ => throw new ArgumentOutOfRangeException(nameof(elem))
+            _ => throw new ArgumentOutOfRangeException(nameof(elem)),
         };
     }
 
     public static string GetNamedTypeName(NamedType elem, NamingScope scope)
     {
         var name = GetRefTypeName(elem.Ref, scope);
-        
+
         if (elem.IsClassRef())
         {
             return name + " | None"; // UObject | None
         }
-        
+
         if (elem.IsStructRef())
         {
             return name + " | WrappedStruct"; // T | WrappedStruct (T is a WrappedStruct)
-        } 
-        
+        }
+
         if (elem.IsEnumRef())
         {
             return name + " | int"; // Enum | int
-        } 
-        
+        }
+
         return name;
     }
-    
+
     public static string GetRefTypeName(RefNode elem, NamingScope scope)
     {
         if (elem.ResolvedTo == null)
@@ -96,7 +98,7 @@ public static class RendererUtils
             ClassDef ty => scope.LocalName(ty, ty.Name()),
             EnumDef ty => $"{scope.LocalName(ty, ty.Name())}",
             StructDef ty => $"{scope.LocalName(ty, ty.Name())}",
-            _ => throw new Exception("invalid type hint: " + elem.ResolvedTo.Name())
+            _ => throw new Exception("invalid type hint: " + elem.ResolvedTo.Name()),
         };
     }
 
@@ -110,22 +112,25 @@ public static class RendererUtils
             EngineBuiltin.Byte => "byte",
             EngineBuiltin.Name => "name",
             EngineBuiltin.String => "str",
-            _ => throw new Exception("invalid builtin type: " + elem.Type)
+            _ => throw new Exception("invalid builtin type: " + elem.Type),
         };
     }
 
     public static string CreateDelegateSignature(DelegateType elem, NamingScope scope)
     {
-        if (elem.Function.ResolvedTo == null) throw new Exception("unresolved delegate");
+        if (elem.Function.ResolvedTo == null)
+            throw new Exception("unresolved delegate");
 
-        if (elem.Function.ResolvedTo is not FunctionDef func) throw new Exception("invalid delegate");
+        if (elem.Function.ResolvedTo is not FunctionDef func)
+            throw new Exception("invalid delegate");
 
         return CreateDelegateSignature(func, scope);
     }
 
     public static string CreateDelegateSignature(FunctionDef func, NamingScope? scope = null)
     {
-        if (scope == null) return func.Name() + "Fn";
+        if (scope == null)
+            return func.Name() + "Fn";
 
         return scope.LocalName(func, func.Name() + "Fn");
     }

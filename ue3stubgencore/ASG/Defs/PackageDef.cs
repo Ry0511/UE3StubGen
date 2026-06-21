@@ -8,7 +8,8 @@ public class PackageDef : BaseSymbol
     public List<ClassDef> Classes { get; }
     public Dictionary<string, HashSet<BaseSymbol>> NameTable { get; }
 
-    public PackageDef(ExportPackage export, BaseElement? parent = null) : base(parent)
+    public PackageDef(ExportPackage export, BaseElement? parent = null)
+        : base(parent)
     {
         Export = export;
         Classes = export.Classes.Select(cls => new ClassDef(cls, this)).ToList();

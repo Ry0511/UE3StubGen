@@ -8,7 +8,8 @@ internal class LoggingExporter : IExporter
 {
     public void Export(ExportModel model)
     {
-        foreach (var pkg in model.Packages) Console.WriteLine($"Package {pkg.Name()} has {pkg.Classes.Count} classes");
+        foreach (var pkg in model.Packages)
+            Console.WriteLine($"Package {pkg.Name()} has {pkg.Classes.Count} classes");
     }
 
     public static void Main(string[] args)

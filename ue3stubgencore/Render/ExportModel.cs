@@ -10,9 +10,7 @@ public class ExportModel
     public ExportModel(ExportContext ctx)
     {
         Context = ctx;
-        Packages = ctx.GetPackages()
-            .Select(pkg => new ExportPackage(Context, pkg))
-            .ToList();
+        Packages = ctx.GetPackages().Select(pkg => new ExportPackage(Context, pkg)).ToList();
     }
 
     public void ExportAll(IExporter api)

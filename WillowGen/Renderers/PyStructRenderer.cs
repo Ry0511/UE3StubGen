@@ -23,7 +23,8 @@ public class PyStructRenderer(StructDef elem, NamingScope scope) : IRenderable
             sink.AppendLine(scratch.ToString());
         }
 
-        if (elem.Fields.Count == 0) sink.Append("...");
+        if (elem.Fields.Count == 0)
+            sink.Append("...");
 
         sink.PopIndent();
     }

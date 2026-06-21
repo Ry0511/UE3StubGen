@@ -17,7 +17,9 @@ public class PyInitFileRenderer(PackageDef elem) : IRenderable
             exported.Add(cls.Name());
 
             // import all the module unique children
-            foreach (var child in cls.Descendants().OfType<BaseSymbol>().Where(e => e.IsModuleUnique))
+            foreach (
+                var child in cls.Descendants().OfType<BaseSymbol>().Where(e => e.IsModuleUnique)
+            )
             {
                 sink.AppendRaw($", {child.Name()}");
                 exported.Add(child.Name());
