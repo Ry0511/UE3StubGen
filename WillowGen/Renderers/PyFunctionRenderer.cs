@@ -7,6 +7,14 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 {
     public void Render(Sink sink)
     {
+        RenderFunctionHeader(sink);
+        RenderFunctionParameters(sink);
+        RenderFunctionReturnType(sink);
+        RenderDocumentation(sink);
+    }
+
+    private void RenderFunctionHeader(Sink sink)
+    {
         if (elem.IsOverride)
         {
             if (elem.IsNaughtyOverride)
@@ -26,9 +34,13 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         {
             sink.Append($"def {elem.Name()}(self");
         }
+    }
 
+    private void RenderFunctionParameters(Sink sink)
+    {
         var scratch = new StringSink();
         var isFirstParam = elem.IsStatic;
+
         foreach (var param in elem.Params)
         {
             if (!isFirstParam)
@@ -40,15 +52,22 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             new PyParamRenderer(param, scope).Render(scratch);
         }
 
+        // if there are any invalid overrides or badly named variables, then we force positional
+        // only invocation
         if (
-            elem.FamilyHasNaughtyOverride || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))
+            elem.FamilyHasNaughtyOverride
+            || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name()))
+        )
         {
             scratch.Append(", /");
         }
 
         sink.AppendRaw(scratch.ToString());
         sink.AppendRaw(") -> ");
+    }
 
+    private void RenderFunctionReturnType(Sink sink)
+    {
         if (elem.HasOutParms)
         {
             var isFirst = elem.ReturnValue == null;
@@ -83,8 +102,6 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         {
             sink.AppendLineRaw("None:");
         }
-
-        RenderDocumentation(sink);
     }
 
     private void RenderDocumentation(Sink sink)
