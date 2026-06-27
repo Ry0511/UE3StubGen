@@ -13,12 +13,9 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         RenderDocumentation(sink);
     }
 
-    private static bool IsTrueOptional(TypedParamDef param)
-        => param.IsOptionalParam && !param.IsOutParam;
-
     private void RenderFunctionHeader(Sink sink)
     {
-        if (elem.HasSparseOptionalParams(IsTrueOptional))
+        if (elem.HasSparseOptionalParams(PyParamRenderer.IsTrueOptional))
         {
             sink.AppendLine("# sparse optional/out params");
         }
@@ -49,7 +46,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         var scratch = new StringSink();
         var isFirstParam = elem.IsStatic;
 
-        var forceKeywordOnly = elem.HasSparseOptionalParams(IsTrueOptional);
+        var forceKeywordOnly = elem.HasSparseOptionalParams(PyParamRenderer.IsTrueOptional);
         if (forceKeywordOnly)
         {
             if (!isFirstParam)
@@ -70,12 +67,6 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 
             isFirstParam = false;
             new PyParamRenderer(param, scope).Render(scratch);
-
-            // TODO: replace this with values derived from defaultproperties
-            if (IsTrueOptional(param))
-            {
-                scratch.AppendRaw(" = None");
-            }
         }
 
         // if there are any invalid overrides or badly named variables, then we force positional
@@ -97,8 +88,14 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
     {
         if (elem.HasOutParms)
         {
+            var hasMultipleReturns = (elem.ReturnValue != null ? 1 : 0)
+                + elem.Params.Count(p => p.IsOutParam) > 1;
             var isFirst = elem.ReturnValue == null;
-            sink.AppendRaw("tuple[");
+            if (hasMultipleReturns)
+            {
+                sink.AppendRaw("tuple[");
+            }
+
             if (elem.ReturnValue != null)
             {
                 var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
@@ -118,7 +115,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
                 sink.AppendRaw(paramType);
             }
 
-            sink.AppendLineRaw("]:");
+            sink.AppendLineRaw(hasMultipleReturns ? "]:" : ":");
         }
         else if (elem.ReturnValue != null)
         {
