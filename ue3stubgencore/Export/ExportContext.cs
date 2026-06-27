@@ -5,15 +5,14 @@ namespace UE3StubGenCore.Export;
 
 public class ExportContext
 {
-    private readonly DirectoryInfo packageRoot;
-    private readonly Dictionary<string, UnrealPackage> packages = new ();
-    private readonly Dictionary<string, BaseExport> exportCache = new ();
-
-    public int CacheCount => exportCache.Count;
+    private readonly DirectoryInfo _packageRoot;
+    private readonly Dictionary<string, UnrealPackage> _packages = new();
+    private readonly Dictionary<string, BaseExport> _exportCache = new();
+    private readonly HashSet<string> _allInterfaces = new();
 
     private void LoadAndInitialiseAllPackages()
     {
-        var packageList = packageRoot
+        var packageList = _packageRoot
             .GetFiles("*.u", SearchOption.AllDirectories)
             .Select(file => file)
             .ToList();
@@ -89,31 +88,49 @@ public class ExportContext
         }
     }
 
+    private void QueryAllInterfaces()
+    {
+        foreach (var pkg in _packages.Values)
+        {
+            foreach (var obj in pkg.Objects.Where(e => (int)e > 0 && e is UClass))
+            {
+                var cls = (UClass)obj;
+                foreach (var interfaceIndex in cls.ImplementedInterfaces ?? [])
+                {
+                    // anything used as an interface is an interface
+                    var import = ResolveImport<UClass>(pkg, interfaceIndex);
+                    _allInterfaces.Add(import.GetPath());
+                }
+            }
+        }
+    }
+
     public ExportContext(string path)
     {
-        packageRoot = new DirectoryInfo(path);
-        if (!packageRoot.Exists)
+        _packageRoot = new DirectoryInfo(path);
+        if (!_packageRoot.Exists)
         {
             throw new Exception($"path specified does not exist: {path}");
         }
 
-        exportCache.EnsureCapacity(8192);
+        _exportCache.EnsureCapacity(8192);
         LoadAndInitialiseAllPackages();
+        QueryAllInterfaces();
     }
 
     private void AddPackage(UnrealPackage pkg)
     {
-        packages[pkg.PackageName] = pkg;
+        _packages[pkg.PackageName] = pkg;
     }
 
     public UnrealPackage? GetPackage(string name)
     {
-        return packages.GetValueOrDefault(name);
+        return _packages.GetValueOrDefault(name);
     }
 
     public IEnumerable<UnrealPackage> GetPackages()
     {
-        return packages.Values;
+        return _packages.Values;
     }
 
     public T ResolveImport<T>(UObject obj, bool checkSubclasses = false)
@@ -172,7 +189,7 @@ public class ExportContext
     public T CreateExport<T>(UnrealPackage pkg, UObject obj)
         where T : BaseExport
     {
-        if (exportCache.TryGetValue(obj.GetPath(), out var cachedExport))
+        if (_exportCache.TryGetValue(obj.GetPath(), out var cachedExport))
         {
             if (cachedExport is T cachedExportAs)
             {
@@ -182,21 +199,10 @@ public class ExportContext
             throw new Exception("cached export is of a different type or is null");
         }
 
-        static bool IsInterface(UClass cls)
-        {
-            var super = cls.Super;
-            while (super != null && super.Super != null)
-            {
-                super = super.Super;
-            }
-
-            return super != null
-                && string.Compare(super.Name, "Interface", StringComparison.OrdinalIgnoreCase) == 0;
-        }
 
         BaseExport createdExport = obj switch
         {
-            UClass elem => IsInterface(elem)
+            UClass elem => _allInterfaces.Contains(elem.GetPath())
                 ? new ExportInterface(this, pkg, elem)
                 : new ExportClass(this, pkg, elem),
             UEnum elem => new ExportEnum(this, pkg, elem),
@@ -211,7 +217,7 @@ public class ExportContext
             throw new Exception("export is not of expected type");
         }
 
-        exportCache.Add(obj.GetPath(), createdExportAs);
+        _exportCache.Add(obj.GetPath(), createdExportAs);
         return createdExportAs;
     }
 }
