@@ -2,7 +2,7 @@
 
 public class SymbolTable
 {
-    private readonly Dictionary<string, BaseSymbol> fullPathSymbols = new ();
+    private readonly Dictionary<string, BaseSymbol> fullPathSymbols = new();
 
     public void Register(ISymbol sym)
     {

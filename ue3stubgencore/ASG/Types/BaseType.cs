@@ -7,7 +7,7 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
 {
     public static BaseType Create(ExportProperty elem, BaseElement? parent)
     {
-        return Create((elem.ObjectHandle as UProperty) !, parent);
+        return Create((elem.ObjectHandle as UProperty)!, parent);
     }
 
     protected static BaseType Create(
@@ -31,14 +31,14 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
             case UDelegateProperty e:
                 return new DelegateType(e, parent);
             case UByteProperty e:
-            {
-                if (e.Enum != null)
+                {
+                    if (e.Enum != null)
                     {
                         return new NamedType(e.Enum.GetPath(), parent);
                     }
 
-                return new EngineBuiltinType(e, parent);
-            }
+                    return new EngineBuiltinType(e, parent);
+                }
 
             case UInterfaceProperty e:
                 return new InterfaceType(e, parent);
@@ -50,16 +50,16 @@ public abstract class BaseType(BaseElement? parent) : BaseElement(parent), IName
                 return new NamedType(e.Object.GetPath(), parent);
 
             default:
-            {
-                try
                 {
-                    return new EngineBuiltinType(prop, parent);
+                    try
+                    {
+                        return new EngineBuiltinType(prop, parent);
+                    }
+                    catch (Exception)
+                    {
+                        return new UnhandledType(prop, parent);
+                    }
                 }
-                catch (Exception)
-                {
-                    return new UnhandledType(prop, parent);
-                }
-            }
         }
     }
 

@@ -13,7 +13,7 @@ public class ExportProperty : BaseExport
 
     private UProperty Obj()
     {
-        return (ObjectHandle as UProperty) !;
+        return (ObjectHandle as UProperty)!;
     }
 
     public bool IsClassMember()

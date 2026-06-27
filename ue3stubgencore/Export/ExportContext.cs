@@ -139,7 +139,7 @@ public class ExportContext
         var index = (int)obj;
         if (index > 0)
         {
-            return (obj as T) !;
+            return (obj as T)!;
         }
 
         return ResolveImport<T>(obj.Package, index, checkSubclasses);
@@ -198,7 +198,6 @@ public class ExportContext
 
             throw new Exception("cached export is of a different type or is null");
         }
-
 
         BaseExport createdExport = obj switch
         {

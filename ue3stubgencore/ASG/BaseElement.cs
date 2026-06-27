@@ -16,7 +16,7 @@ public abstract class BaseElement
 
     public virtual IEnumerable<BaseElement> Children()
     {
-        return[];
+        return [];
     }
 
     public IEnumerable<BaseElement> Descendants(bool includeSelf = false)
