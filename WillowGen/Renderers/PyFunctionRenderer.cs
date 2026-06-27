@@ -13,13 +13,16 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         RenderDocumentation(sink);
     }
 
+    private static bool IsTrueOptional(TypedParamDef param)
+        => param.IsOptionalParam && !param.IsOutParam;
+
     private void RenderFunctionHeader(Sink sink)
     {
-        if (elem.HasSparseOptionalParams(e => e.IsOptionalParam && !e.IsOutParam))
+        if (elem.HasSparseOptionalParams(IsTrueOptional))
         {
-            sink.AppendLine("# sparse optional params");
+            sink.AppendLine("# sparse optional/out params");
         }
-        
+
         if (elem.IsOverride)
         {
             if (elem.IsNaughtyOverride)
@@ -46,6 +49,18 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         var scratch = new StringSink();
         var isFirstParam = elem.IsStatic;
 
+        var forceKeywordOnly = elem.HasSparseOptionalParams(IsTrueOptional);
+        if (forceKeywordOnly)
+        {
+            if (!isFirstParam)
+            {
+                scratch.Append(", ");
+            }
+
+            scratch.Append("*");
+            isFirstParam = false;
+        }
+
         foreach (var param in elem.Params)
         {
             if (!isFirstParam)
@@ -55,13 +70,20 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 
             isFirstParam = false;
             new PyParamRenderer(param, scope).Render(scratch);
+
+            // TODO: replace this with values derived from defaultproperties
+            if (IsTrueOptional(param))
+            {
+                scratch.AppendRaw(" = None");
+            }
         }
 
         // if there are any invalid overrides or badly named variables, then we force positional
         // only invocation
         if (
-            elem.FamilyHasNaughtyOverride
-            || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name()))
+            !forceKeywordOnly
+            && (elem.FamilyHasNaughtyOverride
+                || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))
         )
         {
             scratch.Append(", /");

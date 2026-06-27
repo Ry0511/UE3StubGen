@@ -5,7 +5,7 @@ namespace WillowGen.Renderers;
 public static class PyIdentifier
 {
     // shoutouts to that one twat who decided to name their parameter `del`
-    private static readonly HashSet<string> Keywords = new (StringComparer.Ordinal)
+    private static readonly HashSet<string> Keywords = new(StringComparer.Ordinal)
     {
         "False",
         "None",
