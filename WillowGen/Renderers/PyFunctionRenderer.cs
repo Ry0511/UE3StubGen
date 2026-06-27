@@ -15,6 +15,11 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 
     private void RenderFunctionHeader(Sink sink)
     {
+        if (elem.HasSparseOptionalParams(e => e.IsOptionalParam && !e.IsOutParam))
+        {
+            sink.AppendLine("# sparse optional params");
+        }
+        
         if (elem.IsOverride)
         {
             if (elem.IsNaughtyOverride)

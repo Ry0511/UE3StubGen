@@ -128,12 +128,12 @@ public class FunctionDef : BaseSymbol
             var isOptionalParam = isOptional(param);
             if (isOptionalParam && !lastWasOptional)
             {
-                return false;
+                return true;
             }
 
             lastWasOptional = isOptionalParam;
         }
 
-        return true;
+        return false;
     }
 }
