@@ -110,4 +110,30 @@ public class FunctionDef : BaseSymbol
         var ps = string.Join(",", Params.Select(p => p.ParamType.Name()));
         return $"{Name()}({ps}):{ReturnValue?.ParamType.Name() ?? string.Empty}";
     }
+
+    public bool HasSparseOptionalParams(Predicate<TypedParamDef>? isOptional = null)
+    {
+        // Foo() and Foo(a) can never cause issues
+        if (!HasOptionalParms || Params.Count < 2)
+        {
+            return false;
+        }
+
+        isOptional ??= p => p.IsOptionalParam;
+
+        // Ensure all optional parameters are at the end
+        var lastWasOptional = isOptional(Params[^1]);
+        foreach (var param in Params.AsEnumerable().Reverse().Skip(1))
+        {
+            var isOptionalParam = isOptional(param);
+            if (isOptionalParam && !lastWasOptional)
+            {
+                return false;
+            }
+
+            lastWasOptional = isOptionalParam;
+        }
+
+        return true;
+    }
 }
