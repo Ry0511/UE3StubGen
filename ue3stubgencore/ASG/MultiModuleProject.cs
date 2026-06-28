@@ -7,7 +7,7 @@ public class MultiModuleProject : BaseElement
 {
     public IReadOnlyList<PackageDef> Modules { get; }
 
-    public SymbolTable Symbols { get; } = new ();
+    public SymbolTable Symbols { get; } = new();
 
     public MultiModuleProject(ExportModel model)
     {

@@ -15,6 +15,8 @@ public class TypedParamDef : BaseElement, INameable
 
     public bool IsOutParam { get; }
 
+    public bool IsArray { get; }
+
     public TypedParamDef(ExportProperty prop, BaseElement? parent = null)
         : base(parent)
     {
@@ -23,6 +25,7 @@ public class TypedParamDef : BaseElement, INameable
         IsFunctionParam = parent is FunctionDef;
         IsOptionalParam = prop.IsOptionalParam();
         IsOutParam = prop.IsOutParam();
+        IsArray = prop.IsArray();
     }
 
     public string Name()

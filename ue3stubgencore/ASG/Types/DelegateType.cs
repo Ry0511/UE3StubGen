@@ -37,7 +37,7 @@ public class DelegateType : BaseType
         //    delegate A(int B) == delegate B(int C)
         //  but the Name() from the export will return A or B so it can't be used here as we use
         //  this to determine 'is-same'...
-        StringBuilder sb = new ();
+        StringBuilder sb = new();
         sb.Append("Delegate,");
         sb.Append($"{func.Params.Count},");
         sb.Append('(');

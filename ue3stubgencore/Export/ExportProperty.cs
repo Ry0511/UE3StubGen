@@ -13,12 +13,7 @@ public class ExportProperty : BaseExport
 
     private UProperty Obj()
     {
-        return (ObjectHandle as UProperty) !;
-    }
-
-    public bool IsClassMember()
-    {
-        return Obj().Outer is UClass;
+        return (ObjectHandle as UProperty)!;
     }
 
     public bool IsFunctionParameter()
@@ -51,8 +46,5 @@ public class ExportProperty : BaseExport
         return Obj() is UArrayProperty;
     }
 
-    public bool IsArray()
-    {
-        return IsStaticArray() || IsDynamicArray();
-    }
+    public bool IsArray() => IsStaticArray() || IsDynamicArray();
 }

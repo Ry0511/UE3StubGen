@@ -10,12 +10,12 @@ public static class RendererUtils
     {
         return elem switch
         {
-            ClassType _ => "UClass | None",
-            DynArrayType ty => $"Array[{GetTypeName(ty.InnerType, scope)}]",
+            ClassType _ => "UClass",
+            DynArrayType ty => $"WrappedArray[{GetTypeName(ty.InnerType, scope)}]",
             EngineBuiltinType ty => GetBuiltinType(ty),
             InterfaceType ty => GetTypeName(ty.InterfaceClass, scope),
             NamedType ty => GetNamedTypeName(ty, scope),
-            StaticArrayType ty => $"Array[{GetTypeName(ty.HeldType, scope)}]",
+            StaticArrayType ty => $"WrappedArray[{GetTypeName(ty.HeldType, scope)}]",
             DelegateType ty => $"Delegate[{CreateDelegateSignature(ty, scope)}]",
             UnhandledType _ => "Any", // maps fall into this category
             _ => throw new ArgumentOutOfRangeException(nameof(elem)),
@@ -26,7 +26,7 @@ public static class RendererUtils
     {
         return elem switch
         {
-            ClassType _ => "UClass | None",
+            ClassType _ => "UClass",
             DynArrayType ty => $"WrappedArray[{GetReturnTypeName(ty.InnerType, scope)}]",
             EngineBuiltinType ty => GetBuiltinType(ty),
             InterfaceType ty => GetReturnTypeName(ty.InterfaceClass, scope),
@@ -41,20 +41,9 @@ public static class RendererUtils
     public static string GetNamedTypeName(NamedType elem, NamingScope scope)
     {
         var name = GetRefTypeName(elem.Ref, scope);
-
-        if (elem.IsClassRef())
-        {
-            return name + " | None"; // UObject | None
-        }
-
-        if (elem.IsStructRef())
-        {
-            return name + " | WrappedStruct"; // T | WrappedStruct (T is a WrappedStruct)
-        }
-
         if (elem.IsEnumRef())
         {
-            return name + " | int"; // Enum | int
+            return name + " | int";
         }
 
         return name;

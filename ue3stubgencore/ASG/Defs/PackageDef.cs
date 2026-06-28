@@ -17,7 +17,7 @@ public class PackageDef : BaseSymbol
         Classes = export.Classes.Select(cls => new ClassDef(cls, this)).ToList();
 
         // collect classes, structs, and enums defined
-        NameTable = new ();
+        NameTable = new();
         foreach (var sym in Descendants().OfType<BaseSymbol>().Where(e => e is not FunctionDef))
         {
             if (NameTable.TryGetValue(sym.Name(), out var list))

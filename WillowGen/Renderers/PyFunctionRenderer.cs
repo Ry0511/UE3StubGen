@@ -7,6 +7,19 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 {
     public void Render(Sink sink)
     {
+        RenderFunctionHeader(sink);
+        RenderFunctionParameters(sink);
+        RenderFunctionReturnType(sink);
+        RenderDocumentation(sink);
+    }
+
+    private void RenderFunctionHeader(Sink sink)
+    {
+        if (elem.HasSparseOptionalParams(PyParamRenderer.IsTrueOptional))
+        {
+            sink.AppendLine("# sparse optional/out params");
+        }
+
         if (elem.IsOverride)
         {
             if (elem.IsNaughtyOverride)
@@ -26,9 +39,25 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         {
             sink.Append($"def {elem.Name()}(self");
         }
+    }
 
+    private void RenderFunctionParameters(Sink sink)
+    {
         var scratch = new StringSink();
         var isFirstParam = elem.IsStatic;
+
+        var forceKeywordOnly = elem.HasSparseOptionalParams(PyParamRenderer.IsTrueOptional);
+        if (forceKeywordOnly)
+        {
+            if (!isFirstParam)
+            {
+                scratch.Append(", ");
+            }
+
+            scratch.Append("*");
+            isFirstParam = false;
+        }
+
         foreach (var param in elem.Params)
         {
             if (!isFirstParam)
@@ -40,19 +69,33 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             new PyParamRenderer(param, scope).Render(scratch);
         }
 
+        // if there are any invalid overrides or badly named variables, then we force positional
+        // only invocation
         if (
-            elem.FamilyHasNaughtyOverride || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))
+            !forceKeywordOnly
+            && (elem.FamilyHasNaughtyOverride
+                || elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))
+        )
         {
             scratch.Append(", /");
         }
 
         sink.AppendRaw(scratch.ToString());
         sink.AppendRaw(") -> ");
+    }
 
+    private void RenderFunctionReturnType(Sink sink)
+    {
         if (elem.HasOutParms)
         {
+            var hasMultipleReturns = (elem.ReturnValue != null ? 1 : 0)
+                + elem.Params.Count(p => p.IsOutParam) > 1;
             var isFirst = elem.ReturnValue == null;
-            sink.AppendRaw("tuple[");
+            if (hasMultipleReturns)
+            {
+                sink.AppendRaw("tuple[");
+            }
+
             if (elem.ReturnValue != null)
             {
                 var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
@@ -72,7 +115,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
                 sink.AppendRaw(paramType);
             }
 
-            sink.AppendLineRaw("]:");
+            sink.AppendLineRaw(hasMultipleReturns ? "]:" : ":");
         }
         else if (elem.ReturnValue != null)
         {
@@ -83,8 +126,6 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         {
             sink.AppendLineRaw("None:");
         }
-
-        RenderDocumentation(sink);
     }
 
     private void RenderDocumentation(Sink sink)

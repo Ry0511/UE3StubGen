@@ -39,7 +39,7 @@ public class WillowSdkGenerator : IExporter
         {
             var path = stubDir + $@"\{cls.Module!.Name()}\" + cls.Name() + ".pyi";
             Console.WriteLine($"creating {path}");
-            Directory.CreateDirectory(Path.GetDirectoryName(path) !);
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             var sink = new FileSink(path);
             new PyClassRenderer(model.ImportRoot, cls).Render(sink);
             sink.Dispose();
