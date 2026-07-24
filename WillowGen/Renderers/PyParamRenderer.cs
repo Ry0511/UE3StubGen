@@ -1,3 +1,4 @@
+using System.Text;
 using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.ASG.Types;
 using UE3StubGenCore.Sinks;
@@ -21,22 +22,27 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
         {
             sink.Append($"{name}: ");
 
+            var typeName = new StringBuilder();
+
             if (elem.IsOutParam)
             {
-                sink.AppendRaw("Out[");
+                typeName.Append("Out[");
             }
 
             if (elem.IsOptionalParam || elem.IsOutParam)
             {
-                sink.AppendRaw(type);
+                typeName.Append(type);
                 if (elem.IsArray && elem.IsOutParam)
                 {
-                    sink.AppendRaw(" | list[None]");
+                    typeName.Append(" | list[None]");
                 }
             }
             else
             {
-                sink.AppendRaw(type);
+                typeName.Append(
+                    !elem.IsFunctionParam && CanNormallyBeNone(elem.ParamType)
+                        ? $"AcceptsNone[{type}]"
+                        : type);
             }
 
             // I did think about pulling the default value from the property, but that seems to
@@ -44,17 +50,15 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
             // shows you the default already.
             if (elem.IsFunctionParam && IsTrueOptional())
             {
-                sink.AppendRaw(" | None = None");
-            }
-            else if (CanNormallyBeNone())
-            {
-                sink.AppendRaw(" | None");
+                typeName.Append(" = sentinel");
             }
 
             if (elem.IsOutParam)
             {
-                sink.AppendRaw("]");
+                typeName.Append("]");
             }
+
+            sink.AppendRaw(typeName.ToString());
         }
     }
 
@@ -62,9 +66,10 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
 
     public bool IsTrueOptional() => IsTrueOptional(elem);
 
-    public bool CanNormallyBeNone()
+    public static bool CanNormallyBeNone(BaseType ty)
     {
-        return elem.ParamType switch
+        // TODO: find a place for this
+        return ty switch
         {
             ClassType _ => true,
             DelegateType _ => true,

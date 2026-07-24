@@ -87,8 +87,6 @@ public class PyClassRenderer(string importRoot, ClassDef elem) : IRenderable
             "Unresolved",
             "Opt",
             "Out",
-            "OptOut",
-            "Array",
             "Delegate",
             "Any",
             "Protocol",
@@ -248,11 +246,13 @@ public class PyClassRenderer(string importRoot, ClassDef elem) : IRenderable
     private void RenderImportAndPrefaceDefinitions(Sink sink)
     {
         sink.AppendLine("from enum import IntEnum");
+        sink.AppendLine("from _typeshed import MaybeNone, sentinel");
         sink.AppendLine("from typing import Any, Protocol, override, Literal");
         sink.AppendLine(
             "from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
+        sink.AppendLine("from unrealsdk.unreal._uenum import UnrealEnum");
         sink.AppendLine(
-            $"from {_importRoot}stubgenapi import name, byte, Opt, Out, OptOut, Array, Delegate, Unresolved");
+            $"from {_importRoot}stubgenapi import name, byte, Opt, Out, OptOut, AcceptsNone, Array, Delegate, Unresolved, bound_function");
 
         var imports = new SortedDictionary<string, SortedSet<string>>(StringComparer.Ordinal);
         foreach (var (path, ty) in _namedTypes.Where(e => e.Value != null))

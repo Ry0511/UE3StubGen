@@ -41,6 +41,9 @@ public class WillowSdkGenerator : IExporter
             Console.WriteLine($"creating {path}");
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             var sink = new FileSink(path);
+            sink.AppendLine("# pyright: reportIncompatibleVariableOverride=false");
+            sink.AppendLine("# pyright: reportExplicitAny=false");
+            sink.AppendLine("# pyright: reportAny=false");
             new PyClassRenderer(model.ImportRoot, cls).Render(sink);
             sink.Dispose();
         }

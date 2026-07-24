@@ -1,3 +1,4 @@
+using System.Text;
 using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.Sinks;
 
@@ -15,57 +16,45 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 
     private void RenderFunctionHeader(Sink sink)
     {
+        List<string> comments = new();
+
         if (elem.HasSparseOptionalParams(PyParamRenderer.IsTrueOptional))
         {
-            sink.AppendLine("# sparse optional/out params");
+            comments.Add("sparse optional/out params");
         }
 
         if (elem.IsOverride)
         {
-            if (elem.IsNaughtyOverride)
-            {
-                sink.AppendLine("# naughty override");
-            }
-
-            sink.AppendLine("@override");
+            comments.Add(elem.IsNaughtyOverride ? "naughty override" : "override");
         }
 
         if (elem.IsStatic)
         {
-            sink.AppendLine("@staticmethod");
-            sink.Append($"def {elem.Name()}(");
+            comments.Add("static");
         }
-        else
+
+        if (comments.Count > 0)
         {
-            sink.Append($"def {elem.Name()}(self");
+            sink.AppendLine("# " + string.Join(", ", comments));
         }
+
+        sink.AppendLine("@bound_function");
+        sink.Append($"def {elem.Name()}(self");
     }
 
     private void RenderFunctionParameters(Sink sink)
     {
         var scratch = new StringSink();
-        var isFirstParam = elem.IsStatic;
 
         var forceKeywordOnly = elem.HasSparseOptionalParams(PyParamRenderer.IsTrueOptional);
         if (forceKeywordOnly)
         {
-            if (!isFirstParam)
-            {
-                scratch.Append(", ");
-            }
-
-            scratch.Append("*");
-            isFirstParam = false;
+            scratch.Append(", *");
         }
 
         foreach (var param in elem.Params)
         {
-            if (!isFirstParam)
-            {
-                scratch.Append(", ");
-            }
-
-            isFirstParam = false;
+            scratch.Append(", ");
             new PyParamRenderer(param, scope).Render(scratch);
         }
 
@@ -78,6 +67,10 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         )
         {
             scratch.Append(", /");
+        }
+        else if (elem.Params.Count > 2)
+        {
+            scratch.Append(",");
         }
 
         sink.AppendRaw(scratch.ToString());
@@ -100,6 +93,10 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             {
                 var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
                 sink.AppendRaw($"{retType}");
+                if (PyParamRenderer.CanNormallyBeNone(elem.ReturnValue!.ParamType))
+                {
+                    sink.AppendRaw(" | MaybeNone");
+                }
             }
 
             // output parameters are returned directly
@@ -120,7 +117,8 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         else if (elem.ReturnValue != null)
         {
             var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
-            sink.AppendLineRaw($"{retType}:");
+            var retTags = PyParamRenderer.CanNormallyBeNone(elem.ReturnValue.ParamType) ? " | MaybeNone" : string.Empty;
+            sink.AppendLineRaw($"{retType}{retTags}:");
         }
         else
         {
