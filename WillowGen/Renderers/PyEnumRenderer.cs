@@ -10,7 +10,7 @@ public class PyEnumRenderer(EnumDef elem) : IRenderable
         // an ordinal appears more than once
         var isBadEnum = elem.Values.Distinct().Count() != elem.Values.Count;
 
-        sink.AppendLine($"class {elem.Name()}(IntEnum):" + (isBadEnum ? " # bad enum" : string.Empty));
+        sink.AppendLine($"class {elem.Name()}(UnrealEnum):" + (isBadEnum ? " # bad enum" : string.Empty));
         sink.PushIndent();
         for (var i = 0; i < elem.Values.Count; i++)
         {
