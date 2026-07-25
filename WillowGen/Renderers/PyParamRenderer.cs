@@ -7,6 +7,8 @@ namespace WillowGen.Renderers;
 
 public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderable
 {
+    // TODO: this needs to be refactored to handle different types of rendering i.e., function
+    //  param or return vs member variable
     public void Render(Sink sink)
     {
         var type = RendererUtils.GetTypeName(elem.ParamType, scope);
