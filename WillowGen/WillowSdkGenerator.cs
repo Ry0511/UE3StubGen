@@ -37,15 +37,21 @@ public class WillowSdkGenerator : IExporter
         // create all the class.pyi files (in their package directory)
         foreach (var cls in py.Descendants().OfType<ClassDef>())
         {
-            var path = stubDir + $@"\{cls.Module!.Name()}\" + cls.Name() + ".pyi";
-            Console.WriteLine($"creating {path}");
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            var sink = new FileSink(path);
-            sink.AppendLine("# pyright: reportIncompatibleVariableOverride=false");
-            sink.AppendLine("# pyright: reportExplicitAny=false");
-            sink.AppendLine("# pyright: reportAny=false");
-            new PyClassRenderer(model.ImportRoot, cls).Render(sink);
-            sink.Dispose();
+            ExportClass(stubDir, model, cls);
         }
+    }
+
+    private void ExportClass(string stubDir, ExportModel model, ClassDef cls)
+    {
+        var path = stubDir + $@"\{cls.Module!.Name()}\" + cls.Name() + ".pyi";
+        Console.WriteLine($"creating {path}");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        var sink = new FileSink(path);
+        sink.AppendLine("# pyright: reportIncompatibleVariableOverride=false");
+        sink.AppendLine("# pyright: reportPrivateUsage=false");
+        sink.AppendLine("# pyright: reportExplicitAny=false");
+        sink.AppendLine("# pyright: reportAny=false");
+        new PyClassRenderer(model.ImportRoot, cls).Render(sink);
+        sink.Dispose();
     }
 }
