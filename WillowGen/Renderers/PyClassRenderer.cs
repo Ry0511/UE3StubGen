@@ -37,12 +37,11 @@ public class PyClassRenderer(string importRoot, ClassDef elem) : IRenderable
         }
 
         RenderClassFunctions(scratch);
+        new PyArgumentListRenderer(_symbols.NameResolver, elem).Render(scratch);
         scratch.PopIndent();
 
         sink.AppendLineRaw(preface.ToString());
         sink.AppendLineRaw(scratch.ToString());
-
-        new PyArgumentListRenderer(importRoot, elem).Render(sink);
     }
 
     private void RenderStructsAndEnums(Sink sink)

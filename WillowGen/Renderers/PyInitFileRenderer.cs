@@ -26,14 +26,6 @@ public class PyInitFileRenderer(string importRoot, PackageDef elem) : IRenderabl
                 exported.Add(child.Name());
             }
 
-            // import all the function args wrapped struct names
-            foreach (var func in cls.Functions.Where(e => e.Params.Count > 0))
-            {
-                var name = $"{cls.Name()}{func.Name()}";
-                exported.Add(name);
-                sink.AppendRaw($", {name}");
-            }
-
             sink.AppendLine();
         }
 
