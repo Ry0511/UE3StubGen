@@ -3,7 +3,7 @@ using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.ASG.Types;
 using UE3StubGenCore.Sinks;
 
-namespace WillowGen.Renderers.cls;
+namespace WillowGen.Renderers;
 
 public class PyImportRenderer : IRenderable
 {
