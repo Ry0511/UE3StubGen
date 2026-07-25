@@ -57,7 +57,7 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
 
             if (elem.IsOutParam)
             {
-                typeName.Append("]");
+                typeName.Append(']');
             }
 
             sink.AppendRaw(typeName.ToString());
