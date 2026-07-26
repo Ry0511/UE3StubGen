@@ -14,7 +14,7 @@ public class PyEnumRenderer(EnumDef elem) : IRenderable
         sink.PushIndent();
         for (var i = 0; i < elem.Values.Count; i++)
         {
-            sink.AppendLine((isBadEnum ? "# " : string.Empty) + $"{elem.Values[i]} = {i}");
+            sink.AppendLine((isBadEnum ? "# " : string.Empty) + $"{elem.Values[i]} = auto()");
         }
 
         if (isBadEnum)
