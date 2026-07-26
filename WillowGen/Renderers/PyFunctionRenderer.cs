@@ -1,4 +1,3 @@
-using System.Text;
 using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.Sinks;
 
@@ -55,7 +54,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         foreach (var param in elem.Params)
         {
             scratch.Append(", ");
-            new PyParamRenderer(param, scope).Render(scratch);
+            new PyParamRenderer(param, scope).RenderFunctionParam(scratch);
         }
 
         // if there are any invalid overrides or badly named variables, then we force positional

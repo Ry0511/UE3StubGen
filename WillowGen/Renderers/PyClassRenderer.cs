@@ -103,7 +103,7 @@ public class PyClassRenderer(string importRoot, ClassDef elem) : IRenderable
                 scratch.Append("# ");
             }
 
-            new PyParamRenderer(field, Scope).Render(scratch);
+            new PyParamRenderer(field, Scope).RenderMemberVariable(scratch);
             sink.AppendLine(scratch.ToString());
         }
     }

@@ -7,61 +7,74 @@ namespace WillowGen.Renderers;
 
 public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderable
 {
-    // TODO: this needs to be refactored to handle different types of rendering i.e., function
-    //  param or return vs member variable
     public void Render(Sink sink)
     {
-        var type = RendererUtils.GetTypeName(elem.ParamType, scope);
+        if (elem.IsFunctionParam)
+        {
+            RenderFunctionParam(sink);
+        }
+        else
+        {
+            RenderMemberVariable(sink);
+        }
+    }
 
-        // sanitise only function parameters
-        var name = elem.Parent is FunctionDef ? PyIdentifier.Sanitize(elem.Name()) : elem.Name();
+    public void RenderFunctionParam(Sink sink)
+    {
+        var type = RendererUtils.GetTypeName(elem.ParamType, scope);
+        var name = PyIdentifier.Sanitize(elem.Name());
+
+        sink.Append($"{name}: ");
+
+        var typeName = new StringBuilder();
+
+        if (elem.IsOutParam)
+        {
+            typeName.Append("Out[");
+        }
+
+        if (elem.IsOptionalParam || elem.IsOutParam)
+        {
+            typeName.Append(type);
+            if (elem.IsArray && elem.IsOutParam)
+            {
+                typeName.Append(" | list[None]");
+            }
+        }
+        else
+        {
+            typeName.Append(type);
+        }
+
+        // I did think about pulling the default value from the property, but that seems to
+        // require probing the bytecode, which is just not worth it. The decompiled script code
+        // shows you the default already.
+        if (IsTrueOptional())
+        {
+            typeName.Append(" = sentinel");
+        }
+
+        if (elem.IsOutParam)
+        {
+            typeName.Append(']');
+        }
+
+        sink.AppendRaw(typeName.ToString());
+    }
+
+    public void RenderMemberVariable(Sink sink)
+    {
+        var type = RendererUtils.GetTypeName(elem.ParamType, scope);
+        var name = elem.Name();
 
         if (elem.Parent is ClassDef cls && (cls.Name() == "Object" || !PyIdentifier.IsValid(name)))
         {
             sink.Append($"# {name}: {type}");
+            return;
         }
-        else
-        {
-            sink.Append($"{name}: ");
 
-            var typeName = new StringBuilder();
-
-            if (elem.IsOutParam)
-            {
-                typeName.Append("Out[");
-            }
-
-            if (elem.IsOptionalParam || elem.IsOutParam)
-            {
-                typeName.Append(type);
-                if (elem.IsArray && elem.IsOutParam)
-                {
-                    typeName.Append(" | list[None]");
-                }
-            }
-            else
-            {
-                typeName.Append(
-                    !elem.IsFunctionParam && CanNormallyBeNone(elem.ParamType)
-                        ? $"AcceptsNone[{type}]"
-                        : type);
-            }
-
-            // I did think about pulling the default value from the property, but that seems to
-            // require probing the bytecode, which is just not worth it. The decompiled script code
-            // shows you the default already.
-            if (elem.IsFunctionParam && IsTrueOptional())
-            {
-                typeName.Append(" = sentinel");
-            }
-
-            if (elem.IsOutParam)
-            {
-                typeName.Append(']');
-            }
-
-            sink.AppendRaw(typeName.ToString());
-        }
+        var rendered = CanNormallyBeNone(elem.ParamType) ? $"AcceptsNone[{type}]" : type;
+        sink.Append($"{name}: {rendered}");
     }
 
     public static bool IsTrueOptional(TypedParamDef elem) => elem.IsOptionalParam && !elem.IsOutParam;

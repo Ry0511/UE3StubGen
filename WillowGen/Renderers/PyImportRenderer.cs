@@ -83,7 +83,7 @@ public class PyImportRenderer : IRenderable
     {
         sink.AppendLine("from enum import IntEnum");
         sink.AppendLine("from _typeshed import MaybeNone, sentinel");
-        sink.AppendLine("from typing import Any, Protocol, override, Literal");
+        sink.AppendLine("from typing import Any, Protocol, override, Literal, overload");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
         sink.AppendLine("from unrealsdk.unreal._uenum import UnrealEnum");
         sink.AppendLine($"from {_importRoot}stubgenapi import name, byte, Out, AcceptsNone, Delegate, Unresolved, bound_function");
@@ -114,12 +114,10 @@ public class PyImportRenderer : IRenderable
             var owner = imp.ResolvedTo!.Ancestors(true).OfType<ClassDef>().FirstOrDefault();
             if (owner == null || owner != _elem)
             {
-                // lives in another module
                 _namedTypes[imp.TargetFullPath] = imp.ResolvedTo;
             }
             else
             {
-                // declared on this class (enum/struct); companion files import it back
                 _internalNamedTypes[imp.TargetFullPath] = imp.ResolvedTo;
             }
         }
