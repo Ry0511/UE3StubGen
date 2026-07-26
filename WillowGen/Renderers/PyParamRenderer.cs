@@ -1,6 +1,5 @@
 using System.Text;
 using UE3StubGenCore.ASG.Defs;
-using UE3StubGenCore.ASG.Types;
 using UE3StubGenCore.Sinks;
 
 namespace WillowGen.Renderers;
@@ -21,7 +20,7 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
 
     public void RenderFunctionParam(Sink sink)
     {
-        var type = RendererUtils.GetTypeName(elem.ParamType, scope);
+        var types = new PyTypeRenderer(scope);
         var name = PyIdentifier.Sanitize(elem.Name());
 
         sink.Append($"{name}: ");
@@ -35,7 +34,7 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
 
         if (elem.IsOptionalParam || elem.IsOutParam)
         {
-            typeName.Append(type);
+            typeName.Append(types.RenderRaw(elem.ParamType));
             if (elem.IsArray && elem.IsOutParam)
             {
                 typeName.Append(" | list[None]");
@@ -43,11 +42,7 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
         }
         else
         {
-            typeName.Append(type);
-            if (CanNormallyBeNone(elem.ParamType))
-            {
-                typeName.Append(" | None");
-            }
+            typeName.Append(types.RenderFunctionParam(elem.ParamType));
         }
 
         // I did think about pulling the default value from the property, but that seems to
@@ -68,37 +63,19 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
 
     public void RenderMemberVariable(Sink sink)
     {
-        var type = RendererUtils.GetTypeName(elem.ParamType, scope);
+        var types = new PyTypeRenderer(scope);
         var name = elem.Name();
 
         if (elem.Parent is ClassDef cls && (cls.Name() == "Object" || !PyIdentifier.IsValid(name)))
         {
-            sink.Append($"# {name}: {type}");
+            sink.Append($"# {name}: {types.RenderRaw(elem.ParamType)}");
             return;
         }
 
-        var rendered = CanNormallyBeNone(elem.ParamType) ? $"AcceptsNone[{type}]" : type;
-        sink.Append($"{name}: {rendered}");
+        sink.Append($"{name}: {types.RenderMemberVariable(elem.ParamType)}");
     }
 
     public static bool IsTrueOptional(TypedParamDef elem) => elem.IsOptionalParam && !elem.IsOutParam;
 
     public bool IsTrueOptional() => IsTrueOptional(elem);
-
-    public static bool CanNormallyBeNone(BaseType ty)
-    {
-        // TODO: find a place for this
-        return ty switch
-        {
-            ClassType _ => true,
-            DelegateType _ => true,
-            DynArrayType _ => false,
-            EngineBuiltinType _ => false,
-            InterfaceType _ => true,
-            NamedType e => e.IsClassRef(),
-            StaticArrayType _ => false,
-            UnhandledType _ => true,
-            _ => throw new ArgumentOutOfRangeException()
-        };
-    }
 }

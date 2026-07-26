@@ -30,7 +30,7 @@ public class PyStubApiRenderer : IRenderable
         sink.AppendLine("def bound_function[**P, R](f: Callable[Concatenate[Any, P], R]) -> _TypedBoundFunction[P, R]: ...");
         sink.AppendLine();
         sink.AppendLine("class _TypedDelegate[**P, R](str, _TypedBoundFunction[P, R]):");
-        sink.AppendLine("  def __set__(self, obj: object, value: str | None) -> None: ...");
+        sink.AppendLine("  def __set__(self, obj: object, value: str | BoundFunction | None) -> None: ...");
         sink.AppendLine();
         sink.AppendLine("def delegate[**P, R](");
         sink.AppendLine("    f: Callable[Concatenate[Any, P], R],");

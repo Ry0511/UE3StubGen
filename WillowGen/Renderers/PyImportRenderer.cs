@@ -90,12 +90,8 @@ public class PyImportRenderer : IRenderable
         sink.AppendLine($"from {_importRoot}stubgenapi import name, byte, Out, AcceptsNone, Delegate, Unresolved, bound_function, delegate");
     }
 
-    public static string LocalBaseName(BaseSymbol ty)
-    {
-        return ty is FunctionDef { IsDelegate: true } func
-            ? RendererUtils.CreateDelegateSignature(func)
-            : ty.Name();
-    }
+    public static string LocalBaseName(BaseSymbol ty) => ty.Name();
+
 
     private void CollectNames()
     {

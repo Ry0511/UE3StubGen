@@ -92,6 +92,8 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 
     private void RenderFunctionReturnType(Sink sink)
     {
+        var types = new PyTypeRenderer(scope);
+
         if (elem.HasOutParms)
         {
             var hasMultipleReturns = (elem.ReturnValue != null ? 1 : 0)
@@ -104,12 +106,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 
             if (elem.ReturnValue != null)
             {
-                var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
-                sink.AppendRaw($"{retType}");
-                if (PyParamRenderer.CanNormallyBeNone(elem.ReturnValue!.ParamType))
-                {
-                    sink.AppendRaw(" | MaybeNone");
-                }
+                sink.AppendRaw(types.RenderFunctionReturn(elem.ReturnValue.ParamType));
             }
 
             // output parameters are returned directly
@@ -121,17 +118,14 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
                 }
 
                 isFirst = false;
-                var paramType = RendererUtils.GetReturnTypeName(param.ParamType, scope);
-                sink.AppendRaw(paramType);
+                sink.AppendRaw(types.RenderRawReturn(param.ParamType));
             }
 
             sink.AppendLineRaw(hasMultipleReturns ? "]:" : ":");
         }
         else if (elem.ReturnValue != null)
         {
-            var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
-            var retTags = PyParamRenderer.CanNormallyBeNone(elem.ReturnValue.ParamType) ? " | MaybeNone" : string.Empty;
-            sink.AppendLineRaw($"{retType}{retTags}:");
+            sink.AppendLineRaw($"{types.RenderFunctionReturn(elem.ReturnValue.ParamType)}:");
         }
         else
         {

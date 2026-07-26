@@ -11,7 +11,7 @@ public class PyStructRenderer(StructDef elem, NamingScope scope) : IRenderable
         sink.AppendLineRaw(
             elem.Super == null
                 ? "(WrappedStruct):"
-                : $"({RendererUtils.GetRefTypeName(elem.Super, scope)}):");
+                : $"({PyTypeRenderer.GetRefTypeName(elem.Super, scope)}):");
 
         sink.PushIndent();
 

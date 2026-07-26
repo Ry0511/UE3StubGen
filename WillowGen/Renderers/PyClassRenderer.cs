@@ -73,13 +73,13 @@ public class PyClassRenderer(string importRoot, ClassDef elem) : IRenderable
 
         scratch.Append(
             elem.Super != null && elem.Name() != "Interface"
-                ? $"({RendererUtils.GetRefTypeName(elem.Super, Scope)}"
+                ? $"({PyTypeRenderer.GetRefTypeName(elem.Super, Scope)}"
                 : "(UObject");
 
         foreach (var iface in elem.Interfaces)
         {
             scratch.Append(", ");
-            scratch.Append(RendererUtils.GetRefTypeName(iface, Scope));
+            scratch.Append(PyTypeRenderer.GetRefTypeName(iface, Scope));
         }
 
         sink.AppendLineRaw(scratch + "):");
