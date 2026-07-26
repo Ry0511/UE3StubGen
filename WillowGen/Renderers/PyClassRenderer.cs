@@ -63,13 +63,6 @@ public class PyClassRenderer(string importRoot, ClassDef elem) : IRenderable
             new PyStructRenderer(e, Scope).Render(sink);
             sink.AppendLine();
         }
-
-        foreach (var e in elem.Functions.Where(e => e.IsDelegate))
-        {
-            var renderer = new PyDelegateRenderer(e, Scope);
-            renderer.Render(sink);
-            sink.AppendLine();
-        }
     }
 
     private void RenderClassHeader(Sink sink)
@@ -95,16 +88,23 @@ public class PyClassRenderer(string importRoot, ClassDef elem) : IRenderable
     private void RenderClassFields(Sink sink)
     {
         var scratch = new StringSink();
-        foreach (var field in elem.Fields)
+        foreach (var field in elem.Fields.Where(e => e.ParamType is not DelegateType))
         {
             scratch.Clear();
-            if (field.ParamType is DelegateType)
-            {
-                scratch.Append("# ");
-            }
-
             new PyParamRenderer(field, Scope).RenderMemberVariable(scratch);
             sink.AppendLine(scratch.ToString());
+        }
+
+        var first = true;
+        foreach (var field in elem.Fields.Where(e => e.ParamType is DelegateType))
+        {
+            if (first)
+            {
+                sink.AppendLine();
+                first = false;
+            }
+
+            new PyDelegateRenderer(field, Scope).Render(sink);
         }
     }
 

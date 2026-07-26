@@ -11,53 +11,31 @@ public class PyArgumentListRenderer(NamingScope namingScope, ClassDef elem) : IR
         {
             sink.AppendLine($"class {func.Name()}Args(WrappedStruct):");
             sink.PushIndent();
+            int renderCount = 0;
 
-            var dynamicFields = new List<TypedParamDef>();
             foreach (var param in func.Params)
             {
                 if (!PyIdentifier.IsValid(param.Name()))
                 {
-                    dynamicFields.Add(param);
+                    var scratch = new StringSink();
+                    new PyParamRenderer(param, namingScope).Render(scratch);
+                    sink.AppendLine("# " + scratch);
                 }
                 else
                 {
                     new PyParamRenderer(param, namingScope).RenderMemberVariable(sink);
                     sink.AppendLine();
+                    ++renderCount;
                 }
             }
 
-            // this shit is so fucking rare btw
-            if (dynamicFields.Count > 0)
+            if (renderCount == 0)
             {
-                RenderDynamicAccessors(sink, dynamicFields);
+                sink.AppendLine("...");
             }
 
             sink.PopIndent();
             sink.AppendLine();
         }
-    }
-
-    private void RenderDynamicAccessors(Sink sink, List<TypedParamDef> fields)
-    {
-        foreach (var field in fields)
-        {
-            var type = RendererUtils.GetTypeName(field.ParamType, namingScope);
-            sink.AppendLine("@overload");
-            sink.AppendLine($"def __getattr__(self, name: Literal[\"{field.Name()}\"]) -> {type}: ...");
-        }
-
-        sink.AppendLine("@overload");
-        sink.AppendLine("def __getattr__(self, name: str) -> Any: ...");
-
-        foreach (var field in fields)
-        {
-            var type = RendererUtils.GetTypeName(field.ParamType, namingScope);
-            var value = PyParamRenderer.CanNormallyBeNone(field.ParamType) ? $"{type} | None" : type;
-            sink.AppendLine("@overload");
-            sink.AppendLine($"def __setattr__(self, name: Literal[\"{field.Name()}\"], value: {value}) -> None: ...");
-        }
-
-        sink.AppendLine("@overload");
-        sink.AppendLine("def __setattr__(self, name: str, value: Any) -> None: ...");
     }
 }

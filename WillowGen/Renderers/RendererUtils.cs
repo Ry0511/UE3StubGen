@@ -16,7 +16,7 @@ public static class RendererUtils
             InterfaceType ty => GetTypeName(ty.InterfaceClass, scope),
             NamedType ty => GetNamedTypeName(ty, scope),
             StaticArrayType ty => $"WrappedArray[{GetTypeName(ty.HeldType, scope)}]",
-            DelegateType ty => $"Delegate[{CreateDelegateSignature(ty, scope)}]",
+            DelegateType _ => "Delegate",
             UnhandledType _ => "Any", // maps fall into this category
             _ => throw new ArgumentOutOfRangeException(nameof(elem)),
         };

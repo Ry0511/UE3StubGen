@@ -87,7 +87,7 @@ public class PyImportRenderer : IRenderable
         sink.AppendLine("from enum import auto");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
         sink.AppendLine("from unrealsdk.unreal._uenum import UnrealEnum");
-        sink.AppendLine($"from {_importRoot}stubgenapi import name, byte, Out, AcceptsNone, Delegate, Unresolved, bound_function");
+        sink.AppendLine($"from {_importRoot}stubgenapi import name, byte, Out, AcceptsNone, Delegate, Unresolved, bound_function, delegate");
     }
 
     public static string LocalBaseName(BaseSymbol ty)

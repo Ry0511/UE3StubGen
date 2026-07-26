@@ -44,6 +44,10 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
         else
         {
             typeName.Append(type);
+            if (CanNormallyBeNone(elem.ParamType))
+            {
+                typeName.Append(" | None");
+            }
         }
 
         // I did think about pulling the default value from the property, but that seems to

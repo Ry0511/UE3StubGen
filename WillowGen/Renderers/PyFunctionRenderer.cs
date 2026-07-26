@@ -7,13 +7,23 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 {
     public void Render(Sink sink)
     {
-        RenderFunctionHeader(sink);
+        RenderFunctionHeader(sink, elem.Name(), "@bound_function");
         RenderFunctionParameters(sink);
         RenderFunctionReturnType(sink);
         RenderDocumentation(sink);
     }
 
-    private void RenderFunctionHeader(Sink sink)
+    public void RenderDelegate(Sink sink, TypedParamDef param)
+    {
+        RenderFunctionHeader(sink, param.Name(), "@delegate");
+        RenderFunctionParameters(sink);
+        RenderFunctionReturnType(sink);
+        sink.PushIndent();
+        sink.AppendLine("pass");
+        sink.PopIndent();
+    }
+
+    private void RenderFunctionHeader(Sink sink, string name, string? decorator = null)
     {
         List<string> comments = new();
 
@@ -37,8 +47,12 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             sink.AppendLine("# " + string.Join(", ", comments));
         }
 
-        sink.AppendLine("@bound_function");
-        sink.Append($"def {elem.Name()}(self");
+        if (decorator != null)
+        {
+            sink.AppendLine(decorator);
+        }
+
+        sink.Append($"def {name}(self");
     }
 
     private void RenderFunctionParameters(Sink sink)

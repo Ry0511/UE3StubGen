@@ -1,35 +1,16 @@
 using UE3StubGenCore.ASG.Defs;
+using UE3StubGenCore.ASG.Types;
 using UE3StubGenCore.Sinks;
 
 namespace WillowGen.Renderers;
 
-public class PyDelegateRenderer(FunctionDef elem, NamingScope scope) : IRenderable
+public class PyDelegateRenderer(TypedParamDef elem, NamingScope scope) : IRenderable
 {
     public void Render(Sink sink)
     {
-        sink.AppendLine($"class {RendererUtils.CreateDelegateSignature(elem, scope)}(Protocol):");
-        sink.PushIndent();
-
-        sink.Append("def __call__(self");
-
-        var scratch = new StringSink();
-        foreach (var param in elem.Params)
-        {
-            scratch.Append(", ");
-            new PyParamRenderer(param, scope).RenderFunctionParam(scratch);
-        }
-
-        if (elem.Params.Any(p => !PyIdentifier.IsValid(p.Name())))
-        {
-            scratch.Append(", /");
-        }
-
-        sink.AppendRaw(scratch.ToString());
-
-        sink.AppendLineRaw(
-            elem.ReturnValue != null
-                ? $") -> {RendererUtils.GetTypeName(elem.ReturnValue!.ParamType, scope)}: ..."
-                : ") -> None: ...");
-        sink.PopIndent();
+        var dele = (elem.ParamType as DelegateType)!;
+        var func = (dele.Function.ResolvedTo as FunctionDef)!;
+        new PyFunctionRenderer(func, scope).RenderDelegate(sink, elem);
+        sink.AppendLine();
     }
 }
