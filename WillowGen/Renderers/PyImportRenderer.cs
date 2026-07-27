@@ -92,7 +92,6 @@ public class PyImportRenderer : IRenderable
 
     public static string LocalBaseName(BaseSymbol ty) => ty.Name();
 
-
     private void CollectNames()
     {
         foreach (var imp in _elem.Descendants().OfType<RefNode>())
