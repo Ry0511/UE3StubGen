@@ -61,7 +61,7 @@ public class PyTypeRenderer(NamingScope scope)
     {
         return mode switch
         {
-            Mode.MemberVariable => topLevel ? $"AcceptsNone[{core}]" : $"{core} | None",
+            Mode.MemberVariable => topLevel ? $"AcceptsNone[{core}]" : core,
             Mode.FunctionParam => $"{core} | None",
             Mode.FunctionReturn => $"{core} | MaybeNone",
             _ => core,
