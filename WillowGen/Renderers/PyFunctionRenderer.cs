@@ -18,9 +18,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         RenderFunctionHeader(sink, param.Name(), "@delegate");
         RenderFunctionParameters(sink);
         RenderFunctionReturnType(sink);
-        sink.PushIndent();
-        sink.AppendLine("pass");
-        sink.PopIndent();
+        RenderDocumentation(sink);
     }
 
     private void RenderFunctionHeader(Sink sink, string name, string? decorator = null)
