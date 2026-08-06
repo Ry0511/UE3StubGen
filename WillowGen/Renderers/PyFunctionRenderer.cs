@@ -94,32 +94,20 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 
         if (elem.HasOutParms)
         {
-            var hasMultipleReturns = (elem.ReturnValue != null ? 1 : 0)
-                + elem.Params.Count(p => p.IsOutParam) > 1;
-            var isFirst = elem.ReturnValue == null;
-            if (hasMultipleReturns)
-            {
-                sink.AppendRaw("tuple[");
-            }
+            sink.AppendRaw("tuple[");
 
-            if (elem.ReturnValue != null)
-            {
-                sink.AppendRaw(types.RenderFunctionReturn(elem.ReturnValue.ParamType));
-            }
+            sink.AppendRaw(
+                elem.ReturnValue != null
+                    ? types.RenderFunctionReturn(elem.ReturnValue.ParamType)
+                    : "EllipsisType");
 
-            // output parameters are returned directly
             foreach (var param in elem.Params.Where(p => p.IsOutParam))
             {
-                if (!isFirst)
-                {
-                    sink.AppendRaw(", ");
-                }
-
-                isFirst = false;
+                sink.AppendRaw(", ");
                 sink.AppendRaw(types.RenderRawReturn(param.ParamType));
             }
 
-            sink.AppendLineRaw(hasMultipleReturns ? "]:" : ":");
+            sink.AppendLineRaw("]:");
         }
         else if (elem.ReturnValue != null)
         {

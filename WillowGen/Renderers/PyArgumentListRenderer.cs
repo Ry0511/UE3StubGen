@@ -23,7 +23,7 @@ public class PyArgumentListRenderer(NamingScope namingScope, ClassDef elem) : IR
                 }
                 else
                 {
-                    new PyParamRenderer(param, namingScope).RenderFunctionParam(sink);
+                    new PyParamRenderer(param, namingScope).RenderMemberVariable(sink);
                     sink.AppendLine();
                     ++renderCount;
                 }

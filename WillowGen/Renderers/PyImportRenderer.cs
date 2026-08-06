@@ -83,6 +83,7 @@ public class PyImportRenderer : IRenderable
     {
         sink.AppendLine("from enum import IntEnum");
         sink.AppendLine("from _typeshed import MaybeNone, sentinel");
+        sink.AppendLine("from types import EllipsisType");
         sink.AppendLine("from typing import Any, Protocol, override, Literal, overload");
         sink.AppendLine("from enum import auto");
         sink.AppendLine("from unrealsdk.unreal import UObject, UClass, WrappedArray, WrappedStruct");
