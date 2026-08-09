@@ -68,7 +68,9 @@ public class PyParamRenderer(TypedParamDef elem, NamingScope scope) : IRenderabl
 
         if (elem.Parent is ClassDef cls && (cls.Name() == "Object" || !PyIdentifier.IsValid(name)))
         {
-            sink.Append($"# {name}: {types.RenderRaw(elem.ParamType)}");
+            sink.Append(name is "ObjectArchetype" or "Linker"
+                ? $"{name}: {types.RenderRaw(elem.ParamType)}"
+                : $"# {name}: {types.RenderRaw(elem.ParamType)}");
             return;
         }
 
