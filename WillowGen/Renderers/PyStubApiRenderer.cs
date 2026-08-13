@@ -17,9 +17,9 @@ public class PyStubApiRenderer : IRenderable
         sink.AppendLine("type byte = int");
         sink.AppendLine("type Unresolved[T] = UObject | MaybeNone");
         sink.AppendLine("type Out[T] = T");
-        sink.AppendLine("type Delegate[T] = name");
+        sink.AppendLine("type Delegate = str | None");
         sink.AppendLine();
-        sink.AppendLine("class HookableFunction[**P, R](BoundFunction):");
+        sink.AppendLine("class _TypedBoundFunction[**P, R](BoundFunction):");
         sink.AppendLine("  @overload");
         sink.AppendLine("  def __call__(self, args: WrappedStruct, /) -> R: ...");
         sink.AppendLine("  @overload");
@@ -27,7 +27,14 @@ public class PyStubApiRenderer : IRenderable
         sink.AppendLine("  @override");
         sink.AppendLine("  def __call__(self, *args: Any, **kwargs: Any) -> Any: ...");
         sink.AppendLine();
-        sink.AppendLine("def bound_function[**P, R](f: Callable[Concatenate[Any, P], R]) -> HookableFunction[P, R]: ...");
+        sink.AppendLine("def bound_function[**P, R](f: Callable[Concatenate[Any, P], R]) -> _TypedBoundFunction[P, R]: ...");
+        sink.AppendLine();
+        sink.AppendLine("class _TypedDelegate[**P, R](str, _TypedBoundFunction[P, R]):");
+        sink.AppendLine("  def __set__(self, obj: object, value: str | BoundFunction | None) -> None: ...");
+        sink.AppendLine();
+        sink.AppendLine("def delegate[**P, R](");
+        sink.AppendLine("    f: Callable[Concatenate[Any, P], R],");
+        sink.AppendLine(") -> _TypedDelegate[P, R]: ...");
         sink.AppendLine();
         sink.AppendLine("class AcceptsNone[T=Any]:");
         sink.AppendLine("  @overload");

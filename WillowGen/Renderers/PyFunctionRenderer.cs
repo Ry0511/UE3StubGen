@@ -1,4 +1,3 @@
-using System.Text;
 using UE3StubGenCore.ASG.Defs;
 using UE3StubGenCore.Sinks;
 
@@ -8,13 +7,21 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 {
     public void Render(Sink sink)
     {
-        RenderFunctionHeader(sink);
+        RenderFunctionHeader(sink, elem.Name(), "@bound_function");
         RenderFunctionParameters(sink);
         RenderFunctionReturnType(sink);
         RenderDocumentation(sink);
     }
 
-    private void RenderFunctionHeader(Sink sink)
+    public void RenderDelegate(Sink sink, TypedParamDef param)
+    {
+        RenderFunctionHeader(sink, param.Name(), "@delegate");
+        RenderFunctionParameters(sink);
+        RenderFunctionReturnType(sink);
+        RenderDocumentation(sink);
+    }
+
+    private void RenderFunctionHeader(Sink sink, string name, string? decorator = null)
     {
         List<string> comments = new();
 
@@ -38,8 +45,12 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
             sink.AppendLine("# " + string.Join(", ", comments));
         }
 
-        sink.AppendLine("@bound_function");
-        sink.Append($"def {elem.Name()}(self");
+        if (decorator != null)
+        {
+            sink.AppendLine(decorator);
+        }
+
+        sink.Append($"def {name}(self");
     }
 
     private void RenderFunctionParameters(Sink sink)
@@ -55,7 +66,7 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
         foreach (var param in elem.Params)
         {
             scratch.Append(", ");
-            new PyParamRenderer(param, scope).Render(scratch);
+            new PyParamRenderer(param, scope).RenderFunctionParam(scratch);
         }
 
         // if there are any invalid overrides or badly named variables, then we force positional
@@ -79,46 +90,28 @@ public class PyFunctionRenderer(FunctionDef elem, NamingScope scope) : IRenderab
 
     private void RenderFunctionReturnType(Sink sink)
     {
+        var types = new PyTypeRenderer(scope);
+
         if (elem.HasOutParms)
         {
-            var hasMultipleReturns = (elem.ReturnValue != null ? 1 : 0)
-                + elem.Params.Count(p => p.IsOutParam) > 1;
-            var isFirst = elem.ReturnValue == null;
-            if (hasMultipleReturns)
-            {
-                sink.AppendRaw("tuple[");
-            }
+            sink.AppendRaw("tuple[");
 
-            if (elem.ReturnValue != null)
-            {
-                var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
-                sink.AppendRaw($"{retType}");
-                if (PyParamRenderer.CanNormallyBeNone(elem.ReturnValue!.ParamType))
-                {
-                    sink.AppendRaw(" | MaybeNone");
-                }
-            }
+            sink.AppendRaw(
+                elem.ReturnValue != null
+                    ? types.RenderFunctionReturn(elem.ReturnValue.ParamType)
+                    : "EllipsisType");
 
-            // output parameters are returned directly
             foreach (var param in elem.Params.Where(p => p.IsOutParam))
             {
-                if (!isFirst)
-                {
-                    sink.AppendRaw(", ");
-                }
-
-                isFirst = false;
-                var paramType = RendererUtils.GetReturnTypeName(param.ParamType, scope);
-                sink.AppendRaw(paramType);
+                sink.AppendRaw(", ");
+                sink.AppendRaw(types.RenderRawReturn(param.ParamType));
             }
 
-            sink.AppendLineRaw(hasMultipleReturns ? "]:" : ":");
+            sink.AppendLineRaw("]:");
         }
         else if (elem.ReturnValue != null)
         {
-            var retType = RendererUtils.GetReturnTypeName(elem.ReturnValue.ParamType, scope);
-            var retTags = PyParamRenderer.CanNormallyBeNone(elem.ReturnValue.ParamType) ? " | MaybeNone" : string.Empty;
-            sink.AppendLineRaw($"{retType}{retTags}:");
+            sink.AppendLineRaw($"{types.RenderFunctionReturn(elem.ReturnValue.ParamType)}:");
         }
         else
         {

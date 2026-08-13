@@ -11,14 +11,14 @@ public class PyStructRenderer(StructDef elem, NamingScope scope) : IRenderable
         sink.AppendLineRaw(
             elem.Super == null
                 ? "(WrappedStruct):"
-                : $"({RendererUtils.GetRefTypeName(elem.Super, scope)}):");
+                : $"({PyTypeRenderer.GetRefTypeName(elem.Super, scope)}):");
 
         sink.PushIndent();
 
         foreach (var field in elem.Fields)
         {
             var scratch = new StringSink();
-            new PyParamRenderer(field, scope).Render(scratch);
+            new PyParamRenderer(field, scope).RenderMemberVariable(scratch);
             sink.AppendLine(scratch.ToString());
         }
 
